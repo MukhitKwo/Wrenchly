@@ -5,8 +5,14 @@ from django.conf import settings
 from django.core.cache import cache
 import json
 import re
+from utils.colors import *
 
-client = genai.Client(api_key=settings.GEMINI_API_KEY)
+gemini_key = settings.GEMINI_API_KEY
+if not gemini_key:
+    client = gemini_key
+    print_yellow(f"[WARNING] Gemini has no key. API key set to None!")
+else:
+    client = genai.Client(api_key=gemini_key)
 
 
 # TODO fix cache not saving betwen project restarts
