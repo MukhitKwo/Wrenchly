@@ -10,4 +10,5 @@ urlpatterns = [
     path('cronicIssues/', getCarCronicIssues),
     path('tabelaCarro/', tabelaCarro),  # POST, GET ALL
     path('tabelaCarro/<int:id>/', tabelaCarro),  # GET, PUT, DELETE
+    path('login/', loginUser),
 ]

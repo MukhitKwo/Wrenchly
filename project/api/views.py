@@ -1,10 +1,12 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login
 from rest_framework import viewsets
 from .models import *
 from .serializers import *
 from .gemini import geminiCarCronicIssues
 from .crud import crud
+import json
 
 
 class CarroViewSet(viewsets.ModelViewSet):
@@ -35,3 +37,18 @@ def tabelaGaragem(request, id=None):
 def tabelaCarro(request, id=None):
     print(request.user.id)
     return crud(request, Carro, CarroSerializer, id)
+
+
+@csrf_exempt
+def loginUser(request):
+
+    body = json.loads(request.body)
+    username = body.get("username")
+    password = body.get("password")
+
+    user = authenticate(request, username=username, password=password)  # verificar se existe o utilizador na bd
+    if user:
+        login(request, user) # fazer login
+        return JsonResponse({"success": True, "user_id": user.id})
+
+    return JsonResponse({"success": False, "error": "Invalid credentials"}, status=401)

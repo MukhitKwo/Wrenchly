@@ -33,7 +33,7 @@ function Login() {
 
 		try {
 			// Replace URL with your real login API endpoint
-			const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+			const response = await fetch("/api/login/", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -42,13 +42,17 @@ function Login() {
 			});
 
 			const data = await response.json();
+			console.log(data);
 
-			// Simple success check (replace with real logic)
-			if (response.ok) {
-				alert("Login successful! Response ID: " + data.id);
+			if (data.success) {
+				// login successful
+				// e.g., redirect with React Router
+				alert("login");
 			} else {
-				alert("Login failed");
+				// login failed
+				alert(data.error);
 			}
+
 		} catch (error) {
 			alert("Error: " + error.message);
 		} finally {
