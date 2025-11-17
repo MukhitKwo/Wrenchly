@@ -40,6 +40,20 @@ def tabelaCarro(request, id=None):
 
 
 @csrf_exempt
+def registerUser(request):
+    body = json.loads(request.body)
+    username = body.get("username")
+    email = body.get("email")
+    password = body.get("password")
+
+    User.objects.create_user(
+        username=username,
+        email=email,
+        password=password,
+    )
+    return JsonResponse({"success": True})
+
+@csrf_exempt
 def loginUser(request):
 
     body = json.loads(request.body)
@@ -48,7 +62,7 @@ def loginUser(request):
 
     user = authenticate(request, username=username, password=password)  # verificar se existe o utilizador na bd
     if user:
-        login(request, user) # fazer login
+        login(request, user)  # fazer login
         return JsonResponse({"success": True, "user_id": user.id})
 
     return JsonResponse({"success": False, "error": "Invalid credentials"}, status=401)

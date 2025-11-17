@@ -33,7 +33,7 @@ function Login() {
 
 		try {
 			// Replace URL with your real login API endpoint
-			const response = await fetch("/api/login/", {
+			const response = await fetch("/api/loginUser/", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -47,12 +47,11 @@ function Login() {
 			if (data.success) {
 				// login successful
 				// e.g., redirect with React Router
-				alert("login");
+				alert("Login Sucessfull");
 			} else {
 				// login failed
 				alert(data.error);
 			}
-
 		} catch (error) {
 			alert("Error: " + error.message);
 		} finally {
@@ -77,22 +76,42 @@ function Login() {
 }
 
 function Register() {
-	// Handle registration form submission
-	const handleRegister = (e) => {
-		e.preventDefault(); // Prevent page reload
-		alert("Registered!"); // Replace with real registration logic
+	const [username, setUsername] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+
+	const handleRegister = async (e) => {
+		e.preventDefault();
+
+		try {
+			const response = await fetch("/api/registerUser/", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ username, email, password }),
+			});
+
+			const data = await response.json();
+
+			if (data.success) {
+				alert("Registered successfully!");
+			} else {
+				alert(data.error);
+			}
+		} catch (err) {
+			alert("Network error: " + err.message);
+		}
 	};
 
 	return (
 		<form onSubmit={handleRegister}>
 			<h2>Register</h2>
-			<input type="text" placeholder="Username" required />
+			<input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
 			<br />
 			<br />
-			<input type="email" placeholder="Email" required />
+			<input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 			<br />
 			<br />
-			<input type="password" placeholder="Password" required />
+			<input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 			<br />
 			<br />
 			<button type="submit">Register</button>
