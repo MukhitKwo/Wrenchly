@@ -1,5 +1,8 @@
 from django.http import JsonResponse
+from rest_framework.exceptions import ValidationError
 import json
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 def crud(request, model, serializer, id=None):
@@ -8,31 +11,27 @@ def crud(request, model, serializer, id=None):
     """
 
     if request.method == "POST":
-        return create_object(request, serializer)  # valores necessarios para o POST
-
+        return create_object(request, serializer)
     elif request.method == "GET":
-        return get_object(model, serializer, id)  # valores necessarios para o GET
-
+        return get_object(model, serializer, id)
     elif request.method == "PUT":
-        return update_object(request, model, serializer, id)  # valores necessarios para o PUT
-
+        return update_object(request, model, serializer, id)
     elif request.method == "DELETE":
-        return delete_object(model, id)  # valores necessarios para o DELETE
-
-    return JsonResponse({"error": "Method not allowed"}, status=405)
+        return delete_object(model, id)
 
 
 #! ================== Funções CRUD ==================
 
 def create_object(request, Serializer):
 
-    data = json.loads(request.body)  # recebe o json enviado no request
-    serializer = Serializer(data=data)  # converte o json para o objeto do serializer
-
-    if serializer.is_valid():  # verifica se os dados são válidos
-        obj = serializer.save()  # guarda no BD
-        return JsonResponse({"status": "created"}, status=201)  # resposta ok
-    return JsonResponse(serializer.errors, status=400)  # erros de validação
+    try:
+        data = json.loads(request.body)  # recebe o json enviado no request
+        serializer = Serializer(data=data)  # converte o json para o objeto do serializer
+        serializer.is_valid(raise_exception=True)  # verifica se os dados são válidos (se não, devolve 400)
+        serializer.save()  # guarda no BD
+        return JsonResponse({"message": "created", "data": serializer.data}, status=201)  # resposta ok
+    except ValidationError as e:
+        return JsonResponse({"message": e.detail}, status=400)
 
 
 def get_object(Model, Serializer, id):
@@ -40,49 +39,45 @@ def get_object(Model, Serializer, id):
     if id:  # se foi passado um id, significa que quer um objeto específico
 
         try:
-            pk_id = Model._meta.pk.name
-            obj = Model.objects.get(**{pk_id: id})  # procura o objeto com a chave primária correta
+            obj = Model.objects.get(pk=id)  # procura o objeto com a chave primária correta
+            serializer = Serializer(obj)  # converte o objeto para json
+            return JsonResponse({"message": "obtained", "data": serializer.data}, status=200)  # devolve o json
         except Model.DoesNotExist:
-            return JsonResponse({"error": f"{Model.__name__} not found"}, status=404)  # não encontrou
+            return JsonResponse({"message": "id not found"}, status=404)  # não encontrou
 
-        serializer = Serializer(obj)  # converte o objeto para json
-        return JsonResponse(serializer.data, status=200)  # devolve o json
-
-    objects = Model.objects.all()[:100] # busca todos os primeiros 100 registos
+    objects = Model.objects.all()[:25].order_by('-id')  # busca todos os primeiros 25 registos
     serializer = Serializer(objects, many=True)  # converte todos para json
-    return JsonResponse(serializer.data, safe=False, status=200)  # devolve lista de jsons
+    return JsonResponse({"message": "obtained", "data": serializer.data}, safe=False, status=200)  # devolve lista jsons
 
 
 def update_object(request, Model, Serializer, id):
 
     if not id:  # sem id não há como atualizar
-        return JsonResponse({"error": f"ID required"}, status=400)
+        return JsonResponse({"message": f"ID required"}, status=400)
 
     try:
-        pk_id = Model._meta.pk.name
-        obj = Model.objects.get(**{pk_id: id})  # procura o objeto
-    except Model.DoesNotExist:
-        return JsonResponse({"error": f"{Model.__name__} not found"}, status=404)
+        obj = Model.objects.get(pk=id)  # procura o objeto
 
-    data = json.loads(request.body)  # recebe o json com os dados a atualizar
-    serializer = Serializer(obj, data=data, partial=True)  # atualiza só os campos fornecidos
-    if serializer.is_valid():  # valida
+        data = json.loads(request.body)  # recebe o json com os dados a atualizar
+
+        serializer = Serializer(obj, data=data, partial=True)  # atualiza só os campos fornecidos
+        serializer.is_valid(raise_exception=True)  # verifica se os dados são válidos (se não, devolve 400)
         serializer.save()  # guarda alterações
-        return JsonResponse({"status": "updated"}, status=200)  # resposta ok
-    else:
-        return JsonResponse(serializer.errors, status=400)  # erro de validação
+        return JsonResponse({"message": "updated", "data": serializer.data}, status=200)  # resposta ok
+    except Model.DoesNotExist:
+        return JsonResponse({"message": "id not found"}, status=404)
+    except ValidationError as e:
+        return JsonResponse({"message": e.detail}, status=400)
 
 
 def delete_object(Model, id):
 
     if not id:  # sem id não há o que apagar
-        return JsonResponse({"error": f"ID required"}, status=400)
+        return JsonResponse({"message": f"ID required"}, status=400)
 
     try:
-        pk_id = Model._meta.pk.name
-        obj = Model.objects.get(**{pk_id: id})  # procura o objeto
+        obj = Model.objects.get(pk=id)  # procura o objeto
+        obj.delete()  # apaga o registo
+        return JsonResponse({"message": "deleted"}, status=200)  # confirma eliminação
     except Model.DoesNotExist:
-        return JsonResponse({"error": f"{Model.__name__} not found"}, status=404)
-
-    obj.delete()  # apaga o registo
-    return JsonResponse({"status": "deleted"}, status=200)  # confirma eliminação
+        return JsonResponse({"message": "id not found"}, status=404)

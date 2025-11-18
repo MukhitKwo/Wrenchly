@@ -11,10 +11,10 @@ def print_status(res, onlyError=False):
     - 600+    → Roxo (Status personalizado)
     """
 
-    data = res.json()
-    status_message = data.get("status") or data.get("error")
     status_code = res.status_code
-    text = f"<!> Status Code: {status_code} | Message: {status_message}"
+    data = res.json()
+    status_message = data.get("message")
+    text = f"<!> Status: {status_code} | Message: {status_message}"
 
     if (200 <= status_code <= 299) and not onlyError:
         print_green(text)  # Green → success

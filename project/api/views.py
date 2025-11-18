@@ -21,8 +21,7 @@ def getCarCronicIssues(car_model):
     return JsonResponse(data, safe=False, json_dumps_params={"ensure_ascii": False, "indent": 2})
 
 
-#! estas são as funções que vao ser chamadas no frontend por api
-@csrf_exempt
+@csrf_exempt  # trocar para api_view([POST, GET, ...])
 def tabelaUser(request, id=None):
     return crud(request, User, UserSerializer, id)
 
@@ -35,7 +34,6 @@ def tabelaGaragem(request, id=None):
 
 @csrf_exempt
 def tabelaCarro(request, id=None):
-    print(request.user.id)
     return crud(request, Carro, CarroSerializer, id)
 
 
@@ -46,12 +44,12 @@ def registerUser(request):
     email = body.get("email")
     password = body.get("password")
 
-    User.objects.create_user(
-        username=username,
-        email=email,
-        password=password,
-    )
-    return JsonResponse({"success": True})
+    if User.objects.filter(email=email).exists():  # verificar se já existe um user com esse email
+        return JsonResponse({"sucess": False, "message": "Email already exists"}, status=400)
+
+    User.objects.create_user(username=username, email=email, password=password)
+    return JsonResponse({"success": True}, status=201)
+
 
 @csrf_exempt
 def loginUser(request):
@@ -63,6 +61,6 @@ def loginUser(request):
     user = authenticate(request, username=username, password=password)  # verificar se existe o utilizador na bd
     if user:
         login(request, user)  # fazer login
-        return JsonResponse({"success": True, "user_id": user.id})
+        return JsonResponse({"success": True})
 
-    return JsonResponse({"success": False, "error": "Invalid credentials"}, status=401)
+    return JsonResponse({"success": False, "message": "Invalid credentials"}, status=401)

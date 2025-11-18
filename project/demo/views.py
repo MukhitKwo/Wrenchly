@@ -60,8 +60,6 @@ def createCarroView(request):
 
 def getCarroView(request):
 
-    print(request.user)
-
     oneCar = None
     multipleCars = None
 
