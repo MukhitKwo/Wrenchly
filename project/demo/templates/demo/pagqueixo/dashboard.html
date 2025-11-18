@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Os meus carros · Wrenchly{% endblock %}
+
+{% block content %}
+<div class="glass p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Os meus carros</h2>
+        <a class="btn btn-brand" href="{% url 'car_create' %}">+ Adicionar carro</a>
+    </div>
+
+    {% if cars %}
+    <div class="list-group list-group-flush">
+        {% for c in cars %}
+        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-transparent text-light"
+            href="{% url 'car_detail' c.pk %}">
+            <div>
+                <div class="fw-semibold">{{ c.make }} {{ c.model }}</div>
+                <div class="small text-dim">{{ c.year }} · {{ c.kms_current|intcomma }} km</div>
+            </div>
+            <span class="badge rounded-pill text-bg-dark">
+                {{ c.chronic_issues.count }} problemas · {{ c.maintenances.count }} manutenções
+            </span>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-dim">Ainda não tens carros.</div>
+    {% endif %}
+</div>
+{% endblock %}
