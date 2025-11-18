@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Adicionar carro · Wrenchly{% endblock %}
+
+{% block content %}
+
+<div class="hero p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <a href="{% url 'dashboard' %}" class="text-decoration-none">&larr; Voltar</a>
+      <h3 class="mb-1">Adicionar carro</h3>
+      <div class="vin">Preenche os dados principais abaixo.</div>
+    </div>
+  </div>
+</div>
+
+<div class="glass p-4">
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger py-2 mb-3">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <!-- Linha 1: Marca / Modelo -->
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Marca</label>
+        {% render_field form.make class+="form-control" placeholder="Ex.: BMW" %}
+        {% if form.make.errors %}<div class="invalid-feedback d-block">{{ form.make.errors|join:", " }}</div>{% endif %}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Modelo</label>
+        {% render_field form.model class+="form-control" placeholder="Ex.: 118D" %}
+        {% if form.model.errors %}<div class="invalid-feedback d-block">{{ form.model.errors|join:", " }}</div>{% endif %}
+      </div>
+    </div>
+
+    <!-- Linha 2: Ano / VIN / KM atuais -->
+    <div class="row g-3 mt-1">
+      <div class="col-md-3">
+        <label class="form-label">Ano</label>
+        {% render_field form.year type="number" min="1900" max="2099" step="1" class+="form-control" placeholder="2012" %}
+        {% if form.year.errors %}<div class="invalid-feedback d-block">{{ form.year.errors|join:", " }}</div>{% endif %}
+      </div>
+
+      <div class="col-md-5">
+        <label class="form-label">VIN</label>
+        {% render_field form.vin class+="form-control" id="vinInput" maxlength="17" placeholder="Opcional · 17 caracteres" %}
+        <div class="form-text">Será guardado em maiúsculas.</div>
+        {% if form.vin.errors %}<div class="invalid-feedback d-block">{{ form.vin.errors|join:", " }}</div>{% endif %}
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">KM atuais</label>
+        <div class="input-group">
+          {% render_field form.kms_current type="number" min="0" step="100" class+="form-control" placeholder="200000" %}
+          <span class="input-group-text">km</span>
+        </div>
+        {% if form.kms_current.errors %}<div class="invalid-feedback d-block">{{ form.kms_current.errors|join:", " }}</div>{% endif %}
+      </div>
+    </div>
+
+    <!-- Linha 3: Especificações -->
+    <div class="row g-3 mt-1">
+      <div class="col-12">
+        <label class="form-label">Especificações</label>
+        {% render_field form.specs class+="form-control" rows="5" placeholder="Opcional · notas livres" %}
+        <div class="form-text">Campo livre para notas (opcional).</div>
+        {% if form.specs.errors %}<div class="invalid-feedback d-block">{{ form.specs.errors|join:", " }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button class="btn btn-primary px-4" type="submit">Guardar</button>
+      <a href="{% url 'dashboard' %}" class="btn btn-outline-light">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  // VIN sempre em maiúsculas
+  (function () {
+    const vin = document.getElementById('vinInput');
+    if (vin) vin.addEventListener('input', function () { this.value = this.value.toUpperCase(); });
+  })();
+</script>
+
+{% endblock %}
