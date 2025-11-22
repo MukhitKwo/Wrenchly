@@ -95,11 +95,11 @@ class Manutencao(models.Model):
 
     descricao = models.TextField("Descrição", blank=True, null=True)  # type: ignore
 
+    quilometragem = models.PositiveIntegerField("Quilometragem")  # type: ignore
+
     custo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)   # type: ignore
 
     data = models.DateField("Dia da Manutenção", null=True, blank=True)  # type: ignore
-
-    quilometragem = models.PositiveIntegerField("Quilometragem")  # type: ignore
 
     def __str__(self):
         return f"({self.carro_id.modelo}) {self.nome} - {self.quilometragem}km"
@@ -113,10 +113,6 @@ class Cronico(models.Model):
 
     nome = models.CharField("Nome", max_length=100)  # type: ignore
 
-    descricao = models.TextField("Descrição", blank=True, null=True)  # type: ignore
-
-    quilometragem = models.PositiveIntegerField("Quilometragem")  # type: ignore
-
     SEVERIDADE_CHOICES = [
         ('nenhuma', 'Nenhuma'),
         ('baixa', 'Baixa'),
@@ -129,8 +125,13 @@ class Cronico(models.Model):
 
     resolvido = models.BooleanField(default=False)  # type: ignore
 
+    descricao = models.TextField("Descrição", blank=True, null=True)  # type: ignore
+
+    quilometragem = models.PositiveIntegerField("Quilometragem")  # type: ignore
+
     def __str__(self):
         return f"({self.carro_id.modelo}) {self.nome} - {self.quilometragem}km ({"Resolvido" if self.resolvido else "Severidade: " + self.severidade})"
+
 
 class Defenicoes(models.Model):
 

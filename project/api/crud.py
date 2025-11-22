@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 
-def crud(request, model, serializer, id=None):
+def crud(request, model, serializer, id=None, **filters):
     """
     O CRUD deteta automaticamente o tipo de request e retorna o json correspondente
     """
@@ -34,7 +34,7 @@ def create_object(request, Serializer):
         return JsonResponse({"message": e.detail}, status=400)
 
 
-def get_object(Model, Serializer, id):
+def get_object(Model, Serializer, id, **filters):
 
     if id:  # se foi passado um id, significa que quer um objeto específico
 
@@ -45,18 +45,18 @@ def get_object(Model, Serializer, id):
         except Model.DoesNotExist:
             return JsonResponse({"message": "id not found"}, status=404)  # não encontrou
 
-    objects = Model.objects.all()[:25].order_by('-id')  # busca todos os primeiros 25 registos
+    objects = Model.objects.filter(**filters).order_by('-id')[:25]  # busca todos os primeiros 25 registos
     serializer = Serializer(objects, many=True)  # converte todos para json
     return JsonResponse({"message": "obtained", "data": serializer.data}, safe=False, status=200)  # devolve lista jsons
 
 
-def update_object(request, Model, Serializer, id):
+def update_object(request, Model, Serializer, id, **filters):
 
     if not id:  # sem id não há como atualizar
         return JsonResponse({"message": f"ID required"}, status=400)
 
     try:
-        obj = Model.objects.get(pk=id)  # procura o objeto
+        obj = Model.objects.get(pk=id, **filters)  # procura o objeto
 
         data = json.loads(request.body)  # recebe o json com os dados a atualizar
 
@@ -70,13 +70,13 @@ def update_object(request, Model, Serializer, id):
         return JsonResponse({"message": e.detail}, status=400)
 
 
-def delete_object(Model, id):
+def delete_object(Model, id, **filters):
 
     if not id:  # sem id não há o que apagar
         return JsonResponse({"message": f"ID required"}, status=400)
 
     try:
-        obj = Model.objects.get(pk=id)  # procura o objeto
+        obj = Model.objects.get(pk=id, **filters)  # procura o objeto
         obj.delete()  # apaga o registo
         return JsonResponse({"message": "deleted"}, status=200)  # confirma eliminação
     except Model.DoesNotExist:
