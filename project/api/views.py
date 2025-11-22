@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from rest_framework import viewsets
 from .models import *
 from .serializers import *
-from .gemini import geminiCarCronicIssues
+from .gemini import geminiCarCronicIssues, geminiCarsBySpecs
 from .crud import crud
 import json
 
@@ -17,8 +17,15 @@ class CarroViewSet(viewsets.ModelViewSet):
 def getCarCronicIssues(car_model):
     data = geminiCarCronicIssues(car_model)
     if data is None:
-        return JsonResponse({"error": "Failed to get car issues"}, status=500)
+        return JsonResponse({"message": "Failed to get car issues"}, status=500)
     return JsonResponse(data, safe=False, json_dumps_params={"ensure_ascii": False, "indent": 2})
+
+
+def getCarsBySpecs(specs):
+    data = geminiCarsBySpecs(specs)  # {"combustivel": "diesel", "transmissão": "manual", "tração": "awd"}
+    if data is None:
+        return JsonResponse({"message": "Failed to get cars by specs"}, status=500)
+    return JsonResponse(data, safe=False)
 
 
 @csrf_exempt  # trocar para api_view([POST, GET, ...])

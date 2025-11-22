@@ -1,24 +1,16 @@
 # Wrenchly
 
-**Descrição:**
-Wrenchly é uma aplicação web mobile-first para manutenção de veículos. Permite aos utilizadores adicionar os seus carros, registar reparações e acompanhar o histórico de manutenção. A app inclui também um sistema de previsão que identifica problemas comuns/crónicos do veículo e fornece lembretes para troca de óleo, seguros e outras manutenções periódicas. Além disso, os utilizadores podem procurar veículos com base em características específicas para encontrar o carro que melhor se adapta às suas necessidades. Futuramente, a aplicação poderá ser migrada para **React Native** para suporte nativo em dispositivos móveis.
+![Static Badge](https://img.shields.io/badge/python-v3.13-green)
+![Static Badge](https://img.shields.io/badge/uv%20Astral-v0.8.17-green)
+![Static Badge](https://img.shields.io/badge/npm-v10.9.2-green)
 
-**Colaboradores**
+Aplicação web para manutenção de veículos.<br>
+Permite aos utilizadores adicionar os seus carros, registar reparações e acompanhar o histórico de manutenção. A app inclui também um sistema de previsão que identifica problemas comuns/crónicos do veículo e fornece lembretes para troca de óleo, seguros e outras manutenções periódicas.<br>
+Além disso, os utilizadores podem também procurar veículos com base em características específicas para encontrar o carro que melhor se adapta às suas necessidades.<br>
 
-* **António** – Backend
-* **Guilherme** – Backend
-* **Rui** – Midleman
-* **Daniel** – Frontend
-* **Pablo** – Frontend
+# Instalação
 
-**Stack Tecnológico**
-
-* **Backend:** Django
-* **Frontend:** React + TailwindCSS
-* **Base de Dados:** Supabase
-
-
-### Setup / Run
+---
 
 1. **Instalar dependências**
 
@@ -28,29 +20,23 @@ npm run dep
 
 2. **Executar o projeto**
 
-* Para executar **toda a aplicação** (frontend + backend):
-
 ```bash
-npm run project
-# ou
-npm run p
+# Toda a aplicação (frontend + backend):
+npm run project | p
+
+# Apenas o backend
+npm run backend | b
+
+# Apenas o frontend
+npm run frontend | f
 ```
 
-* Para executar **apenas o backend** (Django):
+# Colaboradores
 
-```bash
-npm run backend
-# ou
-npm run b
-```
+---
 
-* Para executar **apenas o frontend** (React):
-
-```bash
-npm run frontend
-# ou
-npm run f
-```
-
-
-
+- **António** – Backend
+- **Guilherme** – Backend
+- **Rui** – Midleman
+- **Daniel** – Frontend
+- **Pablo** – Frontend

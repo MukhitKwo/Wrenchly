@@ -8,6 +8,7 @@ router.register(r'carinfo', CarroViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('cronicIssues/', getCarCronicIssues),
+    path('carSpecs/', getCarsBySpecs),
     path('tabelaCarro/', tabelaCarro),  # POST, GET ALL
     path('tabelaCarro/<int:id>/', tabelaCarro),  # GET, PUT, DELETE
     path('loginUser/', loginUser),

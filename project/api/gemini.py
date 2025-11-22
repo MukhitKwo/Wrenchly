@@ -15,7 +15,7 @@ else:
     client = genai.Client(api_key=gemini_key)
 
 
-# TODO fix cache not saving betwen project restarts
+# TODO fix cache not saving betwen project restarts (use jsons?)
 
 def geminiCarCronicIssues(car_model: str):
 
@@ -30,7 +30,7 @@ def geminiCarCronicIssues(car_model: str):
     prompt = (
         f"Lista JSON dos problemas crónicos mais comuns do {car_model}, "
         f"com nome do problema, descrição curta e quilometragem média. "
-        f"Responde em português de Portugal."
+        f"Responde em pt-pt."
     )
 
     schema = types.Schema(
@@ -61,11 +61,39 @@ def geminiCarCronicIssues(car_model: str):
             return None
 
         data = json.loads(response.text)
-
-        # data = {"message": "Hello", "status": "success"}
-
         cache.set(cache_key, data, timeout=3600)  # cache 1 hora
+
         return data
+
+    except (APIError, json.JSONDecodeError) as e:
+        print(f"Gemini error: {e}")
+        return None
+
+
+def geminiCarsBySpecs(specs):
+
+    prompt = (
+        f"Lista Python de 15 carros que correspondem a estas especificações: {specs}. "
+        "Incluir o nome completo e ano do carro, "
+        "Não incluir texto adicional, não usar blocos de código (```), sem quebras de linha, "
+        "exemplo: ['Audi A4 2005', 'Toyota Corolla 1998', ...]. "
+    )
+
+    schema = types.Schema(
+        type=types.Type.ARRAY,
+        items=types.Schema(type=types.Type.STRING)
+    )
+
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_schema=schema
+            )
+        )
+
+        return response.text
 
     except (APIError, json.JSONDecodeError) as e:
         print(f"Gemini error: {e}")
