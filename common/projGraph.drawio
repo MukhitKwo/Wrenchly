@@ -1,0 +1,214 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" version="28.2.8">
+  <diagram name="Page-1" id="xeHjFqGeU0t-UTRaoaUx">
+    <mxGraphModel dx="2084" dy="1134" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="nGKt7FyRwP1w65t4rreF-125" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-115" target="nGKt7FyRwP1w65t4rreF-23" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-126" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-115" target="nGKt7FyRwP1w65t4rreF-32" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-115" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="850.02" y="1120" width="440" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-27" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-1" target="nGKt7FyRwP1w65t4rreF-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-28" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-1" target="nGKt7FyRwP1w65t4rreF-12" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-30" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=8 8;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-1" target="nGKt7FyRwP1w65t4rreF-18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-67" value="Caso tenha&amp;nbsp;&lt;div&gt;login feito&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="nGKt7FyRwP1w65t4rreF-30" vertex="1" connectable="0">
+          <mxGeometry x="0.4268" relative="1" as="geometry">
+            <mxPoint x="-100" y="-16" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-1" value="Entra na app (mobile)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="500" y="450" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="6aRPftBG4aABA2dw_mF8-53" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-2" target="nGKt7FyRwP1w65t4rreF-3" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="740" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-2" value="Criar uma conta" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="400" y="590" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-38" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-3" target="nGKt7FyRwP1w65t4rreF-5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6aRPftBG4aABA2dw_mF8-20" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-3" target="nGKt7FyRwP1w65t4rreF-7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="650" y="790" />
+              <mxPoint x="490" y="790" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-3" value="Adicionar um veiculo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fillStyle=solid;glass=0;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="590.02" y="710" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-39" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-5" target="nGKt7FyRwP1w65t4rreF-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-5" value="Procurar o veiculo pela marca, modelo, ano" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fillStyle=solid;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="660.02" y="810" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-45" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-6" target="nGKt7FyRwP1w65t4rreF-32" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="850.02" y="939.9999999999998" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-6" value="Adicionar infomaçoes do veiculo (kms, anos, etc)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="660.02" y="910" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="6aRPftBG4aABA2dw_mF8-21" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-7" target="nGKt7FyRwP1w65t4rreF-13" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-7" value="Procurar por um veiculo novo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="810" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-95" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-12" target="nGKt7FyRwP1w65t4rreF-18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-12" value="Entrar na conta" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="590.02" y="590" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-61" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-13" target="nGKt7FyRwP1w65t4rreF-14" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-13" value="Pôr preferencias pessoias do veiculo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="910" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-62" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-14" target="nGKt7FyRwP1w65t4rreF-15" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-14" value="Lista com veiculos que correspondem às descriçoes" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="1010" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-64" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-15" target="nGKt7FyRwP1w65t4rreF-16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-65" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-15" target="nGKt7FyRwP1w65t4rreF-17" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-15" value="Guardar escolhas" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="1110" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-16" value="Eliminar escolha" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="350" y="1210" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-87" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-17" target="nGKt7FyRwP1w65t4rreF-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-17" value="Selecionar escolha" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="510" y="1210" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-34" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-18" target="nGKt7FyRwP1w65t4rreF-3" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="840" y="680" />
+              <mxPoint x="650" y="680" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-35" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-18" target="nGKt7FyRwP1w65t4rreF-33" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="840" y="680" />
+              <mxPoint x="980" y="680" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-68" value="caso tenha&amp;nbsp;&lt;div&gt;1+ veiculos&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="nGKt7FyRwP1w65t4rreF-35" vertex="1" connectable="0">
+          <mxGeometry x="0.0925" y="-1" relative="1" as="geometry">
+            <mxPoint x="-6" y="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6aRPftBG4aABA2dw_mF8-19" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-18" target="6aRPftBG4aABA2dw_mF8-18" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-18" value="Mostrar garagem pessoal com perfis dos veiculos" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="780.02" y="590" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-19" value="Adicionar manutenções feitas ao veiculo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="830.02" y="1010" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-118" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-20" target="nGKt7FyRwP1w65t4rreF-115" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-20" value="Mostrar manutençoes&amp;nbsp;&lt;div&gt;necessarias do veiculo&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="1010.02" y="1010" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-23" value="Noticação quando alta prioridade" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="1340" y="1130" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-50" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-24" target="nGKt7FyRwP1w65t4rreF-25" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-24" value="Clicar no problema mostra informaçoes mais detalhadas" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="865.04" y="1240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-124" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-25" target="nGKt7FyRwP1w65t4rreF-107" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-25" value="Mostar mapa de locais num x raio km de lojas/oficinas que vendem tal peça" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="865.04" y="1340" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-44" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-32" target="nGKt7FyRwP1w65t4rreF-19" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-88" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-32" target="nGKt7FyRwP1w65t4rreF-20" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-32" value="Mostrar manutençoes passadas do veiculo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="920.02" y="910" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-40" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-33" target="nGKt7FyRwP1w65t4rreF-32" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-33" value="Selecionar o veiculo" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="920.02" y="710" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-107" value="Usar localização do utilizador como ponto inicial" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="1040.02" y="1340" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-119" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="nGKt7FyRwP1w65t4rreF-112" target="nGKt7FyRwP1w65t4rreF-24" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-112" value="Mostar problemas comuns/cronicos" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="865.04" y="1130" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-113" value="Mostar espectativas para manutenção&lt;div&gt;(ex: oleo)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="1010.02" y="1130" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="nGKt7FyRwP1w65t4rreF-114" value="Mostar pagamentos e datas de validade&lt;div&gt;(ex: seguro)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="1150" y="1130" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="6aRPftBG4aABA2dw_mF8-10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;curved=0;dashed=1;dashPattern=8 8;" parent="1" source="nGKt7FyRwP1w65t4rreF-33" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1238" y="1120" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1238" y="740" />
+              <mxPoint x="1238" y="1110" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6aRPftBG4aABA2dw_mF8-11" value="caso altere o que&lt;div&gt;mostar primeiro&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="6aRPftBG4aABA2dw_mF8-10" vertex="1" connectable="0">
+          <mxGeometry x="-0.6698" y="-2" relative="1" as="geometry">
+            <mxPoint x="13" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6aRPftBG4aABA2dw_mF8-18" value="Definições da app" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="980" y="590" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

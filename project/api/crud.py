@@ -53,7 +53,7 @@ def get_object(Model, Serializer, id, **filters):
 def update_object(request, Model, Serializer, id, **filters):
 
     if not id:  # sem id não há como atualizar
-        return JsonResponse({"message": f"ID required"}, status=400)
+        return JsonResponse({"message": "ID required"}, status=400)
 
     try:
         obj = Model.objects.get(pk=id, **filters)  # procura o objeto
@@ -73,7 +73,7 @@ def update_object(request, Model, Serializer, id, **filters):
 def delete_object(Model, id, **filters):
 
     if not id:  # sem id não há o que apagar
-        return JsonResponse({"message": f"ID required"}, status=400)
+        return JsonResponse({"message": "ID required"}, status=400)
 
     try:
         obj = Model.objects.get(pk=id, **filters)  # procura o objeto
