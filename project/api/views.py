@@ -10,7 +10,7 @@ import json
 
 
 class CarroViewSet(viewsets.ModelViewSet):
-    queryset = Carro.objects.all()
+    queryset = Carros.objects.all()
     serializer_class = CarroSerializer
 
 
@@ -35,13 +35,13 @@ def tabelaUser(request, id=None):
 
 @csrf_exempt
 def tabelaGaragem(request, id=None):
-    return crud(request, Garagem, GaragemSerializer, id)
+    return crud(request, Garagens, GaragemSerializer, id)
     # garagem__user=request.user
 
 
 @csrf_exempt
 def tabelaCarro(request, id=None):
-    return crud(request, Carro, CarroSerializer, id)
+    return crud(request, Carros, CarroSerializer, id)
 
 
 @csrf_exempt

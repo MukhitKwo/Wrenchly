@@ -13,25 +13,25 @@ class UserSerializer(serializers.ModelSerializer):
 
 class GaragemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Garagem
+        model = Garagens
         fields = '__all__'
 
 
 class CarroSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Carro
+        model = Carros
         fields = '__all__'
 
 
 class ManutencaoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Manutencao
+        model = Manutencoes
         fields = '__all__'
 
 
 class CronicoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cronico
+        model = Cronicos
         fields = '__all__'
 
 

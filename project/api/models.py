@@ -1,3 +1,4 @@
+from typing import Text
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -17,64 +18,74 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 #         return self.username
 
 
-class Garagem(models.Model):
+class Garagens(models.Model):
 
     garagem_id = models.AutoField(primary_key=True)  # type: ignore
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
-    nome = models.CharField("Nome", max_length=100)  # type: ignore
+    nome = models.CharField("Nome", max_length=50, blank=True, null=True)  # type: ignore
 
     def __str__(self):
-        return self.nome
+        return f"{self.garagem_id} - {self.nome or f'Garagem do {self.user.username}'}"
 
 
-class Carro(models.Model):
+class Notas(models.Model):
+
+    garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+
+    nota = models.TextField("Nota")  # type: ignore
+
+    def __str__(self):
+        return f"{self.garagem.garagem_id} - {self.nota}"
+
+
+class Carros(models.Model):
 
     carro_id = models.AutoField(primary_key=True)  # type: ignore
 
-    garagem = models.ForeignKey(Garagem, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+    garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
     modelo = models.CharField("Modelo", max_length=100)  # type: ignore
 
-    FUEL_CHOICES = (
-        ('Gasolina', 'Gasolina'),
-        ('Gasoleo', 'Gasoleo'),
-        ('Hibrido', 'Hibrido'),
-        ('Eletrico', 'Eletrico'),
-        ('Outro', 'Outro'),
+    TIPOS_COMBUSTIVEL = (
+        ('gasolina', 'Gasolina'),
+        ('gasoleo', 'Gasoleo'),
+        ('hibrido', 'Hibrido'),
+        ('eletrico', 'Eletrico'),
+        ('outro', 'Outro'),
     )
-    combustivel = models.CharField("Combustivel", max_length=20, choices=FUEL_CHOICES)  # type: ignore
+    combustivel = models.CharField("Combustivel", max_length=20, choices=TIPOS_COMBUSTIVEL)  # type: ignore
 
     tdi = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)  # type: ignore
 
     cavalos = models.PositiveIntegerField("Cavalos", blank=True, null=True)  # type: ignore
 
-    TRANSMISSION_CHOICES = (
-        ('Manual', 'Manual'),
-        ('Automatico', 'Automatico'),
-        ('Semi-automatico', 'Semi-automatico'),
-        ('CVT', 'CVT'),
-        ('Outro', 'Outro'),
+    TIPOS_TRANSMISSAO = (
+        ('manual', 'Manual'),
+        ('automatico', 'Automatico'),
+        ('semi-automatico', 'Semi-automatico'),
+        ('cvt', 'CVT'),
+        ('outro', 'Outro'),
     )
-    transmissao = models.CharField("Transmissao", max_length=20, choices=TRANSMISSION_CHOICES)  # type: ignore
+    transmissao = models.CharField("Transmissao", max_length=20, choices=TIPOS_TRANSMISSAO)  # type: ignore
 
     quilometragem = models.PositiveIntegerField("Quilometragem")  # type: ignore
 
     ano_produzido = models.PositiveIntegerField("Ano Produzido")  # type: ignore
 
-    BODY_TYPE_CHOICES = [
-        ('Seda', 'Sedã'),
-        ('Hatchback', 'Hatchback'),
-        ('SUV', 'SUV'),
-        ('Cope', 'Cupê'),
-        ('Conversivel', 'Conversível'),
-        ('Carrinha', 'Carrinha'),
-        ('Van', 'Van'),
-        ('Pickup', 'Pickup'),
-        ('Outro', 'Outro'),
+    TIPOS_CORPO = [
+        ('seda', 'Sedã'),
+        ('hatchback', 'Hatchback'),
+        ('suv', 'SUV'),
+        ('cope', 'Cupê'),
+        ('conversivel', 'Conversível'),
+        ('carrinha', 'Carrinha'),
+        ('van', 'Van'),
+        ('pickup', 'Pickup'),
+        ('outro', 'Outro'),
     ]
-    tipo_corpo = models.CharField("Tipo Corpo", max_length=20, choices=BODY_TYPE_CHOICES,
+    tipo_corpo = models.CharField("Tipo Corpo", max_length=20, choices=TIPOS_CORPO,
                                   null=True, blank=True)  # type: ignore
 
     vin = models.CharField("VIN", max_length=17, blank=True, null=True)  # type: ignore
@@ -82,16 +93,23 @@ class Carro(models.Model):
     matricula = models.CharField('Matricula', max_length=8, blank=True, null=True)  # type: ignore
 
     def __str__(self):
-        return f"{self.modelo} {self.combustivel} ({self.transmissao})"
+        return f"{self.carro_id} - {self.modelo} {self.ano_produzido}"
 
 
-class Manutencao(models.Model):
+class Manutencoes(models.Model):
 
     registro_id = models.AutoField(primary_key=True)  # type: ignore
 
-    carro = models.ForeignKey(Carro, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+    carro = models.ForeignKey(Carros, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
     nome = models.CharField("Nome", max_length=100)  # type: ignore
+
+    TIPO_MANUTENCAO = [
+        ('corretivo', 'Corretivo'),
+        ('preventivo', 'Preventivo'),
+        ('cronico', 'Crônico'),
+    ]
+    tipo = models.CharField("Tipo", max_length=10, choices=TIPO_MANUTENCAO,)  # type: ignore
 
     descricao = models.TextField("Descrição", blank=True, null=True)  # type: ignore
 
@@ -99,38 +117,65 @@ class Manutencao(models.Model):
 
     custo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)   # type: ignore
 
-    data = models.DateField("Dia da Manutenção", null=True, blank=True)  # type: ignore
+    data = models.DateField("Data da Manutenção")  # type: ignore
 
     def __str__(self):
-        return f"({self.carro_id.modelo}) {self.nome} - {self.quilometragem}km"
+        return f"({self.carro.modelo}) {self.nome} - {self.quilometragem}km - {self.data}"
 
 
-class Cronico(models.Model):
+class Preventivos(models.Model):
+    periodico_id = models.AutoField(primary_key=True)  # type: ignore
 
-    problema_id = models.AutoField(primary_key=True)  # type: ignore
-
-    carro = models.ForeignKey(Carro, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+    carro = models.ForeignKey(Carros, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
     nome = models.CharField("Nome", max_length=100)  # type: ignore
 
-    SEVERIDADE_CHOICES = [
-        ('nenhuma', 'Nenhuma'),
-        ('baixa', 'Baixa'),
-        ('media', 'Média'),
-        ('alta', 'Alta'),
-        ('urgente', 'Urgente')
-    ]
-    severidade = models.CharField("Severidade", max_length=7, choices=SEVERIDADE_CHOICES,
-                                  null=True, blank=True)  # type: ignore
+    descricao = models.TextField("Descrição", blank=True, null=True)  # type: ignore
 
-    resolvido = models.BooleanField(default=False)  # type: ignore
+    dataEntreTroca = models.DateField("Tempo entre troca", null=True, blank=True)  # type: ignore
+
+    # ? verificar somando data trocoado com data entre troca e vericar se > ou < que data atual
+    dataTrocado = models.DateField("Data na ultima troca", null=True, blank=True)  # type: ignore
+
+    kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
+
+    # ? verificar somando km trocoado com km entre troca e vericar se > ou < que km atual
+    kmTrocado = models.PositiveIntegerField("Kms na ultima troca", default=0)  # type: ignore
+
+    risco_normalizado = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
+
+    def __str__(self):
+        return f"({self.carro.modelo}) {self.nome} - {self.carro.quilometragem}/{self.kmTrocado + self.kmsEntreTroca}km"
+
+
+class Cronicos(models.Model):
+
+    problema_id = models.AutoField(primary_key=True)  # type: ignore
+
+    carro = models.ForeignKey(Carros, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+
+    nome = models.CharField("Nome", max_length=100)  # type: ignore
+
+    # NIVEIS_RISCO = [
+    #     ('nenhum', 'Nenhum risco'),
+    #     ('baixo', 'Risco baixo'),
+    #     ('moderado', 'Risco moderado'),
+    #     ('elevado', 'Risco elevado'),
+    #     ('muito_alto', 'Risco muito alto')
+    # ]
+    # risco = models.CharField("Risco", max_length=7, choices=NIVEIS_RISCO)  # type: ignore
 
     descricao = models.TextField("Descrição", blank=True, null=True)  # type: ignore
 
-    quilometragem = models.PositiveIntegerField("Quilometragem")  # type: ignore
+    kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
+
+    # ? verificar somando km trocoado com km entre troca e vericar se > ou < que km atual
+    kmTrocado = models.PositiveIntegerField("Kms na ultima troca", default=0)  # type: ignore
+
+    risco_normalizado = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
 
     def __str__(self):
-        return f"({self.carro_id.modelo}) {self.nome} - {self.quilometragem}km ({"Resolvido" if self.resolvido else "Severidade: " + self.severidade})"
+        return f"({self.carro.modelo}) {self.nome} - {self.carro.quilometragem}/{self.kmTrocado + self.kmsEntreTroca}km"
 
 
 class Defenicoes(models.Model):
