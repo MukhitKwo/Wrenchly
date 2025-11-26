@@ -57,7 +57,7 @@ class Carros(models.Model):
     )
     combustivel = models.CharField("Combustivel", max_length=20, choices=TIPOS_COMBUSTIVEL)  # type: ignore
 
-    tdi = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)  # type: ignore
+    cc = models.PositiveIntegerField("CC")  # type: ignore
 
     cavalos = models.PositiveIntegerField("Cavalos", blank=True, null=True)  # type: ignore
 
@@ -87,8 +87,6 @@ class Carros(models.Model):
     ]
     tipo_corpo = models.CharField("Tipo Corpo", max_length=20, choices=TIPOS_CORPO,
                                   null=True, blank=True)  # type: ignore
-
-    vin = models.CharField("VIN", max_length=17, blank=True, null=True)  # type: ignore
 
     matricula = models.CharField('Matricula', max_length=8, blank=True, null=True)  # type: ignore
 
