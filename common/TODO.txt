@@ -1,6 +1,3 @@
-testar o que acontece se api do gemini for None
-adiconar apis publicas para CRUD
-testar filtros no CRUD
 fazer pagina para teste de api (igual ao stor testes)
 tornar as funçoes frontend -> backend acessiveis apenas a users logados
 adicionar funçoes que calculam risco dos problemas cronicos e preventivos

@@ -1,12 +1,7 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
 from .views import *
 
-router = DefaultRouter()
-router.register(r'carinfo', CarroViewSet)
-
 urlpatterns = [
-    path('', include(router.urls)),
     path('cronicIssues/', getCarCronicIssues),
     path('carSpecs/', getCarsBySpecs),
     path('tabelaCarro/', tabelaCarro),  # POST, GET ALL

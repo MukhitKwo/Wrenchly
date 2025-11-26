@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def crud(request, model, serializer, id=None, **filters):
     """
     O CRUD deteta automaticamente o tipo de request e retorna o json correspondente
@@ -13,11 +14,11 @@ def crud(request, model, serializer, id=None, **filters):
     if request.method == "POST":
         return create_object(request, serializer)
     elif request.method == "GET":
-        return get_object(model, serializer, id)
+        return get_object(model, serializer, id, **filters)
     elif request.method == "PUT":
-        return update_object(request, model, serializer, id)
+        return update_object(request, model, serializer, id, **filters)
     elif request.method == "DELETE":
-        return delete_object(model, id)
+        return delete_object(model, id, **filters)
 
 
 #! ================== Funções CRUD ==================
@@ -37,17 +38,16 @@ def create_object(request, Serializer):
 def get_object(Model, Serializer, id, **filters):
 
     if id:  # se foi passado um id, significa que quer um objeto específico
-
         try:
-            obj = Model.objects.get(pk=id)  # procura o objeto com a chave primária correta
+            obj = Model.objects.filter(**filters).get(pk=id)  # procura o objeto com a chave primária correta
             serializer = Serializer(obj)  # converte o objeto para json
             return JsonResponse({"message": "obtained", "data": serializer.data}, status=200)  # devolve o json
         except Model.DoesNotExist:
             return JsonResponse({"message": "id not found"}, status=404)  # não encontrou
 
-    objects = Model.objects.filter(**filters).order_by('-id')[:25]  # busca todos os primeiros 25 registos
+    objects = Model.objects.filter(**filters)  # busca todos os primeiros 25 registos
     serializer = Serializer(objects, many=True)  # converte todos para json
-    return JsonResponse({"message": "obtained", "data": serializer.data}, safe=False, status=200)  # devolve lista jsons
+    return JsonResponse({"message": "obtained", "data": serializer.data}, status=200)  # devolve lista jsons
 
 
 def update_object(request, Model, Serializer, id, **filters):

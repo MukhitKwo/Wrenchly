@@ -19,6 +19,9 @@ else:
 
 def geminiCarCronicIssues(car_model: str):
 
+    if not client:
+        return None
+
     # cache
     car_safe = re.sub(r'[^a-zA-Z0-9]', '_', car_model)
     cache_key = f"car_issues_{car_safe}"
@@ -70,7 +73,10 @@ def geminiCarCronicIssues(car_model: str):
         return None
 
 
-def geminiCarsBySpecs(specs):
+def geminiCarsBySpecs(specs: dict):
+
+    if not client:
+        return None
 
     prompt = (
         f"Lista Python de 15 carros que correspondem a estas especificações: {specs}. "

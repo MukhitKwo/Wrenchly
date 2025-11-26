@@ -1,7 +1,8 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
-from rest_framework import viewsets
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import *
 from .serializers import *
 from .gemini import geminiCarCronicIssues, geminiCarsBySpecs
@@ -9,39 +10,45 @@ from .crud import crud
 import json
 
 
-class CarroViewSet(viewsets.ModelViewSet):
-    queryset = Carros.objects.all()
-    serializer_class = CarroSerializer
+# @api_view(['GET', 'POST', 'PUT', 'DELETE'])
+# @permission_classes([IsAuthenticated]) # so users autenticados
+# @permission_classes([IsAdminUser]) # so admins
+# @permission_classes([AllowAny]) # qualquer um pode ler
+# @permission_classes([IsAuthenticatedOrReadOnly]) # autenticados podem escrever, nao-autenticados so ler
 
-
-def getCarCronicIssues(car_model):
-    data = geminiCarCronicIssues(car_model)
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def getCarCronicIssues(request):
+    car = request.GET.get("car")
+    data = geminiCarCronicIssues(car)  # "Toyota Corolla 1998"
     if data is None:
         return JsonResponse({"message": "Failed to get car issues"}, status=500)
     return JsonResponse(data, safe=False, json_dumps_params={"ensure_ascii": False, "indent": 2})
 
 
-def getCarsBySpecs(specs):
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def getCarsBySpecs(request):
+    specs = request.GET.dict()
     data = geminiCarsBySpecs(specs)  # {"combustivel": "diesel", "transmissão": "manual", "tração": "awd"}
     if data is None:
         return JsonResponse({"message": "Failed to get cars by specs"}, status=500)
     return JsonResponse(data, safe=False)
 
 
-@csrf_exempt  # trocar para api_view([POST, GET, ...])
-def tabelaUser(request, id=None):
-    return crud(request, User, UserSerializer, id)
-
-
 @csrf_exempt
-def tabelaGaragem(request, id=None):
-    return crud(request, Garagens, GaragemSerializer, id)
-    # garagem__user=request.user
+def tabelaGaragem(request, id=None):  # nao testado
+    filtros = {"user": request.user}
+    return crud(request, Garagens, GaragemSerializer, id, **filtros)
 
 
 @csrf_exempt
 def tabelaCarro(request, id=None):
-    return crud(request, Carros, CarroSerializer, id)
+    filtros = {"garagem__user": request.user}
+    return crud(request, Carros, CarroSerializer, id, **filtros)
+
+
+#! ================== FRONTEND FUNÇOES ==================
 
 
 @csrf_exempt
@@ -58,7 +65,7 @@ def registerUser(request):
     return JsonResponse({"success": True}, status=201)
 
 
-@csrf_exempt
+@csrf_exempt  # trocar para api_view([POST, GET, ...])
 def loginUser(request):
 
     body = json.loads(request.body)
