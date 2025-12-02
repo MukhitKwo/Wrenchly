@@ -47,7 +47,7 @@ function Login() {
 			if (data.success) {
 				// login successful
 				// e.g., redirect with React Router
-				alert("Login Sucessfull");
+				alert("Login Successful");
 			} else {
 				// login failed
 				alert(data.error);
