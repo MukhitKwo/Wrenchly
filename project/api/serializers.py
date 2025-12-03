@@ -11,9 +11,21 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class DefenicoesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Defenicoes
+        fields = '__all__'
+
+
 class GaragemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Garagens
+        fields = '__all__'
+
+
+class NotaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notas
         fields = '__all__'
 
 
@@ -29,13 +41,13 @@ class ManutencaoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CronicoSerializer(serializers.ModelSerializer):
+class PreventivoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Cronicos
+        model = Preventivos
         fields = '__all__'
 
 
-class DefenicoesSerializer(serializers.ModelSerializer):
+class CronicoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Defenicoes
+        model = Cronicos
         fields = '__all__'

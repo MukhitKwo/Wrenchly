@@ -26,15 +26,45 @@ def getCarsBySpecs(specs):
 #! ================== CRUD FUNÇOES ==================
 
 
+def crud_Defenicoes(request, id):  # nao testado
+    filtros = {"user": request.user}
+    crud_response = crud(request, Defenicoes, DefenicoesSerializer, id, **filtros)
+    return crud_response
+
+
 def crud_Garagens(request, id):  # nao testado
     filtros = {"user": request.user}
     crud_response = crud(request, Garagens, GaragemSerializer, id, **filtros)
     return crud_response
 
 
+def crud_Notas(request, id):  # nao testado
+    filtros = {"garagem__user": request.user}
+    crud_response = crud(request, Notas, NotaSerializer, id, **filtros)
+    return crud_response
+
+
 def crud_Carros(request, id):
     filtros = {"garagem__user": request.user}
     crud_response = crud(request, Carros, CarroSerializer, id, **filtros)
+    return crud_response
+
+
+def crud_Manutencoes(request, id):  # nao testado
+    filtros = {"carro__garagem__user": request.user}
+    crud_response = crud(request, Manutencoes, ManutencaoSerializer, id, **filtros)
+    return crud_response
+
+
+def crud_Preventivos(request, id):  # nao testado
+    filtros = {"carro__garagem__user": request.user}
+    crud_response = crud(request, Preventivos, PreventivoSerializer, id, **filtros)
+    return crud_response
+
+
+def crud_Cronicos(request, id):  # nao testado
+    filtros = {"carro__garagem__user": request.user}
+    crud_response = crud(request, Cronicos, CronicoSerializer, id, **filtros)
     return crud_response
 
 
