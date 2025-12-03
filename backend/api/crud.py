@@ -1,11 +1,8 @@
 from django.http import JsonResponse
 from rest_framework.exceptions import ValidationError
 import json
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
 
 
-@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def crud(request, model, serializer, id=None, **filters):
     """
     O CRUD deteta automaticamente o tipo de request e retorna o json correspondente

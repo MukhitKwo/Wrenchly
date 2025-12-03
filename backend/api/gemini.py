@@ -17,7 +17,7 @@ else:
 
 # TODO fix cache not saving betwen project restarts (use jsons?)
 
-def geminiCarCronicIssues(car_model: str):
+def carCronicIssues(car_model: str):
 
     if not client:
         return None
@@ -73,7 +73,7 @@ def geminiCarCronicIssues(car_model: str):
         return None
 
 
-def geminiCarsBySpecs(specs: dict):
+def carsBySpecs(specs: dict):
 
     if not client:
         return None
@@ -99,7 +99,8 @@ def geminiCarsBySpecs(specs: dict):
             )
         )
 
-        return response.text
+        data = json.loads(response.text)
+        return data
 
     except (APIError, json.JSONDecodeError) as e:
         print(f"Gemini error: {e}")

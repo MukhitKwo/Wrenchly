@@ -18,6 +18,11 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 #         return self.username
 
 
+class Defenicoes(models.Model):
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+
+
 class Garagens(models.Model):
 
     garagem_id = models.AutoField(primary_key=True)  # type: ignore
@@ -174,8 +179,3 @@ class Cronicos(models.Model):
 
     def __str__(self):
         return f"({self.carro.modelo}) {self.nome} - {self.carro.quilometragem}/{self.kmTrocado + self.kmsEntreTroca}km"
-
-
-class Defenicoes(models.Model):
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
