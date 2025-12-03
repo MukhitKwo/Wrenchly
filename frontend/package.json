@@ -20,7 +20,7 @@
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
 		"backend": "cd ../backend && python manage.py runserver 8001",
-		"frontend": "set PORT=3001 && react-scripts start",
+		"frontend": "cross-env PORT=3001 BROWSER=none NODE_OPTIONS=--no-deprecation react-scripts start",
 		"start-project": "concurrently -k -n DJANGO,REACT -c gray,blue \"npm run backend\" \"npm run frontend\""
 	},
 	"eslintConfig": {
@@ -42,6 +42,7 @@
 		]
 	},
 	"devDependencies": {
-		"concurrently": "^9.2.1"
+		"concurrently": "^9.2.1",
+		"cross-env": "^10.1.0"
 	}
 }
