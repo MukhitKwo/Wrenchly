@@ -4,14 +4,14 @@
 	"description": "Frontend: React e TailwindCSS (Daniel, Pablo e Rui)\r Backend: Django (António e Guilherme)\r Database: Firebase e/ou Supabase",
 	"main": "index.js",
 	"scripts": {
-		"project": "cd project/frontend && npm run start-project",
+		"project": "cd frontend && npm run start-project",
 		"p": "npm run project",
-		"backend": "cd project && uv run manage.py runserver 8001",
+		"backend": "cd backend && uv run manage.py runserver 8001",
 		"b": "npm run backend",
-		"frontend": "cd project/frontend && npm start",
+		"frontend": "cd frontend && npm start",
 		"f": "npm run frontend",
-		"dep": "uv sync && cd project/frontend && npm install",
-		"mig": "cd project && uv run manage.py makemigrations && uv run manage.py migrate"
+		"dep": "uv sync && cd frontend && npm install",
+		"mig": "cd backend && uv run manage.py makemigrations && uv run manage.py migrate"
 	},
 	"repository": {
 		"type": "git",
