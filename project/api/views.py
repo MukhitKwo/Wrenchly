@@ -5,51 +5,51 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import *
 from .serializers import *
-from .gemini import geminiCarCronicIssues, geminiCarsBySpecs
+from .gemini import carCronicIssues, carsBySpecs
 from .crud import crud
 import json
 
+
+#! ================== GEMINI FUNÇOES ==================
+
+
+def getCarCronicIssues(car):
+    data = carCronicIssues(car)  # input -> "Toyota Corolla 1998"
+    return data
+
+
+def getCarsBySpecs(specs):
+    data = carsBySpecs(specs)  # input -> {"combustivel": "diesel", "transmissão": "manual", "tração": "awd"}
+    return data
+
+
+#! ================== CRUD FUNÇOES ==================
+
+
+def crud_Garagens(request, id):  # nao testado
+    filtros = {"user": request.user}
+    crud_response = crud(request, Garagens, GaragemSerializer, id, **filtros)
+    return crud_response
+
+
+def crud_Carros(request, id):
+    filtros = {"garagem__user": request.user}
+    crud_response = crud(request, Carros, CarroSerializer, id, **filtros)
+    return crud_response
+
+
+# * converter uma JsonResponse do crud() para um dicionario
+def to_dict(response):
+    return json.loads(response.content.decode('utf-8'))
+
+
+#! ================== FRONTEND FUNÇOES ==================
 
 # @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 # @permission_classes([IsAuthenticated]) # so users autenticados
 # @permission_classes([IsAdminUser]) # so admins
 # @permission_classes([AllowAny]) # qualquer um pode ler
 # @permission_classes([IsAuthenticatedOrReadOnly]) # autenticados podem escrever, nao-autenticados so ler
-
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def getCarCronicIssues(request):
-    car = request.GET.get("car")
-    data = geminiCarCronicIssues(car)  # "Toyota Corolla 1998"
-    if data is None:
-        return JsonResponse({"message": "Failed to get car issues"}, status=500)
-    return JsonResponse(data, safe=False, json_dumps_params={"ensure_ascii": False, "indent": 2})
-
-
-@api_view(['GET'])
-@permission_classes([IsAdminUser])
-def getCarsBySpecs(request):
-    specs = request.GET.dict()
-    data = geminiCarsBySpecs(specs)  # {"combustivel": "diesel", "transmissão": "manual", "tração": "awd"}
-    if data is None:
-        return JsonResponse({"message": "Failed to get cars by specs"}, status=500)
-    return JsonResponse(data, safe=False)
-
-
-@csrf_exempt
-def tabelaGaragem(request, id=None):  # nao testado
-    filtros = {"user": request.user}
-    return crud(request, Garagens, GaragemSerializer, id, **filtros)
-
-
-@csrf_exempt
-def tabelaCarro(request, id=None):
-    filtros = {"garagem__user": request.user}
-    return crud(request, Carros, CarroSerializer, id, **filtros)
-
-
-#! ================== FRONTEND FUNÇOES ==================
-
 
 @csrf_exempt
 def registerUser(request):
@@ -65,7 +65,7 @@ def registerUser(request):
     return JsonResponse({"success": True}, status=201)
 
 
-@csrf_exempt  # trocar para api_view([POST, GET, ...])
+@csrf_exempt  # ! trocar para api_view([POST, GET, ...])
 def loginUser(request):
 
     body = json.loads(request.body)
@@ -78,3 +78,21 @@ def loginUser(request):
         return JsonResponse({"success": True})
 
     return JsonResponse({"success": False, "message": "Invalid credentials"}, status=401)
+
+
+# função a ser chamada por api pelo frontend
+@csrf_exempt  # converter para api_view([...])
+# permission_classes([...])
+def apiCarros(request, id=None):
+
+    # verificar auth
+
+    # definir garagem id
+
+    # transformar data (se necessario)
+
+    # chamar crud
+    crud_response = crud_Carros(request, id)
+
+    # retornar resposta
+    return crud_response

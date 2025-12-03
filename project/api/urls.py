@@ -1,11 +1,12 @@
 from django.urls import path, include
 from .views import *
+from .api_testing import *
 
 urlpatterns = [
-    path('cronicIssues/', getCarCronicIssues),
-    path('carSpecs/', getCarsBySpecs),
-    path('tabelaCarro/', tabelaCarro),  # POST, GET ALL
-    path('tabelaCarro/<int:id>/', tabelaCarro),  # GET, PUT, DELETE
+    path('cronicIssues/', api_getCarCronicIssues),
+    path('carSpecs/', api_getCarsBySpecs),
+    path('tabelaCarro/', apiCarros),  # POST, GET ALL
+    path('tabelaCarro/<int:id>/', apiCarros),  # GET, PUT, DELETE
     path('loginUser/', loginUser),
     path('registerUser/', registerUser),
 ]
