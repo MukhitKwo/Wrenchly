@@ -64,6 +64,7 @@ def api_getCarsBySpecs(request):
     return JsonResponse({"success": True, "specs": specs, "data": data}, status=200)
 
 
+<<<<<<< HEAD
 
 # ===========================================
 # =============== CRUD FUNÇÕES ==============
@@ -72,6 +73,12 @@ def api_getCarsBySpecs(request):
 def crud_Defenicoes(request, id):
     filtros = {"user": request.user}
     return crud(request, Defenicoes, DefenicoesSerializer, id, **filtros)
+=======
+def crud_Definicoes(request, id):  # nao testado
+    filtros = {"user": request.user}
+    crud_response = crud(request, Definicoes, DefinicoesSerializer, id, **filtros)
+    return crud_response
+>>>>>>> 3ea0674bdb6f91007374c7be78307f469d3c2f07
 
 def crud_Garagens(request, id):
     filtros = {"user": request.user}
@@ -107,7 +114,7 @@ def to_dict(response):
 # =============== AUTH ======================
 # ===========================================
 
-@csrf_exempt
+@csrf_exempt  # ! trocar para api_view([POST, GET, ...])
 def registerUser(request):
 
     if request.method == "GET":
