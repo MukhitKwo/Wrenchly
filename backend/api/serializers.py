@@ -11,9 +11,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class DefenicoesSerializer(serializers.ModelSerializer):
+class DefinicoesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Defenicoes
+        model = Definicoes
         fields = '__all__'
 
 

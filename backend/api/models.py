@@ -18,9 +18,12 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 #         return self.username
 
 
-class Defenicoes(models.Model):
+class Definicoes(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+
+    def __str__(self):
+        return f"Definiçoes do {self.user.username}"
 
 
 class Garagens(models.Model):

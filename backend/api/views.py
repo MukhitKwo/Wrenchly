@@ -26,9 +26,9 @@ def getCarsBySpecs(specs):
 #! ================== CRUD FUNÇOES ==================
 
 
-def crud_Defenicoes(request, id):  # nao testado
+def crud_Definicoes(request, id):  # nao testado
     filtros = {"user": request.user}
-    crud_response = crud(request, Defenicoes, DefenicoesSerializer, id, **filtros)
+    crud_response = crud(request, Definicoes, DefinicoesSerializer, id, **filtros)
     return crud_response
 
 
@@ -81,7 +81,7 @@ def to_dict(response):
 # @permission_classes([AllowAny]) # qualquer um pode ler
 # @permission_classes([IsAuthenticatedOrReadOnly]) # autenticados podem escrever, nao-autenticados so ler
 
-@csrf_exempt
+@csrf_exempt  # ! trocar para api_view([POST, GET, ...])
 def registerUser(request):
     body = json.loads(request.body)
     username = body.get("username")
