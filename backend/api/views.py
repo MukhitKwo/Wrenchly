@@ -12,11 +12,14 @@ import json
 # =============== GEMINI FUNÇÕES ============
 # ===========================================
 
+
 def getCarCronicIssues(car):
     return carCronicIssues(car)
 
+
 def getCarsBySpecs(specs):
     return carsBySpecs(specs)
+
 
 @csrf_exempt
 def api_getCarCronicIssues(request):
@@ -64,8 +67,6 @@ def api_getCarsBySpecs(request):
     return JsonResponse({"success": True, "specs": specs, "data": data}, status=200)
 
 
-
-
 # ===========================================
 # =============== CRUD FUNÇÕES ==============
 # ===========================================
@@ -74,21 +75,26 @@ def crud_Garagens(request, id):
     filtros = {"user": request.user}
     return crud(request, Garagens, GaragemSerializer, id, **filtros)
 
+
 def crud_Notas(request, id):
     filtros = {"garagem__user": request.user}
     return crud(request, Notas, NotaSerializer, id, **filtros)
+
 
 def crud_Carros(request, id):
     filtros = {"garagem__user": request.user}
     return crud(request, Carros, CarroSerializer, id, **filtros)
 
+
 def crud_Manutencoes(request, id):
     filtros = {"carro__garagem__user": request.user}
     return crud(request, Manutencoes, ManutencaoSerializer, id, **filtros)
 
+
 def crud_Preventivos(request, id):
     filtros = {"carro__garagem__user": request.user}
     return crud(request, Preventivos, PreventivoSerializer, id, **filtros)
+
 
 def crud_Cronicos(request, id):
     filtros = {"carro__garagem__user": request.user}
@@ -99,11 +105,7 @@ def to_dict(response):
     return json.loads(response.content.decode("utf-8"))
 
 
-
-# ===========================================
-# =============== AUTH ======================
-# ===========================================
-
+# LOGIN
 @csrf_exempt  # ! trocar para api_view([POST, GET, ...])
 def registerUser(request):
 
@@ -135,7 +137,7 @@ def registerUser(request):
     return JsonResponse({"success": True}, status=201)
 
 
-
+# REGISTAR
 @csrf_exempt
 def loginUser(request):
 
@@ -164,11 +166,53 @@ def loginUser(request):
     return JsonResponse({"success": False, "message": "Invalid credentials"}, status=401)
 
 
+# API NOTAS
+@csrf_exempt
+def apiNotas(request, id=None):
 
-# ===========================================
-# =============== API CARROS ================
-# ===========================================
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "message": "Authentication required"}, status=401)
 
+    if request.method in ["POST", "PUT", "PATCH"]:
+        try:
+            body = json.loads(request.body or "{}")
+        except:
+            return JsonResponse({"success": False, "message": "Invalid JSON body"}, status=400)
+
+        garagem_id = body.get("garagem")
+        if not garagem_id:
+            return JsonResponse({"success": False, "message": "Field 'garagem' is required"}, status=400)
+
+        try:
+            Garagens.objects.get(garagem_id=garagem_id, user=request.user)
+        except Garagens.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Invalid garage for this user"}, status=403)
+
+        request._body = json.dumps(body).encode("utf-8")
+
+    return crud_Notas(request, id)
+
+
+# API GARAGENS
+@csrf_exempt
+def apiGaragens(request, id=None):
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "message": "Authentication required"}, status=401)
+
+    if request.method in ["POST", "PUT", "PATCH"]:
+        try:
+            body = json.loads(request.body or "{}")
+        except:
+            return JsonResponse({"success": False, "message": "Invalid JSON body"}, status=400)
+
+        body["user"] = request.user.id
+        request._body = json.dumps(body).encode("utf-8")
+
+    return crud_Garagens(request, id)
+
+
+# API CARROS
 @csrf_exempt
 def apiCarros(request, id=None):
 
@@ -201,65 +245,7 @@ def apiCarros(request, id=None):
     return crud_Carros(request, id)
 
 
-
-# ===========================================
-# =============== API GARAGENS ==============
-# ===========================================
-
-@csrf_exempt
-def apiGaragens(request, id=None):
-
-    if not request.user.is_authenticated:
-        return JsonResponse({"success": False, "message": "Authentication required"}, status=401)
-
-    if request.method in ["POST", "PUT", "PATCH"]:
-        try:
-            body = json.loads(request.body or "{}")
-        except:
-            return JsonResponse({"success": False, "message": "Invalid JSON body"}, status=400)
-
-        body["user"] = request.user.id
-        request._body = json.dumps(body).encode("utf-8")
-
-    return crud_Garagens(request, id)
-
-
-
-# ===========================================
-# =============== API NOTAS =================
-# ===========================================
-
-@csrf_exempt
-def apiNotas(request, id=None):
-
-    if not request.user.is_authenticated:
-        return JsonResponse({"success": False, "message": "Authentication required"}, status=401)
-
-    if request.method in ["POST", "PUT", "PATCH"]:
-        try:
-            body = json.loads(request.body or "{}")
-        except:
-            return JsonResponse({"success": False, "message": "Invalid JSON body"}, status=400)
-
-        garagem_id = body.get("garagem")
-        if not garagem_id:
-            return JsonResponse({"success": False, "message": "Field 'garagem' is required"}, status=400)
-
-        try:
-            Garagens.objects.get(garagem_id=garagem_id, user=request.user)
-        except Garagens.DoesNotExist:
-            return JsonResponse({"success": False, "message": "Invalid garage for this user"}, status=403)
-
-        request._body = json.dumps(body).encode("utf-8")
-
-    return crud_Notas(request, id)
-
-
-
-# ===========================================
-# =============== API MANUTENÇÕES ===========
-# ===========================================
-
+# API MANUTENÇÕES
 @csrf_exempt
 def apiManutencoes(request, id=None):
 
@@ -286,11 +272,7 @@ def apiManutencoes(request, id=None):
     return crud_Manutencoes(request, id)
 
 
-
-# ===========================================
-# =============== API PREVENTIVOS ============
-# ===========================================
-
+# API PREVENTIVOS
 @csrf_exempt
 def apiPreventivos(request, id=None):
 
@@ -317,11 +299,7 @@ def apiPreventivos(request, id=None):
     return crud_Preventivos(request, id)
 
 
-
-# ===========================================
-# =============== API CRÓNICOS ===============
-# ===========================================
-
+# API CRÓNICOS
 @csrf_exempt
 def apiCronicos(request, id=None):
 
@@ -346,4 +324,3 @@ def apiCronicos(request, id=None):
         request._body = json.dumps(body).encode("utf-8")
 
     return crud_Cronicos(request, id)
-
