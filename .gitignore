@@ -6,3 +6,6 @@ __pycache__/
 
 # env with secret stuff
 .env
+
+# base dados teste
+backend/*.sqlite3
