@@ -26,7 +26,13 @@ Além disso, os utilizadores podem procurar veículos com base em característic
 npm run dep
 ```
 
-2. **Executar o projeto**
+2. **Fazer migrações (sqlite3)**
+
+```bash
+npm run mig
+```
+
+3. **Executar o projeto**
 
 ```bash
 # Toda a aplicação (frontend + backend):
