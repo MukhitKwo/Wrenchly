@@ -17,12 +17,13 @@ function Navbar() {
         
         <div className="navbar-links">
           {/* 2. Todos os botões usam <Link> e a prop 'to' com os caminhos do seu Router */}
-          <Link to="/">Início/Garagem</Link>
+          <Link to="/">🏠 Início/Garagem</Link>
           
-          <Link to="/sobre">Sobre Nós</Link>
+          <Link to="/sobre">🧑‍💻 Sobre Nós</Link>
           
           {/* Garante que o path é '/contatos' para corresponder à sua rota */}
-          <Link to="/contatos">Contatos</Link>
+          <Link to="/contatos">📞 Contatos</Link>
+          <Link to="/perfil">👤 Perfil</Link>
         </div>
       </div>
     </nav>
