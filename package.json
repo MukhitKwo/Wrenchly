@@ -23,8 +23,5 @@
 	"bugs": {
 		"url": "https://github.com/MukhitKwo/CarCare/issues"
 	},
-	"homepage": "https://github.com/MukhitKwo/CarCare#readme",
-	"dependencies": {
-		"react-router-dom": "^7.10.1"
-	}
+	"homepage": "https://github.com/MukhitKwo/CarCare#readme"
 }
