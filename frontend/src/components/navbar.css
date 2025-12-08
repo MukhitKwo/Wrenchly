@@ -1,0 +1,43 @@
+/* src/components/Navbar.css */
+
+.navbar {
+  /* A CHAVE PARA O MENU FLUTUANTE */
+  position: sticky; 
+  top: 0; /* Fixa-o no topo da janela do navegador */
+  z-index: 1000; /* Garante que fique por cima de outro conteúdo */
+  
+  /* Estilos Visuais */
+  background-color: #333; /* Cor de fundo escura */
+  color: white;
+  padding: 10px 0; /* Espaçamento vertical */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidade */
+}
+
+.navbar-container {
+  max-width: 1200px; /* Largura máxima do conteúdo */
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.navbar-logo {
+  color: white;
+  text-decoration: none;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.navbar-links a {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.navbar-links a:hover {
+  background-color: #555;
+}

@@ -1,25 +1,29 @@
-// Exemplo de como deve estar o seu src/App.js
+// src/App.js
 
-import { Outlet, Link } from "react-router-dom"; 
+import { Outlet } from "react-router-dom"; 
+import Navbar from './components/Navbar'; // Importar o componente do menu flutuante
 
 function App() {
   return (
     <div>
-      {/* Aqui fica a sua barra de navegação */}
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="/sobre">Sobre</Link>
-        {/* ... */}
-      </nav>
+      {/* Menu Flutuante (Sticky) */}
+      <Navbar /> 
 
-      {/* ESTE É O PONTO CHAVE: Aqui a página atual é renderizada */}
+      {/* A tag <main> conterá o conteúdo dinâmico (páginas) renderizado pela Router */}
       <main>
         <Outlet /> 
       </main>
 
-      {/* Aqui fica o seu rodapé */}
+      {/* Rodapé da Aplicação (Opcional) */}
       <footer>
-        <p>Rodapé da App</p>
+        <p style={{ 
+            textAlign: 'center', 
+            padding: '20px', 
+            backgroundColor: '#eee', 
+            marginTop: '30px' 
+        }}>
+          Rodapé da App | Wrenchly © 2025
+        </p>
       </footer>
     </div>
   );

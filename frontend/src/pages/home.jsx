@@ -1,16 +1,23 @@
-// src/pages/Home.jsx
+// src/components/Navbar.jsx
 import React from 'react';
+import './Navbar.css'; // Vamos criar este ficheiro de estilos no próximo passo
 
-// 1. Defina o componente
-function Home() {
+function Navbar() {
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Página Inicial (Início)</h1>
-      <p>Bem-vindo ao Wrenchly! Esta é a primeira página da sua aplicação React.</p>
-      {/* Você pode adicionar mais conteúdo e componentes aqui */}
-    </div>
+    <nav className="navbar">
+      <div className="navbar-container">
+        <a href="/" className="navbar-logo">
+          Wrenchly
+        </a>
+        <div className="navbar-links">
+          <a href="#inicio">Início</a>
+          <a href="#servicos">Serviços</a>
+          <a href="#sobre">Sobre Nós</a>
+          <a href="#contacto">Contacto</a>
+        </div>
+      </div>
+    </nav>
   );
 }
 
-// 2. Exporte o componente para que o App.js possa usá-lo
-export default Home;
+export default Navbar;
