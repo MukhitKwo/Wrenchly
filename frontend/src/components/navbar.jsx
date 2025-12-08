@@ -17,7 +17,7 @@ function Navbar() {
         
         <div className="navbar-links">
           {/* 2. Todos os botões usam <Link> e a prop 'to' com os caminhos do seu Router */}
-          <Link to="/">Início</Link>
+          <Link to="/">Início/Garagem</Link>
           
           <Link to="/sobre">Sobre Nós</Link>
           
