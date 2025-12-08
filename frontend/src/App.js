@@ -7,7 +7,7 @@ function App() {
   return (
     <div>
       {/* Menu Flutuante (Sticky) */}
-      <navbar /> 
+      <Navbar /> 
 
       {/* A tag <main> conterá o conteúdo dinâmico (páginas) renderizado pela Router */}
       <main>

@@ -1,16 +1,15 @@
-// src/components/Navbar.jsx
+// src/components/navbar.jsx
 import React from 'react';
 
-function Navbar() {
+function navbar() {
   return (
-    <nav className="navbar">
+    <nav className="Navbar">
       <div className="navbar-container">
         <a href="/" className="navbar-logo">
           Wrenchly
         </a>
         <div className="navbar-links">
           <a href="#inicio">Início</a>
-          <a href="#servicos">Serviços</a>
           <a href="#sobre">Sobre Nós</a>
           <a href="#contacto">Contacto</a>
         </div>
@@ -19,4 +18,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default navbar;

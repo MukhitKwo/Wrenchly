@@ -1,15 +1,33 @@
 // src/components/navbar.jsx
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import './navbar.css'; // 👈 APENAS A REFERÊNCIA AO FICHEIRO DE ESTILOS
+import { Link } from 'react-router-dom'; // 👈 Essencial para a navegação sem recarregar
+import './navbar.css'; 
 
-function navbar() {
+// 1. O nome do componente deve começar com letra maiúscula (navbar)
+function Navbar() {
   return (
     <nav className="navbar">
-      {/* ... o código JSX da navegação ... */}
+      <div className="navbar-container">
+        
+        {/* Logotipo/Marca: Usa Link para voltar à página inicial */}
+        <Link to="/" className="navbar-logo"> 
+          Wrenchly
+        </Link>
+        
+        <div className="navbar-links">
+          {/* 2. Todos os botões usam <Link> e a prop 'to' com os caminhos do seu Router */}
+          <Link to="/">Início</Link>
+          
+          <Link to="/sobre">Sobre Nós</Link>
+          
+          {/* Garante que o path é '/contatos' para corresponder à sua rota */}
+          <Link to="/contatos">Contatos</Link>
+        </div>
+      </div>
     </nav>
   );
 }
 
-export default navbar;
+// 3. Exporta o componente com o nome corrigido
+export default Navbar;

@@ -6,7 +6,7 @@ import './index.css';
 
 // IMPORTAÇÕES NECESSÁRIAS DO ROUTER E DOS COMPONENTES
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import App from './App'; // O componente que servirá de Layout (com Navbar e Footer)
+import App from './App'; // O componente que servirá de Layout (com navbar e Footer)
 
 // Importa os seus componentes de página
 import Home from './pages/home.jsx';
