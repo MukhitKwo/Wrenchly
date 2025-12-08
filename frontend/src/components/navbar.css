@@ -1,43 +1,49 @@
 /* src/components/Navbar.css */
 
 .navbar {
-  /* A CHAVE PARA O MENU FLUTUANTE */
+  /* 1. POSICIONAMENTO CRUCIAL PARA SER FLUTUANTE (STICKY) */
   position: sticky; 
-  top: 0; /* Fixa-o no topo da janela do navegador */
-  z-index: 1000; /* Garante que fique por cima de outro conteúdo */
+  top: 0; /* Fixa-o no topo da janela */
+  z-index: 1000; /* Garante que fique por cima de outro conteúdo enquanto faz scroll */
   
-  /* Estilos Visuais */
+  /* 2. ESTILOS VISUAIS */
   background-color: #333; /* Cor de fundo escura */
-  color: white;
-  padding: 10px 0; /* Espaçamento vertical */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidade */
+  color: white; /* Cor do texto */
+  padding: 15px 0; /* Espaçamento interno vertical */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra subtil para destacar */
+  width: 100%; /* Ocupa toda a largura */
 }
 
+/* Container para alinhar o conteúdo no centro da página */
 .navbar-container {
-  max-width: 1200px; /* Largura máxima do conteúdo */
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
+  max-width: 1200px; 
+  margin: 0 auto; /* Centra o container */
+  display: flex; /* Permite o layout em linha (Logo + Links) */
+  justify-content: space-between; /* Espaço entre o logo e os links */
+  align-items: center; 
+  padding: 0 20px; /* Espaçamento lateral */
 }
 
+/* Estilo do Logotipo (Wrenchly) */
 .navbar-logo {
   color: white;
   text-decoration: none;
-  font-size: 1.5em;
+  font-size: 1.6em; /* Tamanho maior */
   font-weight: bold;
 }
 
+/* Estilo dos Links de Navegação */
 .navbar-links a {
   color: white;
   text-decoration: none;
-  margin-left: 20px;
-  padding: 5px 10px;
+  margin-left: 25px; /* Espaçamento entre os links */
+  padding: 8px 12px;
   border-radius: 4px;
   transition: background-color 0.3s;
 }
 
+/* Efeito ao passar o rato (hover) */
 .navbar-links a:hover {
   background-color: #555;
+  color: #fff;
 }

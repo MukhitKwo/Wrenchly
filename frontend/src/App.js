@@ -1,13 +1,13 @@
 // src/App.js
 
 import { Outlet } from "react-router-dom"; 
-import Navbar from './components/Navbar'; // Importar o componente do menu flutuante
+import Navbar from './components/navbar'; // Importar o componente do menu flutuante
 
 function App() {
   return (
     <div>
       {/* Menu Flutuante (Sticky) */}
-      <Navbar /> 
+      <navbar /> 
 
       {/* A tag <main> conterá o conteúdo dinâmico (páginas) renderizado pela Router */}
       <main>
@@ -22,7 +22,7 @@ function App() {
             backgroundColor: '#eee', 
             marginTop: '30px' 
         }}>
-          Rodapé da App | Wrenchly © 2025
+          Wrenchly © 2025
         </p>
       </footer>
     </div>

@@ -1,6 +1,5 @@
 // src/components/Navbar.jsx
 import React from 'react';
-import './Navbar.css'; // Vamos criar este ficheiro de estilos no próximo passo
 
 function Navbar() {
   return (
