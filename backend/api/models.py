@@ -2,6 +2,7 @@ from typing import Text
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth.models import User
 
 
 # class Utilizador(models.Model):
@@ -19,11 +20,15 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Definicoes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+    # Configurações do utilizador (exemplos práticos)
+    tema = models.CharField(max_length=50, default="light")  # light, dark
+    notificacoes = models.BooleanField(default=True)
+    linguagem = models.CharField(max_length=10, default="pt")  # pt, en, etc
 
     def __str__(self):
-        return f"Definiçoes do {self.user.username}"
+        return f"Definições de {self.user.username}"
 
 
 class Garagens(models.Model):
