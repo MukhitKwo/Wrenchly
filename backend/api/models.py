@@ -5,27 +5,13 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 
 
-# class Utilizador(models.Model):
-
-#     user_id = models.AutoField(primary_key=True)  # type: ignore
-
-#     email = models.EmailField(unique=True)  # type: ignore
-
-#     username = models.CharField(max_length=50, unique=True)  # type: ignore
-
-#     password = models.CharField(max_length=128)  # type: ignore  #! guardar encriptado
-
-#     def __str__(self):
-#         return self.username
-
-
 class Definicoes(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # type: ignore
 
     # Configurações do utilizador (exemplos práticos)
-    tema = models.CharField(max_length=50, default="light")  # light, dark
-    notificacoes = models.BooleanField(default=True)
-    linguagem = models.CharField(max_length=10, default="pt")  # pt, en, etc
+    tema = models.CharField(max_length=50, default="light")  # type: ignore  #* light, dark
+    notificacoes = models.BooleanField(default=True)  # type: ignore
+    linguagem = models.CharField(max_length=10, default="pt")  # type: ignore  #* pt, en, etc
 
     def __str__(self):
         return f"Definições de {self.user.username}"

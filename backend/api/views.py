@@ -26,33 +26,47 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
 # ==========================================
 #               GEMINI APIs
 # ==========================================
-@api_view(["GET", "POST"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([AllowAny])
-def api_getCarCronicIssues(request):
-    body = json.loads(request.body or "{}") if request.method == "POST" else request.GET
-    car = body.get("car")
-
-    if not car:
-        return Response({"success": False, "message": "Field 'car' is required"}, status=400)
-
-    return Response({"success": True, "car": car, "data": carCronicIssues(car)})
+# faz so #! ========== GEMINI APIs ==========
 
 
-@api_view(["GET", "POST"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([AllowAny])
-def api_getCarsBySpecs(request):
-    if request.method == "GET":
-        specs = dict(request.GET.items())
-    else:
-        body = json.loads(request.body or "{}")
-        specs = body.get("specs") or body
+# * pra que uma api pro gemini se é uma função interna?
+# * eu literalmente crei um ficheiro chamada api_testing SO para testar se o gemini funciona
+# * estas duas funçoes api são inuteis pra aplicação em si
 
-    if not specs:
-        return Response({"success": False, "message": "Specs cannot be empty"}, status=400)
 
-    return Response({"success": True, "specs": specs, "data": carsBySpecs(specs)})
+# @api_view(["GET"])
+# @authentication_classes([CsrfExemptSessionAuthentication])
+# @permission_classes([IsAuthenticated])
+# def api_getCarCronicIssues(request):
+#     car = request.GET.get("car")
+
+#     if not car:
+#         return Response({"success": False, "message": "Field 'car' is required"}, status=400)
+
+#     return Response({"success": True, "car": car, "data": carCronicIssues(car)})
+
+
+# @api_view(["GET"])
+# @authentication_classes([CsrfExemptSessionAuthentication])
+# @permission_classes([IsAuthenticated])
+# def api_getCarsBySpecs(request):
+#     specs = dict(request.GET.items())
+
+#     if not specs:
+#         return Response({"success": False, "message": "Specs cannot be empty"}, status=400)
+
+#     return Response({"success": True, "specs": specs, "data": carsBySpecs(specs)})
+
+
+def getCarCronicIssues(car):
+    # talvez adicionar algum type check ou isso
+    # * tenho de melhorar o error-handling das funçoes gemini
+    return carCronicIssues(car)
+
+
+def getCarsBySpecs(specs):
+    # same thing here
+    return carsBySpecs(specs)
 
 
 # ==========================================
@@ -70,6 +84,8 @@ def registerUser(request):
     if not username or not email or not password:
         return Response({"success": False, "message": "Missing username, email or password"}, status=400)
 
+    # username nao precisa ser unico porque é uma aplicação individual, temos o id e email para isso
+    # trocar o auth para verificar email e pass primeiro
     if User.objects.filter(username=username).exists():
         return Response({"success": False, "message": "Username already exists"}, status=400)
 
@@ -88,7 +104,7 @@ def registerUser(request):
 @permission_classes([AllowAny])
 def loginUser(request):
     body = json.loads(request.body or "{}")
-    username = body.get("username")
+    username = body.get("username")  # devia ser email
     password = body.get("password")
 
     if not username or not password:

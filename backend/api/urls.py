@@ -1,23 +1,10 @@
 from django.urls import path, re_path
-from .views import (
-    api_getCarCronicIssues,
-    api_getCarsBySpecs,
-    registerUser,
-    loginUser,
-    apiCarros,
-    apiGaragens,
-    apiNotas,
-    apiManutencoes,
-    apiPreventivos,
-    apiCronicos,
-    apiDefinicoes,
-)
+from .views import *
+from .api_testing import *
 
 urlpatterns = [
 
-    # =====================================
-    #              GEMINI APIs
-    # =====================================
+    # GEMINI API (APENAS PARA TESTE)
     path("cronicIssues/", api_getCarCronicIssues),
     path("carSpecs/", api_getCarsBySpecs),
 
@@ -72,4 +59,3 @@ urlpatterns = [
     # Aceita /definicoes/1 e /definicoes/1/
     re_path(r"^definicoes/(?P<id>\d+)/?$", apiDefinicoes, name="definicoes_detail"),
 ]
-
