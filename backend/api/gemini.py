@@ -2,33 +2,45 @@ from google import genai
 from google.genai import types
 from google.genai.errors import APIError
 from django.conf import settings
-from django.core.cache import cache
 import json
-import re
 from utils.colors import *
+from django.core.exceptions import ImproperlyConfigured
 
 gemini_key = settings.GEMINI_API_KEY
+client = genai.Client(api_key=gemini_key) if gemini_key else None
+
 if not gemini_key:
-    client = gemini_key
-    print_yellow(f"[WARNING] Gemini has no key. API key set to None!")
-else:
-    client = genai.Client(api_key=gemini_key)
+    print_yellow("[WARNING] GEMINI_API_KEY key missing. Gemini disabled.")
 
 
-# TODO fix cache not saving betwen project restarts (use jsons?)
-
-def carCronicIssues(car_model: str):
+def call_gemini(prompt, schema, temp):
 
     if not client:
+        raise ImproperlyConfigured("Gemini's client is not configured.")
+
+    cfg = types.GenerateContentConfig(
+        response_schema=schema,
+        temperature=temp,
+        response_mime_type="application/json"
+    )
+
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=cfg
+        )
+
+        if not response.text:
+            return None
+        return json.loads(response.text)
+
+    except (APIError, json.JSONDecodeError) as e:
+        print(f"Gemini error: {e}")
         return None
 
-    # cache
-    car_safe = re.sub(r'[^a-zA-Z0-9]', '_', car_model)
-    cache_key = f"car_issues_{car_safe}"
-    cached = cache.get(cache_key)
-    if cached:
-        print(f"{cache_key} cached")
-        return cached
+
+def carCronicIssues(car_model: str):
 
     prompt = (
         f"Lista JSON dos problemas crónicos mais comuns do {car_model}, "
@@ -49,34 +61,10 @@ def carCronicIssues(car_model: str):
         )
     )
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.3,
-                response_mime_type="application/json",
-                response_schema=schema
-            )
-        )
-
-        if response.text is None:
-            return None
-
-        data = json.loads(response.text)
-        cache.set(cache_key, data, timeout=3600)  # cache 1 hora
-
-        return data
-
-    except (APIError, json.JSONDecodeError) as e:
-        print(f"Gemini error: {e}")
-        return None
+    return call_gemini(prompt, schema, 0.3)
 
 
 def carsBySpecs(specs: dict):
-
-    if not client:
-        return None
 
     prompt = (
         f"Lista Python de 15 carros que correspondem a estas especificações: {specs}. "
@@ -90,18 +78,4 @@ def carsBySpecs(specs: dict):
         items=types.Schema(type=types.Type.STRING)
     )
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_schema=schema
-            )
-        )
-
-        data = json.loads(response.text)
-        return data
-
-    except (APIError, json.JSONDecodeError) as e:
-        print(f"Gemini error: {e}")
-        return None
+    return call_gemini(prompt, schema, 0.7)

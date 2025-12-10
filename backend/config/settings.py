@@ -18,6 +18,8 @@ SB_PASSWORD = os.getenv("SB_PASSWORD")
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
+WRENCHLY_EMAIL = os.getenv("WRENCHLY_EMAIL")
+EMAIL_APP_KEY = os.getenv("EMAIL_APP_KEY")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -115,6 +117,14 @@ else:
         }
     }
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'          # your SMTP server
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = WRENCHLY_EMAIL
+EMAIL_HOST_PASSWORD = EMAIL_APP_KEY
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -155,7 +165,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [

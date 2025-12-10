@@ -1,3 +1,5 @@
-fazer pagina para teste de api (igual ao stor testes)
 tornar as funçoes frontend -> backend acessiveis apenas a users logados
+
 adicionar funçoes que calculam risco dos problemas cronicos e preventivos
+adicionar login com google
+enviar imagens para supabase storage

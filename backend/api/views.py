@@ -11,67 +11,40 @@ from .models import *
 from .serializers import *
 from .crud import crud
 from .gemini import carCronicIssues, carsBySpecs
+from .email import send_email
 
 import json
 
 
-# ==========================================
+# ==================================================
 #   CSRF EXEMPT FOR APIS AUTHENTICATED BY SESSION
-# ==========================================
+# ==================================================
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return
 
 
-# ==========================================
-#               GEMINI APIs
-# ==========================================
-# faz so #! ========== GEMINI APIs ==========
-
-
-# * pra que uma api pro gemini se é uma função interna?
-# * eu literalmente crei um ficheiro chamada api_testing SO para testar se o gemini funciona
-# * estas duas funçoes api são inuteis pra aplicação em si
-
-
-# @api_view(["GET"])
-# @authentication_classes([CsrfExemptSessionAuthentication])
-# @permission_classes([IsAuthenticated])
-# def api_getCarCronicIssues(request):
-#     car = request.GET.get("car")
-
-#     if not car:
-#         return Response({"success": False, "message": "Field 'car' is required"}, status=400)
-
-#     return Response({"success": True, "car": car, "data": carCronicIssues(car)})
-
-
-# @api_view(["GET"])
-# @authentication_classes([CsrfExemptSessionAuthentication])
-# @permission_classes([IsAuthenticated])
-# def api_getCarsBySpecs(request):
-#     specs = dict(request.GET.items())
-
-#     if not specs:
-#         return Response({"success": False, "message": "Specs cannot be empty"}, status=400)
-
-#     return Response({"success": True, "specs": specs, "data": carsBySpecs(specs)})
-
-
+#! ============ GEMINI APIs ============
 def getCarCronicIssues(car):
-    # talvez adicionar algum type check ou isso
-    # * tenho de melhorar o error-handling das funçoes gemini
-    return carCronicIssues(car)
+    return carCronicIssues(car) if isinstance(car, str) else None
 
 
 def getCarsBySpecs(specs):
-    # same thing here
-    return carsBySpecs(specs)
+    return carsBySpecs(specs) if isinstance(specs, dict) else None
 
 
-# ==========================================
-#               REGISTER USER
-# ==========================================
+#! ============ EMAIL ============
+
+def send_email_user(request):
+
+    user_email = request.user.email
+    send_email(user_email)
+
+    return JsonResponse({"email": "enviado (provavelmente)"})
+
+#! ============ REGISTER USER ============
+
+
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([AllowAny])
@@ -96,9 +69,7 @@ def registerUser(request):
     return Response({"success": True}, status=201)
 
 
-# ==========================================
-#                   LOGIN
-# ==========================================
+#! ============ LOGIN ============
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([AllowAny])
@@ -118,9 +89,7 @@ def loginUser(request):
     return Response({"success": False, "message": "Invalid credentials"}, status=401)
 
 
-# ==========================================
-#                DEFINIÇÕES
-# ==========================================
+#! ============ DEFINIÇOES ============
 @api_view(["GET", "POST", "PUT", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -128,9 +97,7 @@ def apiDefinicoes(request, id=None):
     return crud(request, Definicoes, DefinicoesSerializer, id, user=request.user)
 
 
-# ==========================================
-#                 GARAGENS
-# ==========================================
+#! ============ GARAGENS ============
 @api_view(["GET", "POST", "PUT", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -138,9 +105,22 @@ def apiGaragens(request, id=None):
     return crud(request, Garagens, GaragemSerializer, id, user=request.user)
 
 
-# ==========================================
-#                   CARROS
-# ==========================================
+#! ============ NOTAS ============
+@api_view(["GET", "POST", "PUT", "DELETE"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def apiNotas(request, id=None):
+    if request.method in ["POST", "PUT"]:
+        body = json.loads(request.body or "{}")
+        garagem_id = body.get("garagem")
+
+        if not Garagens.objects.filter(garagem_id=garagem_id, user=request.user).exists():
+            return Response({"success": False, "message": "Invalid garage"}, status=403)
+
+    return crud(request, Notas, NotaSerializer, id, garagem__user=request.user)
+
+
+#! ============ CARROS ============
 @api_view(["GET", "POST", "PUT", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -163,26 +143,7 @@ def apiCarros(request, id=None):
     return crud(request, Carros, CarroSerializer, id, garagem__user=request.user)
 
 
-# ==========================================
-#                   NOTAS
-# ==========================================
-@api_view(["GET", "POST", "PUT", "DELETE"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def apiNotas(request, id=None):
-    if request.method in ["POST", "PUT"]:
-        body = json.loads(request.body or "{}")
-        garagem_id = body.get("garagem")
-
-        if not Garagens.objects.filter(garagem_id=garagem_id, user=request.user).exists():
-            return Response({"success": False, "message": "Invalid garage"}, status=403)
-
-    return crud(request, Notas, NotaSerializer, id, garagem__user=request.user)
-
-
-# ==========================================
-#              MANUTENÇÕES
-# ==========================================
+#! ============ MANUTENÇÕES ============
 @api_view(["GET", "POST", "PUT", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -197,9 +158,7 @@ def apiManutencoes(request, id=None):
     return crud(request, Manutencoes, ManutencaoSerializer, id, carro__garagem__user=request.user)
 
 
-# ==========================================
-#               PREVENTIVOS
-# ==========================================
+#! ============ PREVENTIVOS ============
 @api_view(["GET", "POST", "PUT", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -214,9 +173,7 @@ def apiPreventivos(request, id=None):
     return crud(request, Preventivos, PreventivoSerializer, id, carro__garagem__user=request.user)
 
 
-# ==========================================
-#               CRÓNICOS
-# ==========================================
+#! ============ CRONICOS ============
 @api_view(["GET", "POST", "PUT", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
