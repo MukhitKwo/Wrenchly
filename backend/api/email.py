@@ -5,14 +5,14 @@ import smtplib
 from django.conf import settings
 from utils.colors import print_yellow
 
-if not all([settings.WRENCHLY_EMAIL, settings.EMAIL_APP_KEY]):
+if not all([settings.WRENCHLY_EMAIL, settings.WRENCHLY_APP_KEY]):
     print_yellow("[WARNING] WRENCHLY_EMAIL key or EMAIL_APP_KEY key missing. Email disabled.")
 
 
 def send_email(to_email, subject='Wrenchly Notification', body='This is a simple email from Wrenchly.'):
 
     try:
-        if not all([settings.WRENCHLY_EMAIL, settings.EMAIL_APP_KEY]):
+        if not all([settings.WRENCHLY_EMAIL, settings.WRENCHLY_APP_KEY]):
             raise ImproperlyConfigured("Email's host or password is not configured.")
 
         email = EmailMessage(
