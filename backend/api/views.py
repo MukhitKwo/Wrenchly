@@ -24,13 +24,30 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
         return
 
 
-#! ============ GEMINI APIs ============
+#! ============ GEMINI ============
+
+class GeminiError(Exception):
+    pass
+
+
 def getCarCronicIssues(car):
-    return carCronicIssues(car) if isinstance(car, str) else None
+
+    cronicIssues = carCronicIssues(car)
+
+    if isinstance(cronicIssues, list):
+        return cronicIssues
+    else:
+        raise GeminiError(cronicIssues)
 
 
 def getCarsBySpecs(specs):
-    return carsBySpecs(specs) if isinstance(specs, dict) else None
+
+    cars = carsBySpecs(specs)
+
+    if isinstance(cars, list):
+        return cars
+    else:
+        raise GeminiError(cars)
 
 
 #! ============ EMAIL ============

@@ -13,7 +13,7 @@ def send_email(to_email, subject='Wrenchly Notification', body='This is a simple
 
     try:
         if not all([settings.WRENCHLY_EMAIL, settings.EMAIL_APP_KEY]):
-            raise ImproperlyConfigured("GEMINI_CLIENT is not configured.")
+            raise ImproperlyConfigured("Email's host or password is not configured.")
 
         email = EmailMessage(
             subject=subject,

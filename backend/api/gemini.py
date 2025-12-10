@@ -31,16 +31,25 @@ def call_gemini(prompt, schema, temp):
             config=cfg
         )
 
-        if not response.text:
-            return None
-        return json.loads(response.text)
+    except APIError as e:
+        # print(f"Gemini API error: {e}")
+        return "API_ERROR"
+    except json.JSONDecodeError:
+        return "INVALID_JSON"
+    
+    except ImproperlyConfigured as e:
+        # print(f"Configuration error: {e}")
+        return "CONFIG_ERROR"
 
-    except (APIError, json.JSONDecodeError) as e:
-        print(f"Gemini error: {e}")
-        return None
+    if not response.text:
+        return "NO_CONTENT"
+    return json.loads(response.text)
 
 
 def carCronicIssues(car_model: str):
+
+    if not isinstance(car_model, str):
+        return "CAR_NOT_STR"
 
     prompt = (
         f"Lista JSON dos problemas crónicos mais comuns do {car_model}, "
@@ -65,6 +74,9 @@ def carCronicIssues(car_model: str):
 
 
 def carsBySpecs(specs: dict):
+
+    if not isinstance(specs, dict):
+        return "SPECS_NOT_DICT"
 
     prompt = (
         f"Lista Python de 15 carros que correspondem a estas especificações: {specs}. "
