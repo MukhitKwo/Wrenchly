@@ -23,8 +23,52 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return
 
+# * ============ CRUD ============ NAO APAGAR (OUTRA VEZ)
 
-#! ============ GEMINI ============
+
+def crud_Defenicoes(request, id):  # nao testado
+    filtros = {"user": request.user}
+    crud_response = crud(request, Definicoes, DefinicoesSerializer, id, **filtros)
+    return crud_response
+
+
+def crud_Garagens(request, id):  # nao testado
+    filtros = {"user": request.user}
+    crud_response = crud(request, Garagens, GaragemSerializer, id, **filtros)
+    return crud_response
+
+
+def crud_Notas(request, id):  # nao testado
+    filtros = {"garagem__user": request.user}
+    crud_response = crud(request, Notas, NotaSerializer, id, **filtros)
+    return crud_response
+
+
+def crud_Carros(request, id):
+    filtros = {"garagem__user": request.user}
+    crud_response = crud(request, Carros, CarroSerializer, id, **filtros)
+    return crud_response
+
+
+def crud_Manutencoes(request, id):  # nao testado
+    filtros = {"carro__garagem__user": request.user}
+    crud_response = crud(request, Manutencoes, ManutencaoSerializer, id, **filtros)
+    return crud_response
+
+
+def crud_Preventivos(request, id):  # nao testado
+    filtros = {"carro__garagem__user": request.user}
+    crud_response = crud(request, Preventivos, PreventivoSerializer, id, **filtros)
+    return crud_response
+
+
+def crud_Cronicos(request, id):  # nao testado
+    filtros = {"carro__garagem__user": request.user}
+    crud_response = crud(request, Cronicos, CronicoSerializer, id, **filtros)
+    return crud_response
+
+# * ============ GEMINI ============
+
 
 class GeminiError(Exception):
     pass
@@ -50,7 +94,7 @@ def getCarsBySpecs(specs):
         raise GeminiError(cars)
 
 
-#! ============ EMAIL ============
+# * ============ EMAIL ============
 
 def send_email_user(request):
 
@@ -59,9 +103,8 @@ def send_email_user(request):
 
     return JsonResponse({"email": "enviado (provavelmente)"})
 
+
 #! ============ REGISTER USER ============
-
-
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([AllowAny])
@@ -119,7 +162,9 @@ def apiDefinicoes(request, id=None):
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
 def apiGaragens(request, id=None):
-    return crud(request, Garagens, GaragemSerializer, id, user=request.user)
+    filtros = {"user": request.user}
+    return crud(request, Garagens, GaragemSerializer, id, **filtros)
+    # return crud(request, Garagens, GaragemSerializer, id, user=request.user)
 
 
 #! ============ NOTAS ============
