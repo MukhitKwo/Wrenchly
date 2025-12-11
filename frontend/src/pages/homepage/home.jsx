@@ -3,7 +3,8 @@ import React from "react";
 
 function navbar() {
 	return (
-		<nav className="Navbar">
+		// ja tem navbar na App
+		<nav className="Navbar"> 
 			<div className="navbar-container">
 				<a href="/" className="navbar-logo">
 					Wrenchly
