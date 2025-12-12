@@ -2,159 +2,162 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
 
-from .models import *
-from .serializers import *
+from .models import (
+    Definicoes,
+    Garagens,
+    Notas,
+    Carros,
+    Manutencoes,
+    Preventivos,
+    Cronicos,
+)
+from .serializers import (
+    DefinicoesSerializer,
+    GaragemSerializer,
+    NotaSerializer,
+    CarroSerializer,
+    ManutencaoSerializer,
+    PreventivoSerializer,
+    CronicoSerializer,
+)
 from .crud import crud
 from .gemini import carCronicIssues, carsBySpecs
 from .email import send_email
 
 import json
 
-
-# ==================================================
-#   CSRF EXEMPT FOR APIS AUTHENTICATED BY SESSION
-# ==================================================
+#! ============ CSRF EXEMPT FOR SESSION AUTHENTICATED APIs ============
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return
 
-# * ============ CRUD ============ NAO APAGAR (OUTRA VEZ)
+#! ============ FUNCOES CRUD ============
 
-
-def crud_Defenicoes(request, id):  # nao testado
+def crud_Definicoes(request, id=None):
     filtros = {"user": request.user}
-    crud_response = crud(request, Definicoes, DefinicoesSerializer, id, **filtros)
-    return crud_response
+    return crud(request, Definicoes, DefinicoesSerializer, id, **filtros)
 
 
-def crud_Garagens(request, id):  # nao testado
+def crud_Garagens(request, id=None):
     filtros = {"user": request.user}
-    crud_response = crud(request, Garagens, GaragemSerializer, id, **filtros)
-    return crud_response
+    return crud(request, Garagens, GaragemSerializer, id, **filtros)
 
 
-def crud_Notas(request, id):  # nao testado
+def crud_Notas(request, id=None):
     filtros = {"garagem__user": request.user}
-    crud_response = crud(request, Notas, NotaSerializer, id, **filtros)
-    return crud_response
+    return crud(request, Notas, NotaSerializer, id, **filtros)
 
 
-def crud_Carros(request, id):
+def crud_Carros(request, id=None):
     filtros = {"garagem__user": request.user}
-    crud_response = crud(request, Carros, CarroSerializer, id, **filtros)
-    return crud_response
+    return crud(request, Carros, CarroSerializer, id, **filtros)
 
 
-def crud_Manutencoes(request, id):  # nao testado
+def crud_Manutencoes(request, id=None):
     filtros = {"carro__garagem__user": request.user}
-    crud_response = crud(request, Manutencoes, ManutencaoSerializer, id, **filtros)
-    return crud_response
+    return crud(request, Manutencoes, ManutencaoSerializer, id, **filtros)
 
 
-def crud_Preventivos(request, id):  # nao testado
+def crud_Preventivos(request, id=None):
     filtros = {"carro__garagem__user": request.user}
-    crud_response = crud(request, Preventivos, PreventivoSerializer, id, **filtros)
-    return crud_response
+    return crud(request, Preventivos, PreventivoSerializer, id, **filtros)
 
 
-def crud_Cronicos(request, id):  # nao testado
+def crud_Cronicos(request, id=None):
     filtros = {"carro__garagem__user": request.user}
-    crud_response = crud(request, Cronicos, CronicoSerializer, id, **filtros)
-    return crud_response
+    return crud(request, Cronicos, CronicoSerializer, id, **filtros)
 
-# * ============ GEMINI ============
-
-
+#! ============ GEMINI HELPERS (SEMDB) ============
 class GeminiError(Exception):
     pass
 
 
-def getCarCronicIssues(car):
-
-    cronicIssues = carCronicIssues(car)
-
-    if isinstance(cronicIssues, list):
-        return cronicIssues
-    else:
-        raise GeminiError(cronicIssues)
+def getCarCronicIssues(car: str):
+    result = carCronicIssues(car)
+    if not isinstance(result, list):
+        raise GeminiError(result)
+    return result
 
 
-def getCarsBySpecs(specs):
-
-    cars = carsBySpecs(specs)
-
-    if isinstance(cars, list):
-        return cars
-    else:
-        raise GeminiError(cars)
+def getCarsBySpecs(specs: dict):
+    result = carsBySpecs(specs)
+    if not isinstance(result, list):
+        raise GeminiError(result)
+    return result
 
 
-# * ============ EMAIL ============
 
+#! ============ EMAIL ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
 def send_email_user(request):
+    send_email(request.user.email)
+    return Response({"success": True, "message": "Email enviado"})
+#! ============ AUTH ============
 
-    user_email = request.user.email
-    send_email(user_email)
-
-    return JsonResponse({"email": "enviado (provavelmente)"})
-
-
-#! ============ REGISTER USER ============
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([AllowAny])
 def registerUser(request):
-    body = json.loads(request.body or "{}")
+    body = request.data
     username = body.get("username")
     email = body.get("email")
     password = body.get("password")
 
     if not username or not email or not password:
-        return Response({"success": False, "message": "Missing username, email or password"}, status=400)
-
-    # username nao precisa ser unico porque é uma aplicação individual, temos o id e email para isso
-    # trocar o auth para verificar email e pass primeiro
+        return Response(
+            {"success": False, "message": "Missing fields"},
+            status=400,
+        )
     if User.objects.filter(username=username).exists():
-        return Response({"success": False, "message": "Username already exists"}, status=400)
+        return Response({"success": False, "message": "Username exists"}, status=400)
 
     if User.objects.filter(email=email).exists():
-        return Response({"success": False, "message": "Email already exists"}, status=400)
+        return Response({"success": False, "message": "Email exists"}, status=400)
 
     User.objects.create_user(username=username, email=email, password=password)
     return Response({"success": True}, status=201)
-
-
 #! ============ LOGIN ============
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([AllowAny])
 def loginUser(request):
-    body = json.loads(request.body or "{}")
-    username = body.get("username")  # devia ser email
+    body = request.data
+    username = body.get("username")
     password = body.get("password")
 
     if not username or not password:
-        return Response({"success": False, "message": "Missing username or password"}, status=400)
+        return Response(
+            {"success": False, "message": "Missing credentials"},
+            status=400,
+        )
 
     user = authenticate(request, username=username, password=password)
-    if user:
-        login(request, user)
-        return Response({"success": True})
+    if not user:
+        return Response(
+            {"success": False, "message": "Invalid credentials"},
+            status=401,
+        )
 
-    return Response({"success": False, "message": "Invalid credentials"}, status=401)
+    login(request, user)
+    return Response({"success": True})
 
-
-#! ============ DEFINIÇOES ============
+#! ============ DEFINICOES ============
 @api_view(["GET", "POST", "PUT", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
 def apiDefinicoes(request, id=None):
-    return crud(request, Definicoes, DefinicoesSerializer, id, user=request.user)
+    return crud_Definicoes(request, id)
 
 
 #! ============ GARAGENS ============
@@ -162,9 +165,7 @@ def apiDefinicoes(request, id=None):
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
 def apiGaragens(request, id=None):
-    filtros = {"user": request.user}
-    return crud(request, Garagens, GaragemSerializer, id, **filtros)
-    # return crud(request, Garagens, GaragemSerializer, id, user=request.user)
+    return crud_Garagens(request, id)
 
 
 #! ============ NOTAS ============
@@ -173,13 +174,14 @@ def apiGaragens(request, id=None):
 @permission_classes([IsAuthenticated])
 def apiNotas(request, id=None):
     if request.method in ["POST", "PUT"]:
-        body = json.loads(request.body or "{}")
-        garagem_id = body.get("garagem")
-
-        if not Garagens.objects.filter(garagem_id=garagem_id, user=request.user).exists():
+        garagem_id = request.data.get("garagem")
+        if not Garagens.objects.filter(
+            garagem_id=garagem_id,
+            user=request.user,
+        ).exists():
             return Response({"success": False, "message": "Invalid garage"}, status=403)
 
-    return crud(request, Notas, NotaSerializer, id, garagem__user=request.user)
+    return crud_Notas(request, id)
 
 
 #! ============ CARROS ============
@@ -188,36 +190,35 @@ def apiNotas(request, id=None):
 @permission_classes([IsAuthenticated])
 def apiCarros(request, id=None):
     if request.method in ["POST", "PUT"]:
-        body = json.loads(request.body or "{}")
-        garagem_id = body.get("garagem")
+        garagem_id = request.data.get("garagem")
 
         if garagem_id:
-            if not Garagens.objects.filter(garagem_id=garagem_id, user=request.user).exists():
-                return Response({"success": False, "message": "Invalid garage"}, status=403)
+            if not Garagens.objects.filter(
+                garagem_id=garagem_id,
+                user=request.user,
+            ).exists():
+                return Response(
+                    {"success": False, "message": "Invalid garage"},
+                    status=403,
+                )
 
-        else:
-            garagem, _ = Garagens.objects.get_or_create(
-                user=request.user, nome=f"Garagem do {request.user.username}"
-            )
-            body["garagem"] = garagem.garagem_id
-            request._body = json.dumps(body).encode()
-
-    return crud(request, Carros, CarroSerializer, id, garagem__user=request.user)
+    return crud_Carros(request, id)
 
 
-#! ============ MANUTENÇÕES ============
+#! ============ MANUTENCOES ============
 @api_view(["GET", "POST", "PUT", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
 def apiManutencoes(request, id=None):
     if request.method in ["POST", "PUT"]:
-        body = json.loads(request.body or "{}")
-        carro_id = body.get("carro")
-
-        if not Carros.objects.filter(carro_id=carro_id, garagem__user=request.user).exists():
+        carro_id = request.data.get("carro")
+        if not Carros.objects.filter(
+            carro_id=carro_id,
+            garagem__user=request.user,
+        ).exists():
             return Response({"success": False, "message": "Invalid car"}, status=403)
 
-    return crud(request, Manutencoes, ManutencaoSerializer, id, carro__garagem__user=request.user)
+    return crud_Manutencoes(request, id)
 
 
 #! ============ PREVENTIVOS ============
@@ -226,13 +227,14 @@ def apiManutencoes(request, id=None):
 @permission_classes([IsAuthenticated])
 def apiPreventivos(request, id=None):
     if request.method in ["POST", "PUT"]:
-        body = json.loads(request.body or "{}")
-        carro_id = body.get("carro")
-
-        if not Carros.objects.filter(carro_id=carro_id, garagem__user=request.user).exists():
+        carro_id = request.data.get("carro")
+        if not Carros.objects.filter(
+            carro_id=carro_id,
+            garagem__user=request.user,
+        ).exists():
             return Response({"success": False, "message": "Invalid car"}, status=403)
 
-    return crud(request, Preventivos, PreventivoSerializer, id, carro__garagem__user=request.user)
+    return crud_Preventivos(request, id)
 
 
 #! ============ CRONICOS ============
@@ -241,10 +243,11 @@ def apiPreventivos(request, id=None):
 @permission_classes([IsAuthenticated])
 def apiCronicos(request, id=None):
     if request.method in ["POST", "PUT"]:
-        body = json.loads(request.body or "{}")
-        carro_id = body.get("carro")
-
-        if not Carros.objects.filter(carro_id=carro_id, garagem__user=request.user).exists():
+        carro_id = request.data.get("carro")
+        if not Carros.objects.filter(
+            carro_id=carro_id,
+            garagem__user=request.user,
+        ).exists():
             return Response({"success": False, "message": "Invalid car"}, status=403)
 
-    return crud(request, Cronicos, CronicoSerializer, id, carro__garagem__user=request.user)
+    return crud_Cronicos(request, id)
