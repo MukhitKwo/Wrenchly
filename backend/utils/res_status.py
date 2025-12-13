@@ -1,3 +1,4 @@
+import json
 from .colors import *
 
 
@@ -12,9 +13,9 @@ def print_status(res, onlyError=False):
     """
 
     status_code = res.status_code
-    data = res.json()
-    status_message = data.get("message")
-    text = f"<!> Status: {status_code} | Message: {status_message}"
+    data = json.loads(res.content)
+    message = data.get("message")
+    text = f"<!> Status: {status_code} | Message: {message}"
 
     if (200 <= status_code <= 299) and not onlyError:
         print_green(text)  # Green → success
@@ -23,4 +24,4 @@ def print_status(res, onlyError=False):
     elif 500 <= status_code <= 599:
         print_red(text)  # Red → server error
     else:
-        print_purple(text) # Purple → custom
+        print_purple(text)  # Purple → custom

@@ -3,33 +3,31 @@ from rest_framework.exceptions import ValidationError
 import json
 
 
-def crud(request, model, serializer, id=None, **filters):
+def crud(method, data, model, serializer, id=None, **filters):
     """
     O CRUD deteta automaticamente o tipo de request e retorna o json correspondente
     """
 
-    if request.method == "POST":
-        return create_object(request, serializer)
-    elif request.method == "GET":
+    if method == "POST":
+        return create_object(data, serializer)
+    elif method == "GET":
         return get_object(model, serializer, id, **filters)
-    elif request.method == "PUT":
-        return update_object(request, model, serializer, id, **filters)
-    elif request.method == "DELETE":
+    elif method == "PUT":
+        return update_object(data, model, serializer, id, **filters)
+    elif method == "DELETE":
         return delete_object(model, id, **filters)
 
 
 #! ================== Funções CRUD ==================
 
-def create_object(request, Serializer):
-
+def create_object(data, Serializer):
     try:
-        data = json.loads(request.body)  # recebe o json enviado no request
         serializer = Serializer(data=data)  # converte o json para o objeto do serializer
         serializer.is_valid(raise_exception=True)  # verifica se os dados são válidos (se não, devolve 400)
         serializer.save()  # guarda no BD
-        return JsonResponse({"message": "created", "data": serializer.data}, status=201)  # resposta ok
+        return CRUDResponse(status=201, message="created", data=serializer.data)
     except ValidationError as e:
-        return JsonResponse({"message": e.detail}, status=400)
+        return CRUDResponse(status=400, message=e.detail)
 
 
 def get_object(Model, Serializer, id, **filters):
@@ -38,13 +36,16 @@ def get_object(Model, Serializer, id, **filters):
         try:
             obj = Model.objects.filter(**filters).get(pk=id)  # procura o objeto com a chave primária correta
             serializer = Serializer(obj)  # converte o objeto para json
-            return JsonResponse({"message": "obtained", "data": serializer.data}, status=200)  # devolve o json
+            # return JsonResponse({"message": "obtained", "data": serializer.data}, status=200)  # devolve o json
+            return CRUDResponse(status=200, message="obtained", data=serializer.data)
         except Model.DoesNotExist:
-            return JsonResponse({"message": "id not found"}, status=404)  # não encontrou
+            # return JsonResponse({"message": "id not found"}, status=404)  # não encontrou
+            return CRUDResponse(status=404, message="id not found")
 
     objects = Model.objects.filter(**filters)  # busca todos os primeiros 25 registos
     serializer = Serializer(objects, many=True)  # converte todos para json
-    return JsonResponse({"message": "obtained", "data": serializer.data}, status=200)  # devolve lista jsons
+    # return JsonResponse({"message": "obtained", "data": serializer.data}, status=200)  # devolve lista jsons
+    return CRUDResponse(status=200, message="obtained", data=serializer.data)
 
 
 def update_object(request, Model, Serializer, id, **filters):
@@ -60,7 +61,7 @@ def update_object(request, Model, Serializer, id, **filters):
         serializer = Serializer(obj, data=data, partial=True)  # atualiza só os campos fornecidos
         serializer.is_valid(raise_exception=True)  # verifica se os dados são válidos (se não, devolve 400)
         serializer.save()  # guarda alterações
-        return JsonResponse({"message": "updated", "data": serializer.data}, status=200)  # resposta ok
+        return JsonResponse({"message": "updated", "data": serializer.data}, status=200)
     except Model.DoesNotExist:
         return JsonResponse({"message": "id not found"}, status=404)
     except ValidationError as e:
@@ -75,6 +76,16 @@ def delete_object(Model, id, **filters):
     try:
         obj = Model.objects.get(pk=id, **filters)  # procura o objeto
         obj.delete()  # apaga o registo
-        return JsonResponse({"message": "deleted"}, status=200)  # confirma eliminação
+        return JsonResponse({"message": "deleted"}, status=200)
     except Model.DoesNotExist:
         return JsonResponse({"message": "id not found"}, status=404)
+
+
+#! ================== Classe CRUDResponse ==================
+
+class CRUDResponse:
+    def __init__(self, status=200, message="", data=None):
+        self.success = status in (200, 201)
+        self.status = status
+        self.message = message
+        self.data = data
