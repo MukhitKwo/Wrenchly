@@ -2,6 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import { AppProvider } from "./context/appContext.jsx"; // your context
 
 // IMPORTAÇÕES NECESSÁRIAS DO ROUTER E DOS COMPONENTES
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -54,12 +55,12 @@ const router = createBrowserRouter([
 			{ path: "manutencaoDetalhe", element: <ManutencaoDetalhe /> },
 			{ path: "preventivoDetalhe", element: <PreventivoDetalhe /> },
 			{ path: "cronicoDetalhe", element: <CronicoDetalhe /> },
-      { path: "procurarCarroPor", element: <ProcurarCarroPor /> },
-      { path: "modelo", element: <Modelo /> },
-      { path: "especificacoes", element: <Especificacoes /> },
-      { path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
-      { path: "listaCarrosSalvos", element: <ListaCarrosSalvos /> },
-      { path: "definicoes", element: <Definicoes /> },
+			{ path: "procurarCarroPor", element: <ProcurarCarroPor /> },
+			{ path: "modelo", element: <Modelo /> },
+			{ path: "especificacoes", element: <Especificacoes /> },
+			{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
+			{ path: "listaCarrosSalvos", element: <ListaCarrosSalvos /> },
+			{ path: "definicoes", element: <Definicoes /> },
 		],
 	},
 ]);
@@ -68,8 +69,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
 	<React.StrictMode>
-		{/* Substituímos <App /> pelo provedor de rotas */}
-		<RouterProvider router={router} />
+		<AppProvider>
+			<RouterProvider router={router} />
+		</AppProvider>
 	</React.StrictMode>
 );
 

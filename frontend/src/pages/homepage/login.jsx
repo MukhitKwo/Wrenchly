@@ -1,11 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useApp } from "../../context/appContext";
 
 export default function Login() {
 	// const [email, setEmail] = React.useState("");
 	const [username, setUsername] = React.useState("");
 	const [password, setPassword] = React.useState("");
 	const navigate = useNavigate(); // hook to navigate programmatically
+	const { state, setState } = useApp(); // access global state
 
 	const handleSubmit = async () => {
 		// console.log({ email, username, password });
@@ -30,8 +32,14 @@ export default function Login() {
 				console.log(data.message); //! FALHOU A DAR LOGIN
 			} else {
 				console.log(data.message); //* LOGIN SUCESSO
-                console.log(data.garagem_data);
-                
+
+				setState((prev) => ({
+					...prev,
+					user: data.user_data,
+					garagem: data.garagem_data,
+					definicoes: data.definicoes_data,
+				}));
+
 				navigate("/garagem"); // redirect to home page
 			}
 		} catch (err) {

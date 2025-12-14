@@ -60,15 +60,17 @@ def send_email_user(request):
 #! ============ FUNCOES CRUD ============
 
 
-def crud_Definicoes(request, id=None):
-    filtros = {"user": request.user}
-    return crud(request, Definicoes, DefinicoesSerializer, id, **filtros)
+def crud_Definicoes(method, data=None, id=None, user=None):  # * fixing
+    filtros = {}
+    if method not in ("POST"):
+        filtros = {"user": user}
+    return crud(method, data, Definicoes, DefinicoesSerializer, id, **filtros)
 
 
 def crud_Garagens(method, data=None, id=None, user=None):  # * fixing
     filtros = {}
     if method not in ("POST"):
-        filtros = {"user": user}  # request.user
+        filtros = {"user": user}
     return crud(method, data, Garagens, GaragemSerializer, id, **filtros)
 
 
@@ -97,8 +99,18 @@ def crud_Cronicos(request, id=None):
     return crud(request, Cronicos, CronicoSerializer, id, **filtros)
 
 
+def userData(user):
+    user_data = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+    }
+    return user_data
+
+
 #! ============ Registro ============
-# TODO garantir que garagem foi criada quando user registrado, senão apagar user ou assim
 @api_view(["POST"])
 @permission_classes([AllowAny])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -108,9 +120,6 @@ def registerUser(request):
     email = body.get("email")
     password = body.get("password")
 
-    if not username or not email or not password:
-        return Response({"message": "Missing fields"}, status=400)
-
     if User.objects.filter(email=email).exists():
         return Response({"message": "Email already exists"}, status=400)
 
@@ -118,21 +127,29 @@ def registerUser(request):
         return Response({"message": "Username already exists"}, status=400)
 
     try:
-        with transaction.atomic():  # garantir que o user e garagem sao ambos criados
+        with transaction.atomic():  # garante que o user e garagem sao ambos criados
 
             user = User.objects.create_user(username=username, email=email, password=password)
 
+            # TODO criar garagem e definiçoes em paralelo
+
             garagem_data = {"user": user.id, "nome": f"Garagem do {username}"}
-            res_crud = crud_Garagens(method="POST", data=garagem_data)
+            res_crud_garagem = crud_Garagens(method="POST", data=garagem_data)
+            if not res_crud_garagem.success:
+                # rollback a transação caso falhar
+                raise Exception(res_crud_garagem.message)
 
-            if not res_crud.success:
-                # rollback a transação caso um falhar
-                raise Exception(res_crud.message)
+            definicoes_data = {"user": user.id}
+            res_crud_definicoes = crud_Definicoes(method="POST", data=definicoes_data)
+            if not res_crud_definicoes.success:
+                # rollback a transação caso falhar
+                raise Exception(res_crud_definicoes.message)
 
-            print(res_crud.data)
+            # TODO tambem fazer get dos carros todos?
 
             login(request, user)
-            return Response({"message": "User and Garagem created", "garagem_data": res_crud.data}, status=201)
+
+            return Response({"message": "User, Garagem and Definiçoes created", "user_data": userData(user), "garagem_data": res_crud_garagem.data, "definicoes_data": res_crud_definicoes.data}, status=201)
 
     except Exception as e:
         return Response({"message": f"Registration failed: {str(e)}"}, status=400)
@@ -151,13 +168,17 @@ def loginUser(request):
     if not user:
         return Response({"message": "User not found"}, status=401)
 
-    res_crud = crud_Garagens(method="GET", user=user)
-    if len(res_crud.data) < 1:  # é garantido existir (supostmente)
+    res_crud_garagem = crud_Garagens(method="GET", user=user)
+    if len(res_crud_garagem.data) < 1:  # é garantido existir (supostmente)
         return Response({"message": "Garagem not found"}, status=400)
+
+    res_crud_definicoes = crud_Garagens(method="GET", user=user)
+    if len(res_crud_definicoes.data) < 1:  # é garantido existir (supostmente)
+        return Response({"message": "Definicoes not found"}, status=400)
 
     login(request, user)
 
-    return Response({"message": "User and Garagem found", "garagem_data": res_crud.data[0]}, status=200)
+    return Response({"message": "User, Garagem and Definiçoes found", "user_data": userData(user), "garagem_data": res_crud_garagem.data[0], "definicoes_data": res_crud_definicoes.data[0]}, status=200)
 
 
 #! ============ DEFINICOES ============
