@@ -6,4 +6,4 @@ call npm run mig
 call type nul > .env
 timeout /t 1 /nobreak >nul
 cls
-echo Wrenchly Install Done
+echo Wrenchly instalado e configurado! Defina chaves no .env

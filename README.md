@@ -18,7 +18,7 @@ Além disso, os utilizadores podem procurar veículos com base em característic
 - Lembretes automáticos para manutenção periódica e seguros.
 - Pesquisa de veículos por características.
 
-# Instalação
+# Configuração
 
 ```bash
 ./init.bat
