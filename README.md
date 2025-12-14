@@ -20,19 +20,13 @@ Além disso, os utilizadores podem procurar veículos com base em característic
 
 # Instalação
 
-1. **Instalar dependências**
-
 ```bash
-npm run dep
+./init.bat
 ```
 
-2. **Fazer migrações (sqlite3)**
+(Definir chaves no .env)
 
-```bash
-npm run mig
-```
-
-3. **Executar o projeto**
+# Executar o projeto
 
 ```bash
 # Toda a aplicação (frontend + backend):
