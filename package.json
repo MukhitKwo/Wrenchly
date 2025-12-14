@@ -11,8 +11,7 @@
 		"frontend": "cd frontend && npm start",
 		"f": "npm run frontend",
 		"dep": "uv sync && cd frontend && npm install",
-		"mig": "cd backend && uv run manage.py makemigrations && uv run manage.py migrate",
-		"init": "init.bat"
+		"mig": "cd backend && uv run manage.py makemigrations && uv run manage.py migrate"
 	},
 	"repository": {
 		"type": "git",

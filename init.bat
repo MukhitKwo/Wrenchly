@@ -2,8 +2,8 @@
 uv venv
 call .venv\Scripts\activate.bat
 call npm run dep
-npm run mig
-type nul > .env
+call npm run mig
+call type nul > .env
+timeout /t 1 /nobreak >nul
 cls
 echo Wrenchly Install Done
-pause
