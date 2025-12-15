@@ -27,17 +27,15 @@ export default function Login() {
 			});
 
 			const data = await res.json();
+			console.log(data.message);
 
-			if (!res.ok) {
-				console.log(data.message); //! FALHOU A DAR LOGIN
-			} else {
-				console.log(data.message); //* LOGIN SUCESSO
-
+			if (res.ok) {
 				setLocalStorage((prev) => ({
 					...prev,
 					user: data.user_data,
 					garagem: data.garagem_data,
 					definicoes: data.definicoes_data,
+					carros: data.carros_data,
 				}));
 
 				navigate("/garagem"); // redirect to home page

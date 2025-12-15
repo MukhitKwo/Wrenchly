@@ -49,12 +49,9 @@ export default function Definicoes() {
 			});
 
 			const data = await res.json();
+			console.log(data.message);
 
-			if (!res.ok) {
-				console.log(data.message); //! FALHOU A ATUALIZAR
-			} else {
-				console.log(data.message); //* ATUALIZOU COM SUCESSO
-
+			if (res.ok) {
 				setLocalStorage((prev) => ({
 					...prev,
 					definicoes: data.definicoes_data,
@@ -66,7 +63,6 @@ export default function Definicoes() {
 	};
 
 	const logoutUser = async () => {
-		// nao vale a pena ter 2 ifs porque estas a verificar a mesma coisa
 		if (window.confirm("Tens a certeza que queres sair da tua conta?.")) {
 			try {
 				const res = await fetch(`/api/logoutUser`, {
@@ -74,15 +70,12 @@ export default function Definicoes() {
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({}),
 				});
 
 				const data = await res.json();
+				console.log(data.message);
 
-				if (!res.ok) {
-					console.log(data.message); //! FALHOU A DAR LOGOUT
-				} else {
-					console.log(data.message); //* LOGOUT COM SUCESSO
+				if (res.ok) {
 					navigate("/login");
 					clearLocalStorage(); // TODO resolver erro de variaveis quando se apaga o storage
 				}
@@ -94,7 +87,7 @@ export default function Definicoes() {
 
 	return (
 		<div>
-			<h1>Defenições</h1>
+			<h1>Definições</h1>
 
 			<div>
 				{/* onchange chama o handleChnage(), e o handleChange() usa o value="" */}

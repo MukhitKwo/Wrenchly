@@ -88,7 +88,7 @@ class CRUDResponse:
         self.data = data
 
 
-#! ================== Funções CRUD_helpers? idk ==================
+#! ================== Funções CRUD_model ==================
 
 def crud_Definicoes(method, data=None, id=None, user=None):  # * fixed?
     filtros = {}
@@ -104,26 +104,36 @@ def crud_Garagens(method, data=None, id=None, user=None):  # * fixed?
     return crud(method, data, Garagens, GaragemSerializer, id, **filtros)
 
 
-def crud_Notas(request, id=None):
-    filtros = {"garagem__user": request.user}
-    return crud(request, Notas, NotaSerializer, id, **filtros)
+def crud_Notas(method, data=None, id=None, user=None):
+    filtros = {}
+    if method not in ("POST"):
+        filtros = {"garagem__user": user}
+    return crud(method, data, Notas, NotaSerializer, id, **filtros)
 
 
-def crud_Carros(request, id=None):
-    filtros = {"garagem__user": request.user}
-    return crud(request, Carros, CarroSerializer, id, **filtros)
+def crud_Carros(method, data=None, id=None, user=None):
+    filtros = {}
+    if method not in ("POST"):
+        filtros = {"garagem__user": user}
+    return crud(method, data, Carros, CarroSerializer, id, **filtros)
 
 
-def crud_Manutencoes(request, id=None):
-    filtros = {"carro__garagem__user": request.user}
-    return crud(request, Manutencoes, ManutencaoSerializer, id, **filtros)
+def crud_Manutencoes(method, data=None, id=None, user=None):
+    filtros = {}
+    if method not in ("POST"):
+        filtros = {"carro__garagem__user": user}
+    return crud(method, data, Manutencoes, ManutencaoSerializer, id, **filtros)
 
 
-def crud_Preventivos(request, id=None):
-    filtros = {"carro__garagem__user": request.user}
-    return crud(request, Preventivos, PreventivoSerializer, id, **filtros)
+def crud_Preventivos(method, data=None, id=None, user=None):
+    filtros = {}
+    if method not in ("POST"):
+        filtros = {"carro__garagem__user": user}
+    return crud(method, data, Preventivos, PreventivoSerializer, id, **filtros)
 
 
-def crud_Cronicos(request, id=None):
-    filtros = {"carro__garagem__user": request.user}
-    return crud(request, Cronicos, CronicoSerializer, id, **filtros)
+def crud_Cronicos(method, data=None, id=None, user=None):
+    filtros = {}
+    if method not in ("POST"):
+        filtros = {"carro__garagem__user": user}
+    return crud(method, data, Cronicos, CronicoSerializer, id, **filtros)

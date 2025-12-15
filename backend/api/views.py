@@ -80,11 +80,16 @@ def userData(user):
     return user_data
 
 
-def crudData(res_crud, delete=None):
+def crudData(res_crud, delete=None, fullList=False):
 
     crud_data = res_crud.data
 
     if isinstance(crud_data, list):
+        if fullList:
+            for data in crud_data:
+                del data[delete]
+            return crud_data
+
         crud_data = crud_data[0]
 
     del crud_data[delete]
@@ -152,21 +157,24 @@ def loginUser(request):
         return Response({"message": "User not found"}, status=401)
 
     res_crud_garagem = crud_Garagens(method="GET", user=user)
-    if len(res_crud_garagem.data) < 1:  # é garantido existir (supostmente)
+    if len(res_crud_garagem.data) < 1:
         return Response({"message": "Garagem not found"}, status=res_crud_garagem.status)
 
     res_crud_definicoes = crud_Definicoes(method="GET", user=user)
-    if len(res_crud_definicoes.data) < 1:  # é garantido existir (supostmente)
+    if len(res_crud_definicoes.data) < 1:
         return Response({"message": "Definicoes not found"}, status=res_crud_definicoes.status)
 
-    # TODO tambem fazer get dos carros todos?
+    res_crud_carros = crud_Carros(method="GET", user=user) # pode não haver carros
+
+    # TODO fazer get das notas tambem
 
     login(request, user)
 
     return Response({"message": "User, Garagem and Definiçoes found",
                      "user_data": userData(user),
                      "garagem_data": crudData(res_crud_garagem, "user"),
-                     "definicoes_data": crudData(res_crud_definicoes, "user")},
+                     "definicoes_data": crudData(res_crud_definicoes, "user"),
+                     "carros_data": crudData(res_crud_carros, "garagem", fullList=True)},
                     status=201)
 
 

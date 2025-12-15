@@ -27,12 +27,9 @@ export default function Registro() {
 			});
 
 			const data = await res.json();
+			console.log(data.message);
 
-			if (!res.ok) {
-				console.log(data.message); //! FALHOU A CRIAR USER OU GARAGEM
-			} else {
-				console.log(data.message); //* CRIOU USER E GARAGEM
-
+			if (res.ok) {
 				setLocalStorage((prev) => ({
 					...prev,
 					user: data.user_data,
