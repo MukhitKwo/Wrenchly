@@ -1,22 +1,35 @@
 import { useState } from "react";
+import { useApp as useLocalStorage } from "../../context/appContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Definicoes() {
+	// obter definiçoes do localStorage
+	const { state: getLocalStorage, setState: setLocalStorage, clearAppState: clearLocalStorage } = useLocalStorage();
+	const navigate = useNavigate();
+
+	// TODO fix temporario
+	const definicoes_data = getLocalStorage?.definicoes || {
+		tema: "claro",
+		notificacoes: false,
+		linguagem: "pt",
+	};
+
 	// definir todos os campos numa unica variavel (menos sets e mais facil de adicionar mais campos)
-	const [settings, setSettings] = useState({
-		theme: "light",
-		notifications: true,
-		language: "pt",
+	const [definicoes, setDefinicoes] = useState({
+		tema: definicoes_data.tema,
+		notificacoes: definicoes_data.notificacoes,
+		linguagem: definicoes_data.linguagem,
 	});
 
 	// sempre que algo muda/atualiza, esta função é executada
 	const handleChange = (e) => {
 		// obtem a informação do target (elemento que foi atualizado)
 		const { name, type, value, checked } = e.target;
-		// copia os campos do settings (...s)
-		setSettings((s) => ({
-			...s,
+		// copia os campos previos (antigos) do settings (...prev)
+		setDefinicoes((prev) => ({
+			...prev,
 			// mas define o campo atualizado com o novo valor
-			// [name] é o nome do campo atualizado (ou a ser atualizado)
+			// [name] é o name="" do elemento atualizado (ou a ser atualizado)
 			// type é o tipo (texto, checkbox, etc)
 			// se o tipo for "checkbox" (notificaçoes é checkbox), define o valor de "checked" (true ou false)
 			// se NÂO foi checkbox, define o volor de "value" (o valor)
@@ -25,52 +38,90 @@ export default function Definicoes() {
 		// por fim, troca o campo antigo pelo campo com valor atualizado na copia e salva
 	};
 
-	// Se não existisse checkboxes na pagina, o handleChange seria assim
-	// const handleChange = (e) => {
-	// 	const { name, value } = e.target;
-	// 	setSettings((s) => ({
-	// 		...s,
-	// 		[name]: value,
-	// 	}));
-	// };
+	const atualizarDefinicoes = async () => {
+		try {
+			const res = await fetch(`/api/atualizarDefinicoes/${definicoes_data.id}`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ definicoes }),
+			});
 
-	const salvarDefinicoes = () => {
-		console.log("USER SETTINGS", settings);
+			const data = await res.json();
+
+			if (!res.ok) {
+				console.log(data.message); //! FALHOU A ATUALIZAR
+			} else {
+				console.log(data.message); //* ATUALIZOU COM SUCESSO
+
+				setLocalStorage((prev) => ({
+					...prev,
+					definicoes: data.definicoes_data,
+				}));
+			}
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
-	const apagarConta = () => {
-    // nao vale a pena ter 2 ifs porque estas a verificar a mesma coisa
-		if (window.confirm("Tens a certeza que queres apagar a tua conta?.")) {
-			console.log("Account Deleted");
+	const logoutUser = async () => {
+		// nao vale a pena ter 2 ifs porque estas a verificar a mesma coisa
+		if (window.confirm("Tens a certeza que queres sair da tua conta?.")) {
+			try {
+				const res = await fetch(`/api/logoutUser`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({}),
+				});
+
+				const data = await res.json();
+
+				if (!res.ok) {
+					console.log(data.message); //! FALHOU A DAR LOGOUT
+				} else {
+					console.log(data.message); //* LOGOUT COM SUCESSO
+					navigate("/login");
+					clearLocalStorage(); // TODO resolver erro de variaveis quando se apaga o storage
+				}
+			} catch (error) {
+				console.error(error);
+			}
 		}
 	};
 
 	return (
 		<div>
-			<h1>Settings</h1>
+			<h1>Defenições</h1>
 
-			{/* onchange chama o handleChnage(), e o handleChange() usa o value="" */}
-			<select name="theme" value={settings.theme} onChange={handleChange}>
-				<option value="claro">Claro</option>
-				<option value="escuro">Escuro</option>
-			</select>
+			<div>
+				{/* onchange chama o handleChnage(), e o handleChange() usa o value="" */}
+				<select name="tema" value={definicoes.theme} onChange={handleChange}>
+					<option value="claro">Claro</option>
+					<option value="escuro">Escuro</option>
+				</select>
+			</div>
 
-			{/* onchange chama o handleChnage(), e o handleChange() usa o checked="" (porque não existe value="") */}
-			<label>
-				<input type="checkbox" name="notifications" checked={settings.notifications} onChange={handleChange} />
-				Permitir notificações
-			</label>
+			<div>
+				<label>
+					{/* onchange chama o handleChnage(), e o handleChange() usa o checked="" (porque não existe value="") */}
+					<input type="checkbox" name="notificacoes" checked={definicoes.notifications} onChange={handleChange} />
+					Permitir notificações
+				</label>
+			</div>
 
-			{/* onchange chama o handleChnage(), e o handleChange() usa o value="" */}
-			<select name="language" value={settings.language} onChange={handleChange}>
-				<option value="pt">Português</option>
-				<option value="en">English</option>
-			</select>
+			<div>
+				{/* onchange chama o handleChnage(), e o handleChange() usa o value="" */}
+				<select name="linguagem" value={definicoes.language} onChange={handleChange}>
+					<option value="pt">Português</option>
+					<option value="en">English</option>
+				</select>
+			</div>
 
-			<button onClick={salvarDefinicoes}>Salvar</button>
-			<button onClick={apagarConta} style={{ color: "red" }}>
-				Apagar Conta
-			</button>
+			<button onClick={atualizarDefinicoes}>Salvar</button>
+			<button onClick={logoutUser}>Sair da Conta</button>
 		</div>
 	);
 }

@@ -3,7 +3,7 @@ from .views import *
 from .api_testing import *
 
 urlpatterns = [
-    
+
     path("email/", send_email_user),
 
     # GEMINI API (APENAS PARA TESTE)
@@ -13,6 +13,10 @@ urlpatterns = [
     # REGISTRO E LOGIN
     path("registerUser/", registerUser),
     path("loginUser/", loginUser),
+    path("logoutUser", logoutUser),
+
+    path("atualizarDefinicoes/<int:id>", atualizarDefinicoes),
+
 
     # GARAGENS
     path("tabelaGaragem/", apiGaragens),
@@ -37,14 +41,4 @@ urlpatterns = [
     # CRÓNICOS
     path("tabelaCronico/", apiCronicos),
     path("tabelaCronico/<int:id>/", apiCronicos),
-
-    # DEFINIÇÕES
-    #! nao precisas de usar re_path, o path normal ja trata automaticamente do / no final e estas so a complicar
-    # Aceita /definicoes e /definicoes/
-    # re_path(r"^definicoes/?$", apiDefinicoes, name="definicoes_list"),
-
-    # Aceita /definicoes/1 e /definicoes/1/
-    # re_path(r"^definicoes/(?P<id>\d+)/?$", apiDefinicoes, name="definicoes_detail"),
-
-    path("definicoes/", apiDefinicoes)  # id nao precisas por agora
 ]

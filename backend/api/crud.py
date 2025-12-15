@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from rest_framework.exceptions import ValidationError
 import json
+from .models import *
+from .serializers import *
 
 
 def crud(method, data, model, serializer, id=None, **filters):
@@ -20,9 +22,9 @@ def crud(method, data, model, serializer, id=None, **filters):
 
 #! ================== Funções CRUD ==================
 
-def create_object(data, Serializer):
+def create_object(Data, Serializer):
     try:
-        serializer = Serializer(data=data)  # converte o json para o objeto do serializer
+        serializer = Serializer(data=Data)  # converte o json para o objeto do serializer
         serializer.is_valid(raise_exception=True)  # verifica se os dados são válidos (se não, devolve 400)
         serializer.save()  # guarda no BD
         return CRUDResponse(status=201, message="created", data=serializer.data)
@@ -30,55 +32,50 @@ def create_object(data, Serializer):
         return CRUDResponse(status=400, message=e.detail)
 
 
-def get_object(Model, Serializer, id, **filters):
+def get_object(Model, Serializer, ID, **filters):
 
-    if id:  # se foi passado um id, significa que quer um objeto específico
+    if ID:  # se foi passado um id, significa que quer um objeto específico
         try:
-            obj = Model.objects.filter(**filters).get(pk=id)  # procura o objeto com a chave primária correta
+            obj = Model.objects.filter(**filters).get(pk=ID)  # procura o objeto com a chave primária correta
             serializer = Serializer(obj)  # converte o objeto para json
-            # return JsonResponse({"message": "obtained", "data": serializer.data}, status=200)  # devolve o json
             return CRUDResponse(status=200, message="obtained", data=serializer.data)
         except Model.DoesNotExist:
-            # return JsonResponse({"message": "id not found"}, status=404)  # não encontrou
             return CRUDResponse(status=404, message="id not found")
 
     objects = Model.objects.filter(**filters)  # busca todos os primeiros 25 registos
     serializer = Serializer(objects, many=True)  # converte todos para json
-    # return JsonResponse({"message": "obtained", "data": serializer.data}, status=200)  # devolve lista jsons
     return CRUDResponse(status=200, message="obtained", data=serializer.data)
 
 
-def update_object(request, Model, Serializer, id, **filters):
+def update_object(Data, Model, Serializer, ID, **filters):
 
-    if not id:  # sem id não há como atualizar
+    if not ID:  # sem id não há como atualizar
         return JsonResponse({"message": "ID required"}, status=400)
 
     try:
-        obj = Model.objects.get(pk=id, **filters)  # procura o objeto
+        obj = Model.objects.get(pk=ID, **filters)  # procura o objeto
 
-        data = json.loads(request.body)  # recebe o json com os dados a atualizar
-
-        serializer = Serializer(obj, data=data, partial=True)  # atualiza só os campos fornecidos
+        serializer = Serializer(obj, data=Data, partial=True)  # atualiza só os campos fornecidos
         serializer.is_valid(raise_exception=True)  # verifica se os dados são válidos (se não, devolve 400)
         serializer.save()  # guarda alterações
-        return JsonResponse({"message": "updated", "data": serializer.data}, status=200)
+        return CRUDResponse(status=200, message="updated", data=serializer.data)
     except Model.DoesNotExist:
-        return JsonResponse({"message": "id not found"}, status=404)
+        return CRUDResponse(status=404, message="id not found")
     except ValidationError as e:
-        return JsonResponse({"message": e.detail}, status=400)
+        return CRUDResponse(status=400, message=e.detail)
 
 
-def delete_object(Model, id, **filters):
+def delete_object(Model, ID, **filters):
 
-    if not id:  # sem id não há o que apagar
-        return JsonResponse({"message": "ID required"}, status=400)
+    if not ID:  # sem id não há o que apagar
+        CRUDResponse(status=400, message="ID required")
 
     try:
-        obj = Model.objects.get(pk=id, **filters)  # procura o objeto
+        obj = Model.objects.get(pk=ID, **filters)  # procura o objeto
         obj.delete()  # apaga o registo
-        return JsonResponse({"message": "deleted"}, status=200)
+        CRUDResponse(status=200, message="deleted")
     except Model.DoesNotExist:
-        return JsonResponse({"message": "id not found"}, status=404)
+        CRUDResponse(status=404, message="ID not found")
 
 
 #! ================== Classe CRUDResponse ==================
@@ -89,3 +86,44 @@ class CRUDResponse:
         self.status = status
         self.message = message
         self.data = data
+
+
+#! ================== Funções CRUD_helpers? idk ==================
+
+def crud_Definicoes(method, data=None, id=None, user=None):  # * fixed?
+    filtros = {}
+    if method not in ("POST"):
+        filtros = {"user": user}
+    return crud(method, data, Definicoes, DefinicoesSerializer, id, **filtros)
+
+
+def crud_Garagens(method, data=None, id=None, user=None):  # * fixed?
+    filtros = {}
+    if method not in ("POST"):
+        filtros = {"user": user}
+    return crud(method, data, Garagens, GaragemSerializer, id, **filtros)
+
+
+def crud_Notas(request, id=None):
+    filtros = {"garagem__user": request.user}
+    return crud(request, Notas, NotaSerializer, id, **filtros)
+
+
+def crud_Carros(request, id=None):
+    filtros = {"garagem__user": request.user}
+    return crud(request, Carros, CarroSerializer, id, **filtros)
+
+
+def crud_Manutencoes(request, id=None):
+    filtros = {"carro__garagem__user": request.user}
+    return crud(request, Manutencoes, ManutencaoSerializer, id, **filtros)
+
+
+def crud_Preventivos(request, id=None):
+    filtros = {"carro__garagem__user": request.user}
+    return crud(request, Preventivos, PreventivoSerializer, id, **filtros)
+
+
+def crud_Cronicos(request, id=None):
+    filtros = {"carro__garagem__user": request.user}
+    return crud(request, Cronicos, CronicoSerializer, id, **filtros)

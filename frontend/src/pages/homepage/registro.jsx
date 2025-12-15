@@ -1,15 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useApp } from "../../context/appContext";
+import { useApp as useLocalStorage } from "../../context/appContext";
 
 export default function Registro() {
 	const [email, setEmail] = React.useState("");
 	const [username, setUsername] = React.useState("");
 	const [password, setPassword] = React.useState("");
 	const navigate = useNavigate(); // hook to navigate programmatically
-	const { state, setState } = useApp(); // access global state
+	const { setState: setLocalStorage } = useLocalStorage(); // access global state
 
-	const handleSubmit = async () => {
+	const registarUser = async () => {
 		// console.log({ email, username, password });
 
 		if (!username || !password || !email) {
@@ -33,7 +33,7 @@ export default function Registro() {
 			} else {
 				console.log(data.message); //* CRIOU USER E GARAGEM
 
-				setState((prev) => ({
+				setLocalStorage((prev) => ({
 					...prev,
 					user: data.user_data,
 					garagem: data.garagem_data,
@@ -55,7 +55,7 @@ export default function Registro() {
 			<br></br>
 			<input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
 			<br></br>
-			<button onClick={handleSubmit}>Submit</button>
+			<button onClick={registarUser}>Submit</button>
 		</div>
 	);
 }

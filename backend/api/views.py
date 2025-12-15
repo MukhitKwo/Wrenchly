@@ -1,7 +1,8 @@
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.db import transaction
+from django.db import DatabaseError
 
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
@@ -12,12 +13,20 @@ from rest_framework.decorators import (
     authentication_classes,
 )
 
-from utils.res_status import print_status
-from .models import *
-from .serializers import *
-from .crud import crud
+from .models import *  # apagar dps
+from .serializers import *  # apagar dps
+
 from .gemini import carCronicIssues, carsBySpecs
 from .email import send_email
+from .crud import (
+    crud_Definicoes,
+    crud_Garagens,
+    crud_Notas,
+    crud_Carros,
+    crud_Manutencoes,
+    crud_Cronicos,
+    crud_Preventivos
+)
 
 import json
 
@@ -29,7 +38,7 @@ class CsrfExemptSessionAuthentication(SessionAuthentication):
         return
 
 
-#! ============ GEMINI HELPERS (SEMDB) ============
+#! ================== GEMINI  ==================
 
 
 class GeminiError(Exception):
@@ -50,54 +59,15 @@ def getCarsBySpecs(specs: dict):
     return result
 
 
-#! ============ EMAIL ============
+#! ================== EMAIL ==================
 
 
 def send_email_user(request):
     send_email(request.user.email)
     return Response({"success": True, "message": "Email enviado"})
 
-#! ============ FUNCOES CRUD ============
 
-
-def crud_Definicoes(method, data=None, id=None, user=None):  # * fixing
-    filtros = {}
-    if method not in ("POST"):
-        filtros = {"user": user}
-    return crud(method, data, Definicoes, DefinicoesSerializer, id, **filtros)
-
-
-def crud_Garagens(method, data=None, id=None, user=None):  # * fixing
-    filtros = {}
-    if method not in ("POST"):
-        filtros = {"user": user}
-    return crud(method, data, Garagens, GaragemSerializer, id, **filtros)
-
-
-def crud_Notas(request, id=None):
-    filtros = {"garagem__user": request.user}
-    return crud(request, Notas, NotaSerializer, id, **filtros)
-
-
-def crud_Carros(request, id=None):
-    filtros = {"garagem__user": request.user}
-    return crud(request, Carros, CarroSerializer, id, **filtros)
-
-
-def crud_Manutencoes(request, id=None):
-    filtros = {"carro__garagem__user": request.user}
-    return crud(request, Manutencoes, ManutencaoSerializer, id, **filtros)
-
-
-def crud_Preventivos(request, id=None):
-    filtros = {"carro__garagem__user": request.user}
-    return crud(request, Preventivos, PreventivoSerializer, id, **filtros)
-
-
-def crud_Cronicos(request, id=None):
-    filtros = {"carro__garagem__user": request.user}
-    return crud(request, Cronicos, CronicoSerializer, id, **filtros)
-
+#! ================== Funções Helpers ==================
 
 def userData(user):
     user_data = {
@@ -110,7 +80,18 @@ def userData(user):
     return user_data
 
 
-#! ============ Registro ============
+def crudData(res_crud, delete=None):
+
+    crud_data = res_crud.data
+
+    if isinstance(crud_data, list):
+        crud_data = crud_data[0]
+
+    del crud_data[delete]
+    return crud_data
+
+
+#! ================== Registro ==================
 @api_view(["POST"])
 @permission_classes([AllowAny])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -145,17 +126,19 @@ def registerUser(request):
                 # rollback a transação caso falhar
                 raise Exception(res_crud_definicoes.message)
 
-            # TODO tambem fazer get dos carros todos?
-
             login(request, user)
 
-            return Response({"message": "User, Garagem and Definiçoes created", "user_data": userData(user), "garagem_data": res_crud_garagem.data, "definicoes_data": res_crud_definicoes.data}, status=201)
+            return Response({"message": "User, Garagem and Definiçoes created",
+                             "user_data": userData(user),
+                             "garagem_data": crudData(res_crud_garagem, "user"),
+                             "definicoes_data": crudData(res_crud_definicoes, "user")},
+                            status=201)
 
     except Exception as e:
         return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
 
-#! ============ LOGIN ============
+#! ================== LOGIN ==================
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([AllowAny])
@@ -170,28 +153,58 @@ def loginUser(request):
 
     res_crud_garagem = crud_Garagens(method="GET", user=user)
     if len(res_crud_garagem.data) < 1:  # é garantido existir (supostmente)
-        return Response({"message": "Garagem not found"}, status=400)
+        return Response({"message": "Garagem not found"}, status=res_crud_garagem.status)
 
-    res_crud_definicoes = crud_Garagens(method="GET", user=user)
+    res_crud_definicoes = crud_Definicoes(method="GET", user=user)
     if len(res_crud_definicoes.data) < 1:  # é garantido existir (supostmente)
-        return Response({"message": "Definicoes not found"}, status=400)
+        return Response({"message": "Definicoes not found"}, status=res_crud_definicoes.status)
+
+    # TODO tambem fazer get dos carros todos?
 
     login(request, user)
 
-    return Response({"message": "User, Garagem and Definiçoes found", "user_data": userData(user), "garagem_data": res_crud_garagem.data[0], "definicoes_data": res_crud_definicoes.data[0]}, status=200)
+    return Response({"message": "User, Garagem and Definiçoes found",
+                     "user_data": userData(user),
+                     "garagem_data": crudData(res_crud_garagem, "user"),
+                     "definicoes_data": crudData(res_crud_definicoes, "user")},
+                    status=201)
 
 
-#! ============ DEFINICOES ============
-
-
-@api_view(["GET", "POST", "PUT", "DELETE"])
+#! ================== LOGOUT ==================
+@api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
-def apiDefinicoes(request, id=None):
-    return crud_Definicoes(request, id)
+def logoutUser(request):
+
+    logout(request)
+
+    return Response({"message": "User logged out"},
+                    status=200)
+
+
+#! ================== ATUALIZAR DEFINICOES ==================
+@api_view(["PUT"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def atualizarDefinicoes(request, id):  # request ja tem o user
+    body = request.data
+    definicoes_data = body.get("definicoes")
+    res_crud_definicoes = crud_Definicoes(method="PUT", data=definicoes_data, id=id, user=request.user)
+
+    if not res_crud_definicoes.success:
+        return Response({"message": res_crud_definicoes.message}, status=res_crud_definicoes.status)
+
+    definicoes_data = res_crud_definicoes.data
+    del definicoes_data["user"]
+
+    return Response({"message": "Settings updated",
+                     "definicoes_data": definicoes_data},
+                    status=200)
 
 
 #! ============ GARAGENS ============
+
+
 @api_view(["GET", "POST", "PUT", "DELETE"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
