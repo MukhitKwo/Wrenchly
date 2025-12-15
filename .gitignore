@@ -9,3 +9,5 @@ __pycache__/
 
 # base dados teste
 backend/*.sqlite3
+
+TODO.txt
