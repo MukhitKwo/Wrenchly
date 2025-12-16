@@ -16,12 +16,11 @@
 
 /* Container para alinhar o conteúdo no centro da página */
 .navbar-container {
-  max-width: 1200px; 
   margin: 0 auto; /* Centra o container */
   display: flex; /* Permite o layout em linha (Logo + Links) */
   justify-content: space-between; /* Espaço entre o logo e os links */
   align-items: center; 
-  padding: 0 20px; /* Espaçamento lateral */
+  padding: 0 3%; /* Espaçamento lateral */
 }
 
 /* Estilo do Logotipo (Wrenchly) */

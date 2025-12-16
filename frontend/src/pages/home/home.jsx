@@ -4,13 +4,7 @@ function navbar() {
 		<nav className="Navbar">
 			<div className="navbar-container">
 				<br />
-				Caso o utilizador esteja logado (django salva sessão no browser), deverá aparecer *apenas* a garagem com os carros! Caso não esteja, mostra a homepage.
-				<br />
-				Na homepage podes dexar o que está, mas tira o botao Inicio (clicar no "Wrenchly" leva ao inicio) e troca o Perfil por Login e Registro (dois butoes
-				individuais).
-				<br />
-				Na garagem tem 3 buttoes: definições, criar carro novo e homepage. Cada carro é uma box interativa que quando clicas, aparecem as manuteções, mas
-				adiciona mais 2 botoes temporarios para preventivos e cronicos.
+				Sobre Nós aqui
 			</div>
 		</nav>
 	);

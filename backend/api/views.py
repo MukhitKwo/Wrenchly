@@ -117,7 +117,8 @@ def registerUser(request):
             return Response({"message": "User, Garagem and Definiçoes created",
                              "user_data": userData(user),
                              "garagem_data": crudData(res_crud_garagem, "user"),
-                             "definicoes_data": crudData(res_crud_definicoes, "user")},
+                             "definicoes_data": crudData(res_crud_definicoes, "user"),
+                             "carroPreview_data": []},
                             status=201)
 
     except Exception as e:
@@ -202,23 +203,23 @@ def adicionarCarroComModelo(request, id=None):
 
     preview_data = CarroPreviewSerializer(res_crud_carros.data).data
 
-    res_gemini = carCronicIssues("audi a4 2005 2.0 tdi")
+    # res_gemini = carCronicIssues("audi a4 2005 2.0 tdi")
 
-    print("Message: ", res_gemini.message)
-    print("Data: ", res_gemini.data)
+    # print("Message: ", res_gemini.message)
+    # print("Data: ", res_gemini.data)
 
-    if not res_gemini.success:
-        return Response({"message": res_gemini.message}, status=400)
+    # if not res_gemini.success:
+    #     return Response({"message": res_gemini.message}, status=400)
 
-    cronic_issues = res_gemini.data  # TODO defenir dummy data para nao usar tanto gemini
+    # cronic_issues = res_gemini.data  # TODO defenir dummy data para nao usar tanto gemini
 
-    print(cronic_issues)
-    for issue in cronic_issues:
-        print(issue)
-        # TODO usar transaction igual registro E formatar a imformação primeiro para aceitar na db
-        res_crud_cronico = crud_Cronicos("POST", data=issue)
-        if not res_crud_cronico.success:
-            return Response({"message": res_crud_cronico.message}, status=res_crud_cronico.status)
+    # print(cronic_issues)
+    # for issue in cronic_issues:
+    #     print(issue)
+    #     # TODO usar transaction igual registro E formatar a imformação primeiro para aceitar na db
+    #     res_crud_cronico = crud_Cronicos("POST", data=issue)
+    #     if not res_crud_cronico.success:
+    #         return Response({"message": res_crud_cronico.message}, status=res_crud_cronico.status)
 
     return Response({"message": "Carro added",
                      "carroPreview_data": preview_data},
