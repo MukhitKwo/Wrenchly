@@ -1,6 +1,6 @@
 // src/components/navbar.jsx
 import React from "react";
-import { useApp } from "../../context/appContext";
+// import { useApp } from "../../context/appContext";
 
 function navbar() {
 	return (

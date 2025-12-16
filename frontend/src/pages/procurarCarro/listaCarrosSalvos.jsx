@@ -1,4 +1,4 @@
-export default function listaCarrosSalvos() {
+export default function ListaCarrosSalvos() {
     return(
         <div className="page-box">
 			<h1>Pagina listaCarrosSalvos</h1>

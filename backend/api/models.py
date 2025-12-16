@@ -43,7 +43,11 @@ class Carros(models.Model):
 
     garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
+    marca = models.CharField("Marca", max_length=100)  # type: ignore
+
     modelo = models.CharField("Modelo", max_length=100)  # type: ignore
+
+    ano = models.PositiveIntegerField("Ano")  # type: ignore
 
     # TIPOS_COMBUSTIVEL = (
     #     ('gasolina', 'Gasolina'),
@@ -55,18 +59,18 @@ class Carros(models.Model):
     # * definir escolhas no frontend
     combustivel = models.CharField("Combustivel", max_length=20)  # type: ignore
 
-    cc = models.PositiveIntegerField("CC")  # type: ignore
+    cilindrada = models.PositiveIntegerField("CC")  # type: ignore
 
     cavalos = models.PositiveIntegerField("Cavalos", blank=True, null=True)  # type: ignore
 
-    TIPOS_TRANSMISSAO = (
-        ('manual', 'Manual'),
-        ('automatico', 'Automatico'),
-        ('semi-automatico', 'Semi-automatico'),
-        ('cvt', 'CVT'),
-        ('outro', 'Outro'),
-    )
-    transmissao = models.CharField("Transmissao", max_length=20, choices=TIPOS_TRANSMISSAO)  # type: ignore
+    # TIPOS_TRANSMISSAO = (
+    #     ('manual', 'Manual'),
+    #     ('automatico', 'Automatico'),
+    #     ('semi-automatico', 'Semi-automatico'),
+    #     ('cvt', 'CVT'),
+    #     ('outro', 'Outro'),
+    # )
+    transmissao = models.CharField("Transmissao", max_length=20)  # type: ignore
 
     quilometragem = models.PositiveIntegerField("Quilometragem")  # type: ignore
 
@@ -133,13 +137,12 @@ class Preventivos(models.Model):
 
     kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
 
-    # ? verificar somando km trocoado com km entre troca e vericar se > ou < que km atual
-    kmTrocado = models.PositiveIntegerField("Kms na ultima troca", default=0)  # type: ignore
+    trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0)  # type: ignore
 
     risco = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
 
     def __str__(self):
-        return f"({self.carro.modelo}) {self.nome} - {self.carro.quilometragem}/{self.kmTrocado + self.kmsEntreTroca}km"
+        return f"({self.carro.modelo}) {self.nome} - CORRIGIR km"
 
 
 class Cronicos(models.Model):
@@ -152,10 +155,9 @@ class Cronicos(models.Model):
 
     kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
 
-    # ? verificar somando km trocoado com km entre troca e vericar se > ou < que km atual
-    kmTrocado = models.PositiveIntegerField("Kms na ultima troca", default=0)  # type: ignore
+    trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0)  # type: ignore
 
     risco = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
 
     def __str__(self):
-        return f"({self.carro.modelo}) {self.nome} - {self.carro.quilometragem}/{self.kmTrocado + self.kmsEntreTroca}km"
+        return f"({self.carro.modelo}) {self.nome} - CORRIGIR km"

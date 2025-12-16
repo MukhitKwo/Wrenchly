@@ -13,6 +13,13 @@ if not gemini_key:
     print_yellow("[WARNING] GEMINI_API_KEY key missing. Gemini disabled.")
 
 
+class GeminiResponse:
+    def __init__(self, success=True, message=None, data=None):
+        self.success = success
+        self.message = message
+        self.data = data
+
+
 def call_gemini(prompt, schema, temp):
 
     if not client:
@@ -32,29 +39,34 @@ def call_gemini(prompt, schema, temp):
         )
 
     except APIError as e:
-        # print(f"Gemini API error: {e}")
-        return "API_ERROR"
+        return GeminiResponse(success=False, message="Gemini API error", data=e)
     except json.JSONDecodeError:
-        return "INVALID_JSON"
-    
-    except ImproperlyConfigured as e:
-        # print(f"Configuration error: {e}")
-        return "CONFIG_ERROR"
+        return GeminiResponse(success=False, message="Invalid JSON")
 
-    if not response.text:
-        return "NO_CONTENT"
-    return json.loads(response.text)
+    except ImproperlyConfigured as e:
+        return GeminiResponse(success=False, message="Configuration error", data=e)
+
+    if not response.text:  # texto vazio
+        return GeminiResponse(success=False, message="No content")
+
+    gemini_data = json.loads(response.text)
+
+    if not gemini_data:  # []
+        return GeminiResponse(success=False, message="Empty list (not a car)")
+
+    return GeminiResponse(success=True, data=gemini_data)
 
 
 def carCronicIssues(car_model: str):
 
     if not isinstance(car_model, str):
-        return "CAR_NOT_STR"
+        return GeminiResponse(success=False, message="Car not a string")
 
     prompt = (
         f"Lista JSON dos problemas crónicos mais comuns do {car_model}, "
         f"com nome do problema, descrição curta e quilometragem média. "
         f"Responde em pt-pt."
+        f"Caso o veiculo não exista, retorna lista vazia."
     )
 
     schema = types.Schema(
@@ -76,7 +88,7 @@ def carCronicIssues(car_model: str):
 def carsBySpecs(specs: dict):
 
     if not isinstance(specs, dict):
-        return "SPECS_NOT_DICT"
+        return GeminiResponse(success=False, message="Specs not a dictionary")
 
     prompt = (
         f"Lista Python de 15 carros que correspondem a estas especificações: {specs}. "

@@ -118,6 +118,13 @@ def crud_Carros(method, data=None, id=None, user=None):
     return crud(method, data, Carros, CarroSerializer, id, **filtros)
 
 
+def crud_CarrosPreview(method, data=None, id=None, user=None):
+    filtros = {}
+    if method not in ("POST"):
+        filtros = {"garagem__user": user}
+    return crud(method, data, Carros, CarroPreviewSerializer, id, **filtros)
+
+
 def crud_Manutencoes(method, data=None, id=None, user=None):
     filtros = {}
     if method not in ("POST"):

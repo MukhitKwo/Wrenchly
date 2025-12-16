@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useApp as useLocalStorage } from "../../context/appContext";
+import { useLocalStorage } from "../../context/appContext";
 
 export default function Login() {
 	// const [email, setEmail] = React.useState("");
@@ -35,7 +35,7 @@ export default function Login() {
 					user: data.user_data,
 					garagem: data.garagem_data,
 					definicoes: data.definicoes_data,
-					carros: data.carros_data,
+					carros_preview: data.carroPreview_data,
 				}));
 
 				navigate("/garagem"); // redirect to home page

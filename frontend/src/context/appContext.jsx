@@ -20,6 +20,6 @@ export function AppProvider({ children }) {
 	return <AppContext.Provider value={{ state, setState, clearAppState }}>{children}</AppContext.Provider>;
 }
 
-export function useApp() {
+export function useLocalStorage() {
 	return useContext(AppContext);
 }

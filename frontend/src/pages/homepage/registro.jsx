@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useApp as useLocalStorage } from "../../context/appContext";
+import { useLocalStorage } from "../../context/appContext";
 
 export default function Registro() {
 	const [email, setEmail] = React.useState("");

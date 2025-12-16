@@ -4,11 +4,16 @@ export default function Garagem() {
 	return (
 		<div className="page-box">
 			<h1>Pagina Lista Garagem</h1>
-			<p>lista arros aqui</p>
 
-			<Link to="/manutencoes">
-				<button>Ver Manutenções</button>
+			<Link to="/procurarPorModelo">
+				<button>Adicionar carro</button>
 			</Link>
+
+			<Link to="/definicoes">
+				<button>Definições</button>
+			</Link>
+
+			<p>lista arros aqui</p>
 		</div>
 	);
 }

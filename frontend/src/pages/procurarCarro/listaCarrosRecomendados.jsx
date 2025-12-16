@@ -1,4 +1,4 @@
-export default function listaCarrosRecomendados() {
+export default function ListaCarrosRecomendados() {
     return(
         <div className="page-box">
 			<h1>Pagina listaCarrosRecomendados</h1>

@@ -16,23 +16,23 @@ import Sobre from "./pages/homepage/sobre.jsx";
 import Login from "./pages/homepage/login.jsx";
 import Registro from "./pages/homepage/registro.jsx";
 
-import Garagem from "./pages/registros/garagem.jsx";
-import Manutencoes from "./pages/registros/manutencoes.jsx";
-import Preventivos from "./pages/registros/preventivos.jsx";
-import Cronicos from "./pages/registros/cronicos.jsx";
+import Garagem from "./pages/garagemUser/garagem.jsx";
+import Manutencoes from "./pages/garagemUser/manutencoes.jsx";
+import Preventivos from "./pages/garagemUser/preventivos.jsx";
+import Cronicos from "./pages/garagemUser/cronicos.jsx";
 
-import ManutencaoDetalhe from "./pages/registros/manutencaoDetalhe.jsx";
-import PreventivoDetalhe from "./pages/registros/preventivoDetalhe.jsx";
-import CronicoDetalhe from "./pages/registros/cronicoDetalhe.jsx";
+import ManutencaoDetalhe from "./pages/garagemUser/manutencaoDetalhe.jsx";
+import PreventivoDetalhe from "./pages/garagemUser/preventivoDetalhe.jsx";
+import CronicoDetalhe from "./pages/garagemUser/cronicoDetalhe.jsx";
 
-import ProcurarCarroPor from "./pages/procurar/procurarCarroPor.jsx";
-import Modelo from "./pages/procurar/modelo.jsx";
-import Especificacoes from "./pages/procurar/especificacoes.jsx";
-import ListaCarrosRecomendados from "./pages/procurar/listaCarrosRecomendados.jsx";
-import ListaCarrosSalvos from "./pages/procurar/listaCarrosSalvos.jsx";
+import ProcurarCarroPorModelo from "./pages/procurarCarro/procurarPorModelo.jsx";
+import ProcurarPorEspecificacoes from "./pages/procurarCarro/procurarPorEspecificacoes.jsx";
+import ListaCarrosRecomendados from "./pages/procurarCarro/listaCarrosRecomendados.jsx";
+import ListaCarrosSalvos from "./pages/procurarCarro/listaCarrosSalvos.jsx";
 
-import Definicoes from "./pages/definicoes/definicoes.jsx";
-import Perfil from "./pages/definicoes/perfil.jsx";
+
+import Definicoes from "./pages/definicoesUser/definicoes.jsx";
+import Perfil from "./pages/definicoesUser/perfil.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -55,9 +55,8 @@ const router = createBrowserRouter([
 			{ path: "manutencaoDetalhe", element: <ManutencaoDetalhe /> },
 			{ path: "preventivoDetalhe", element: <PreventivoDetalhe /> },
 			{ path: "cronicoDetalhe", element: <CronicoDetalhe /> },
-			{ path: "procurarCarroPor", element: <ProcurarCarroPor /> },
-			{ path: "modelo", element: <Modelo /> },
-			{ path: "especificacoes", element: <Especificacoes /> },
+			{ path: "procurarPorModelo", element: <ProcurarCarroPorModelo /> },
+			{ path: "procurarPorEspecificacoes", element: <ProcurarPorEspecificacoes /> },
 			{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
 			{ path: "listaCarrosSalvos", element: <ListaCarrosSalvos /> },
 			{ path: "definicoes", element: <Definicoes /> },

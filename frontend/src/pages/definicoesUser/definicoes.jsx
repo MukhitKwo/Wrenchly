@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useApp as useLocalStorage } from "../../context/appContext";
+import { useLocalStorage } from "../../context/appContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Definicoes() {
