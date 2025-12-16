@@ -1,9 +1,9 @@
 function navbar() {
 	return (
 		// ja tem navbar na App
-		<nav className="Navbar" style={{ backgroundColor: 'blue' }}>
-			<div className="navbar-container" style={{ backgroundColor: 'red' }}>
-				<a href="/" className="navbar-logo">
+		<nav className="Navbar">
+			<div className="navbar-container">
+				<a href="/" className="navbar-logo" style={{ color: "black" }}>
 					Wrenchly
 				</a>
 				<br />
