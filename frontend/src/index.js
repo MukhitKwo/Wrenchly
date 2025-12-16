@@ -9,30 +9,30 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App"; // O componente que servirá de Layout (com navbar e Footer)
 
 // Importa os seus componentes de página
-import Home from "./pages/homepage/home.jsx";
-import Contatos from "./pages/homepage/contatos.jsx";
-import Sobre from "./pages/homepage/sobre.jsx";
+import Home from "./pages/home/home.jsx";
+import Contatos from "./pages/home/contatos.jsx";
+import Sobre from "./pages/home/sobre.jsx";
 
-import Login from "./pages/homepage/login.jsx";
-import Registro from "./pages/homepage/registo.jsx";
+import Login from "./pages/home/login.jsx";
+import Registo from "./pages/home/registo.jsx";
 
-import Garagem from "./pages/garagemUser/garagem.jsx";
-import Manutencoes from "./pages/garagemUser/manutencoes.jsx";
-import Preventivos from "./pages/garagemUser/preventivos.jsx";
-import Cronicos from "./pages/garagemUser/cronicos.jsx";
+import Garagem from "./pages/garage/garagem/garagem.jsx";
+import Manutencoes from "./pages/garage/manutencoes.jsx";
+import Preventivos from "./pages/garage/preventivos.jsx";
+import Cronicos from "./pages/garage/cronicos.jsx";
 
-import ManutencaoDetalhe from "./pages/garagemUser/manutencaoDetalhe.jsx";
-import PreventivoDetalhe from "./pages/garagemUser/preventivoDetalhe.jsx";
-import CronicoDetalhe from "./pages/garagemUser/cronicoDetalhe.jsx";
+import ManutencaoDetalhe from "./pages/garage/manutencaoDetalhe.jsx";
+import PreventivoDetalhe from "./pages/garage/preventivoDetalhe.jsx";
+import CronicoDetalhe from "./pages/garage/cronicoDetalhe.jsx";
 
-import ProcurarCarroPorModelo from "./pages/procurarCarro/procurarPorModelo.jsx";
-import ProcurarPorEspecificacoes from "./pages/procurarCarro/procurarPorEspecificacoes.jsx";
-import ListaCarrosRecomendados from "./pages/procurarCarro/listaCarrosRecomendados.jsx";
-import ListaCarrosSalvos from "./pages/procurarCarro/listaCarrosSalvos.jsx";
+import ProcurarCarroPorModelo from "./pages/addCar/procurarPorModelo.jsx";
+import ProcurarPorEspecificacoes from "./pages/addCar/procurarPorEspecificacoes.jsx";
+import ListaCarrosRecomendados from "./pages/addCar/listaCarrosRecomendados.jsx";
+import ListaCarrosSalvos from "./pages/addCar/listaCarrosSalvos.jsx";
 
 
-import Definicoes from "./pages/definicoesUser/definicoes.jsx";
-import Perfil from "./pages/definicoesUser/perfil.jsx";
+import Definicoes from "./pages/settings/definicoes.jsx";
+import Perfil from "./pages/settings/perfil.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -46,7 +46,7 @@ const router = createBrowserRouter([
 			{ path: "contatos", element: <Contatos /> }, // Rota para "/contatos"
 			{ path: "perfil", element: <Perfil /> }, //rota para "/perfil"
 			{ path: "login", element: <Login /> },
-			{ path: "registro", element: <Registro /> },
+			{ path: "registro", element: <Registo /> },
 			{ path: "garagem", element: <Garagem /> },
 			{ path: "manutencoes", element: <Manutencoes /> },
 			{ path: "preventivos", element: <Preventivos /> },
