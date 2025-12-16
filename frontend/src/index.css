@@ -1,4 +1,5 @@
 body {
+	height: 100%;
 	margin: 0;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 	-webkit-font-smoothing: antialiased;
@@ -9,9 +10,24 @@ code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-/* usar tailwind + shadcn/ui */
-
 .page-box {
 	padding: 30px;
 	border: 1px solid #ddd;
+}
+
+.app-container {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Main ocupa todo o espaço entre navbar e footer */
+.main-content {
+	flex: 1;
+}
+
+/* Footer sempre em baixo */
+.footer {
+	text-align: center;
+	background-color: #eee;
 }

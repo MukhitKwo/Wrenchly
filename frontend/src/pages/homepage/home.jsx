@@ -1,12 +1,8 @@
-// src/components/navbar.jsx
-import React from "react";
-import { useApp } from "../../context/appContext";
-
 function navbar() {
 	return (
 		// ja tem navbar na App
-		<nav className="Navbar">
-			<div className="navbar-container">
+		<nav className="Navbar" style={{ backgroundColor: 'blue' }}>
+			<div className="navbar-container" style={{ backgroundColor: 'red' }}>
 				<a href="/" className="navbar-logo">
 					Wrenchly
 				</a>
