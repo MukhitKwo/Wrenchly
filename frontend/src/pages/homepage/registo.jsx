@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalStorage } from "../../context/appContext";
 
-export default function Registro() {
+export default function Registo() {
 	const [email, setEmail] = React.useState("");
 	const [username, setUsername] = React.useState("");
 	const [password, setPassword] = React.useState("");

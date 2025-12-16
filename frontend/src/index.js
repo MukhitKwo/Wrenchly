@@ -14,7 +14,7 @@ import Contatos from "./pages/homepage/contatos.jsx";
 import Sobre from "./pages/homepage/sobre.jsx";
 
 import Login from "./pages/homepage/login.jsx";
-import Registro from "./pages/homepage/registro.jsx";
+import Registro from "./pages/homepage/registo.jsx";
 
 import Garagem from "./pages/garagemUser/garagem.jsx";
 import Manutencoes from "./pages/garagemUser/manutencoes.jsx";

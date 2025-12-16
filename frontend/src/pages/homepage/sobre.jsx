@@ -10,7 +10,7 @@ function Sobre() {
         A nossa missão é fornecer serviços rápidos e confiáveis aos nossos clientes.
       </p>
       {/* Adicione mais conteúdo para preencher a página e permitir o scroll */}
-      <div style={{ height: '800px', marginTop: '20px', backgroundColor: '#f5f5f5', padding: '15px' }}>
+      <div style={{ height: '100%', marginTop: '20px', backgroundColor: '#f5f5f5', padding: '15px' }}>
         <p>A nossa equipa é composta por profissionais certificados...</p>
       </div>
     </div>

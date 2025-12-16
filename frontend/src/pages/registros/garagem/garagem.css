@@ -1,0 +1,39 @@
+/* por defeito */
+.buttonStyles {
+    background-color: #ffffff;
+    color: #111827;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+/* Quando é passado o rato */
+.buttonStyles:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+/* quando é carregado o tab e este está focus */
+.buttonStyles:focus {
+    outline: none;
+    border-color: #2563eb;
+    /* azul elegante */
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+/* Active (quando clicas) */
+.buttonStyles:active {
+    transform: translateY(1px);
+    background-color: #f3f4f6;
+}
+
+/* Disabled (se precisares no futuro) */
+.buttonStyles:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
