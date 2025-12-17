@@ -123,7 +123,7 @@ export default function ProcurarCarroPorModelo() {
 
 				<select name="combustivel" onChange={handleChange}>
 					<option value="">Combustível</option>
-					<option value="gasoleo">Gasóleo</option>
+					<option value="gasoleo">Diesel</option>
 					<option value="gasolina">Gasolina</option>
 					<option value="eletrico">Elétrico</option>
 					<option value="hibrido">Híbrido</option>

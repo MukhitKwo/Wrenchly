@@ -9,41 +9,14 @@ export default function Garagem() {
 			<h1>Garagem</h1>
 
 			<div style={{ display: "flex", justifyContent: "center", gap: "14px", padding: "20px", }} >
-				<button className="buttonStyles" onClick={() => setSecao("homepage")}> Homepage </button>
-				<button className="buttonStyles" onClick={() => setSecao("criar")}> Criar novo carro </button>
-				<button className="buttonStyles" onClick={() => setSecao("definicoes")}> Definições </button>
+				<Link to="/procurarPorModelo">
+					<button>Adicionar carro</button>
+				</Link>
 			</div>
 
 			Ja que estas aqui, as definiçoes devem estar na navbar (ja meti), homepage botao nao deve existir na garagem (a logo "wrenhcly" ja faz isso), e quando tu entras na garagem, deve logo mostar os carros todos, e cada carro é tipo um painel que quando clicas, vai para pagina manutencoes.jsx e mostra as manutencoes do carro.
 			Em relação aos carros, tu ja consegues meter os paineis com informação real da base de dados. tens de: fazer registro (/registro), se for sucesso vai-te mandar pra garagem, caso não, ve consola. Clica Criar Novo carro e dps Adicionar carro, preenche tudo (podes meter cenas à toa, ainda nao verifica), clica no Procurar umas 3 vezes para teres varios carros, volta à garagem. Agora se abrires a console e fores a "Application", clica no LocalStorage e no http... dentro, vais ver uma "appState" (clica nela) com as informaçoes todas, incluindo carros_preview. Agora para usar esses dados é um bocado mais dificil e vais ter que perguntar na aula. se quiseres fazer ja a cena dos paineis dos carros, usa informaçoes estaticas.
 
-			{/* HOMEPAGE */}
-			{secao === "homepage" && (
-				<div style={{ padding: "20px" }}>
-					<p>lista arros aqui</p>
-
-					<Link to="/manutencoes">
-						<button>Ver Manutenções</button>
-					</Link>
-				</div>
-			)}
-
-			{/* CRIAR CARRO */}
-			{secao === "criar" && (
-				<div style={{ padding: "20px" }}>
-					<p>Formulário de criação do carro</p>
-					<Link to="/procurarPorModelo">
-						<button>Adicionar carro</button>
-					</Link>
-				</div>
-			)}
-
-			{/* DEFINIÇÕES */}
-			{secao === "definicoes" && (
-				<div style={{ padding: "20px" }}>
-					<p>Aqui ficam as definições</p>
-				</div>
-			)}
 		</div>
 	);
 }
