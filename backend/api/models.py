@@ -43,52 +43,25 @@ class Carros(models.Model):
 
     garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
+    categoria = models.CharField("Categoria", max_length=20)  # type: ignore
+
     marca = models.CharField("Marca", max_length=100)  # type: ignore
 
     modelo = models.CharField("Modelo", max_length=100)  # type: ignore
 
     ano = models.PositiveIntegerField("Ano")  # type: ignore
 
-    # TIPOS_COMBUSTIVEL = (
-    #     ('gasolina', 'Gasolina'),
-    #     ('gasoleo', 'Gasoleo'),
-    #     ('hibrido', 'Hibrido'),
-    #     ('eletrico', 'Eletrico'),
-    #     ('outro', 'Outro'),
-    # )
-    # * definir escolhas no frontend
+    ano_produzido = models.PositiveIntegerField("Ano Produzido")  # type: ignore
+
     combustivel = models.CharField("Combustivel", max_length=20)  # type: ignore
 
     cilindrada = models.PositiveIntegerField("CC")  # type: ignore
 
     cavalos = models.PositiveIntegerField("Cavalos", blank=True, null=True)  # type: ignore
 
-    # TIPOS_TRANSMISSAO = (
-    #     ('manual', 'Manual'),
-    #     ('automatico', 'Automatico'),
-    #     ('semi-automatico', 'Semi-automatico'),
-    #     ('cvt', 'CVT'),
-    #     ('outro', 'Outro'),
-    # )
     transmissao = models.CharField("Transmissao", max_length=20)  # type: ignore
 
     quilometragem = models.PositiveIntegerField("Quilometragem")  # type: ignore
-
-    ano_produzido = models.PositiveIntegerField("Ano Produzido")  # type: ignore
-
-    # TIPOS_CORPO = [
-    #     ('seda', 'Sedã'),
-    #     ('hatchback', 'Hatchback'),
-    #     ('suv', 'SUV'),
-    #     ('cope', 'Cupê'),
-    #     ('conversivel', 'Conversível'),
-    #     ('carrinha', 'Carrinha'),
-    #     ('van', 'Van'),
-    #     ('pickup', 'Pickup'),
-    #     ('outro', 'Outro'),
-    # ]
-    # * definir escolhas no frontend
-    tipo_corpo = models.CharField("Tipo Corpo", max_length=20, null=True, blank=True)  # type: ignore
 
     matricula = models.CharField('Matricula', max_length=8, blank=True, null=True)  # type: ignore
 
@@ -130,10 +103,9 @@ class Preventivos(models.Model):
 
     descricao = models.TextField("Descrição", blank=True, null=True)  # type: ignore
 
-    dataEntreTroca = models.DateField("Tempo entre troca", null=True, blank=True)  # type: ignore
+    diasEntreTroca = models.PositiveIntegerField("Dias entre troca")  # type: ignore
 
-    # ? verificar somando data trocoado com data entre troca e vericar se > ou < que data atual
-    dataTrocado = models.DateField("Data na ultima troca", null=True, blank=True)  # type: ignore
+    trocarNaData = models.DateField("Trocar na data")  # type: ignore
 
     kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
 

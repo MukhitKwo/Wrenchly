@@ -8,16 +8,16 @@ export default function ProcurarCarroPorModelo() {
 	const garagem_id = getLocalStorage.garagem.id;
 
 	const [caracteristicas, setCaracteristicas] = useState({
+		categoria: null,
 		marca: null,
 		modelo: null,
 		ano: null,
+		ano_produzido: null,
 		combustivel: null,
 		cilindrada: null,
 		cavalos: null,
-		ano_produzido: null,
 		transmissao: null,
 		quilometragem: null,
-		tipo_corpo: null,
 		matricula: null,
 		garagem: garagem_id,
 	});
@@ -56,7 +56,7 @@ export default function ProcurarCarroPorModelo() {
 			if (res.ok) {
 				setLocalStorage((prev) => ({
 					...prev,
-					carros_preview: [...(prev.carros_preview), data.carroPreview_data], // TODO fix this shit
+					carros_preview: [...prev.carros_preview, data.carroPreview_data], // TODO fix this shit
 				}));
 			}
 		} catch (error) {
@@ -78,42 +78,72 @@ export default function ProcurarCarroPorModelo() {
 			<div>
 				<h2>Pesquisar por Modelo</h2>
 
+				<select name="categoria" onChange={handleChange}>
+					<option value="">Tipo / Categoria</option>
+
+					<optgroup label="Carro">
+						<option value="carro:sedan">Sedan</option>
+						<option value="carro:suv">SUV</option>
+						<option value="carro:hatchback">Hatchback</option>
+						<option value="carro:coupe">Coupé</option>
+						<option value="carro:carrinha">Carrinha</option>
+					</optgroup>
+
+					<optgroup label="Mota">
+						<option value="mota:naked">Naked</option>
+						<option value="mota:sport">Sport</option>
+						<option value="mota:touring">Touring</option>
+						<option value="mota:custom">Custom</option>
+						<option value="mota:adv">Adventure</option>
+					</optgroup>
+
+					<optgroup label="Scooter">
+						<option value="scooter:urbana">Urbana</option>
+						<option value="scooter:maxi">Maxi-scooter</option>
+					</optgroup>
+
+					<optgroup label="Quad / ATV">
+						<option value="quad:trabalho">Trabalho</option>
+						<option value="quad:lazer">Lazer</option>
+					</optgroup>
+
+					<optgroup label="Trator">
+						<option value="tractor:agricola">Agrícola</option>
+						<option value="tractor:industrial">Industrial</option>
+					</optgroup>
+				</select>
+
 				<input placeholder="Marca" name="marca" onChange={handleChange} />
 
 				<input placeholder="Modelo" name="modelo" onChange={handleChange} />
 
 				<input type="number" min="0" placeholder="Ano" name="ano" onChange={handleChange} />
 
+				<input type="number" min="0" placeholder="Ano Produzido" name="ano_produzido" onChange={handleChange} />
+
 				<select name="combustivel" onChange={handleChange}>
 					<option value="">Combustível</option>
-					<option>Gasolina</option>
-					<option>Gasóleo</option>
-					<option>Elétrico</option>
-					<option>Híbrido</option>
+					<option value="gasoleo">Gasóleo</option>
+					<option value="gasolina">Gasolina</option>
+					<option value="eletrico">Elétrico</option>
+					<option value="hibrido">Híbrido</option>
 				</select>
 
 				<input type="number" min="0" placeholder="Cilindrada (cc)" name="cilindrada" onChange={handleChange} />
 
 				<input type="number" min="0" placeholder="Cavalos (opcional)" name="cavalos" onChange={handleChange} />
 
-				<input type="number" min="0" placeholder="Ano de Produção" name="ano_produzido" onChange={handleChange} />
-
-				<select name="transmissao" onChange={handleChange}>
-					<option value="">Transmissão</option>
-					<option>Manual</option>
-					<option>Automática</option>
+				<select name="transmissao" onChange={handleChange} defaultValue="">
+					<option value="" disabled>
+						Transmissão
+					</option>
+					<option value="manual:4speed">Manual 4-speed</option>
+					<option value="manual:5speed">Manual 5-speed</option>
+					<option value="manual:6speed">Manual 6-speed</option>
+					<option value="automatica">Automática</option>
 				</select>
 
 				<input type="number" min="0" placeholder="Quilometragem" name="quilometragem" onChange={handleChange} />
-
-				<select name="tipo_corpo" onChange={handleChange}>
-					<option value="">Tipo de Corpo (opcional)</option>
-					<option>Sedan</option>
-					<option>SUV</option>
-					<option>Hatchback</option>
-					<option>Coupé</option>
-					<option>Carrinha</option>
-				</select>
 
 				<input placeholder="Matrícula (opcional)" name="matricula" onChange={handleChange} />
 

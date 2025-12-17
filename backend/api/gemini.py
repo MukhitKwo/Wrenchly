@@ -1,3 +1,4 @@
+import re
 from google import genai
 from google.genai import types
 from google.genai.errors import APIError
@@ -57,10 +58,13 @@ def call_gemini(prompt, schema, temp):
     return GeminiResponse(success=True, data=gemini_data)
 
 
-def carCronicIssues(car_model: str):
+def carCronicIssues(car_model: str, dummyData=False):
 
     if not isinstance(car_model, str):
         return GeminiResponse(success=False, message="Car not a string")
+
+    if dummyData:
+        return GeminiResponse(success=True, message="This is dummy data!", data=getDummyData(1))
 
     prompt = (
         f"Lista JSON dos problemas crónicos mais comuns do {car_model}, "
@@ -85,10 +89,13 @@ def carCronicIssues(car_model: str):
     return call_gemini(prompt, schema, 0.3)
 
 
-def carsBySpecs(specs: dict):
+def carsBySpecs(specs: dict, dummyData=False):
 
     if not isinstance(specs, dict):
         return GeminiResponse(success=False, message="Specs not a dictionary")
+
+    if dummyData:
+        return GeminiResponse(success=True, message="This is dummy data!", data=getDummyData(2))
 
     prompt = (
         f"Lista Python de 15 carros que correspondem a estas especificações: {specs}. "
@@ -103,3 +110,36 @@ def carsBySpecs(specs: dict):
     )
 
     return call_gemini(prompt, schema, 0.7)
+
+
+def getDummyData(cronics):
+    if cronics == 1:
+        return [
+            {
+                "problema": "Falha na Corrente de Distribuição (Motor N47) (DUMMY)",
+                "descricao": "Desgaste prematuro ou quebra da corrente de distribuição, podendo causar danos catastróficos ao motor.",
+                "media_km": 120000
+            },
+            {
+                "problema": "Obstrução do Filtro de Partículas (DPF) (DUMMY)",
+                "descricao": "O filtro fica saturado em trajetos curtos, impedindo a regeneração e causando perda de potência.",
+                "media_km": 150000
+            },
+            {
+                "problema": "Falha no Turbo (DUMMY)",
+                "descricao": "Desgaste nos rolamentos do turbo ou falha na geometria variável, resultando em fumo excessivo e perda de força.",
+                "media_km": 180000
+            },
+            {
+                "problema": "Borboletas de Admissão (Swirl Flaps) (DUMMY)",
+                "descricao": "As borboletas podem soltar-se e ser ingeridas pelo motor, causando danos graves nos cilindros.",
+                "media_km": 100000
+            },
+            {
+                "problema": "Fuga de Óleo na Junta da Tampa das Válvulas (DUMMY)",
+                "descricao": "Ressequimento da junta devido ao calor, provocando cheiro a óleo queimado e fugas visíveis.",
+                "media_km": 140000
+            }
+        ]
+    else:
+        return ['Volkswagen Golf 2.0 TDI 2011', 'Renault Clio 1.5 dCi 2015', 'BMW 320d 2009', 'Mercedes-Benz C220 2012', 'Audi A3 2010', 'Peugeot 208 2016', 'Ford Focus 2013', 'Toyota Yaris 2014', 'Honda Civic 2008', 'Fiat Punto 2011', 'Opel Corsa 2012', 'Nissan Qashqai 2010', 'Seat Ibiza 2013', 'Citroën C3 2015', 'Volvo V40 2014']

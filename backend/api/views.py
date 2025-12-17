@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import transaction
 from django.db import DatabaseError
 
+from httpx import get
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.response import Response
@@ -17,6 +18,7 @@ from .models import *  # apagar dps
 from .serializers import *  # apagar dps
 
 from .gemini import carCronicIssues, carsBySpecs, GeminiResponse
+from .preventivos import getPreventivos
 from .email import send_email
 from .crud import (
     crud_CarrosPreview,
@@ -30,7 +32,7 @@ from .crud import (
     crud_Preventivos
 )
 
-import json
+from datetime import date, timedelta
 
 #! ============ CSRF EXEMPT FOR SESSION AUTHENTICATED APIs ============
 
@@ -77,7 +79,56 @@ def crudData(res_crud, delete=None, fullList=False):
     return crud_data
 
 
-#! ================== Registro ==================
+def getCarroModel(carro):
+    return f"({carro.get("categoria")}) {carro.get("marca")} {carro.get("modelo")} {carro.get("ano")}, {carro.get("cilindrada")}cc, {carro.get("transmissao")} {carro.get("combustivel")}"
+
+
+def getCronicIssueData(issue, carro_data):
+
+    carro_id = carro_data["id"]
+    carro_km = carro_data["quilometragem"]
+
+    media_kms = issue.get("media_km")
+
+    return {
+        "carro": carro_id,
+        "nome": issue.get("problema"),
+        "descricao": issue.get("descricao"),
+        "kmsEntreTroca": media_kms,
+        "trocarNoKm": media_kms,
+        "risco": round(carro_km/media_kms, 3)
+    }
+
+
+def getPreventiveIssueData(issue, info, carro_data):
+
+    carro_id = carro_data["id"]
+    carro_km = carro_data["quilometragem"]
+
+    media_kms = info.get("media_km")
+    trocarNoKm = carro_km + media_kms // 2
+
+    media_dias = info.get("media_dias")
+    trocarNaData = date.today() + timedelta(days=media_dias//2)
+
+    risco_km = round(carro_km/media_kms, 3)
+    risco_days = round(1 - (trocarNaData - date.today()).days / media_dias, 3)
+
+    risco = round(risco_km * 0.8 + risco_days * 0.2, 3) # TODO risco a calcular mal (eu acho)
+
+    return {
+        "carro": carro_id,
+        "nome": issue,
+        "descricao": info.get("descricao"),
+        "kmsEntreTroca": media_kms,
+        "trocarNoKm": trocarNoKm,
+        "diasEntreTroca": media_dias,
+        "trocarNaData": trocarNaData,
+        "risco": risco
+    }
+
+
+#! ================== Registro ================== 1
 @api_view(["POST"])
 @permission_classes([AllowAny])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -125,7 +176,7 @@ def registerUser(request):
         return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
 
-#! ================== LOGIN ==================
+#! ================== LOGIN ================== 2
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([AllowAny])
@@ -160,7 +211,7 @@ def loginUser(request):
                     status=201)
 
 
-#! ================== LOGOUT ==================
+#! ================== LOGOUT ================== 3
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -172,7 +223,7 @@ def logoutUser(request):
                     status=200)
 
 
-#! ================== ATUALIZAR DEFINICOES ==================
+#! ================== ATUALIZAR DEFINICOES ================== 4
 @api_view(["PUT"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -189,7 +240,7 @@ def atualizarDefinicoes(request, id):
                     status=200)
 
 
-#! ============ ADICIONAR CARRO À GARAGEM ============
+#! ============ ADICIONAR CARRO À GARAGEM ============ 5
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -200,26 +251,27 @@ def adicionarCarroComModelo(request, id=None):
     res_crud_carros = crud_Carros(method="POST", data=caracteristicas)
     if not res_crud_carros.success:
         return Response({"message": res_crud_carros.message}, status=res_crud_carros.status)
+    carro_data = res_crud_carros.data
+    preview_data = CarroPreviewSerializer(carro_data).data
+    carro_modelo = getCarroModel(carro_data)
+    print(carro_modelo)
+    # TODO usar transaction igual registro E formatar a imformação primeiro para aceitar na db
+    res_gemini = carCronicIssues(carro_modelo, dummyData=True)
+    if not res_gemini.success:
+        return Response({"message": res_gemini.message}, status=400)
 
-    preview_data = CarroPreviewSerializer(res_crud_carros.data).data
+    for cronico in res_gemini.data:
+        cronicData = getCronicIssueData(cronico, carro_data)
+        res_crud_cronico = crud_Cronicos("POST", data=cronicData)
+        if not res_crud_cronico.success:
+            return Response({"message": res_crud_cronico.message}, status=res_crud_cronico.status)
 
-    # res_gemini = carCronicIssues("audi a4 2005 2.0 tdi")
-
-    # print("Message: ", res_gemini.message)
-    # print("Data: ", res_gemini.data)
-
-    # if not res_gemini.success:
-    #     return Response({"message": res_gemini.message}, status=400)
-
-    # cronic_issues = res_gemini.data  # TODO defenir dummy data para nao usar tanto gemini
-
-    # print(cronic_issues)
-    # for issue in cronic_issues:
-    #     print(issue)
-    #     # TODO usar transaction igual registro E formatar a imformação primeiro para aceitar na db
-    #     res_crud_cronico = crud_Cronicos("POST", data=issue)
-    #     if not res_crud_cronico.success:
-    #         return Response({"message": res_crud_cronico.message}, status=res_crud_cronico.status)
+    preventivos = getPreventivos(carro_data.get("combustivel"))
+    for key, value in preventivos.items():
+        preventiveData = getPreventiveIssueData(key, value, carro_data)
+        res_crud_preventivo = crud_Preventivos("POST", data=preventiveData)
+        if not res_crud_preventivo.success:
+            return Response({"message": res_crud_preventivo.message}, status=res_crud_preventivo.status)
 
     return Response({"message": "Carro added",
                      "carroPreview_data": preview_data},

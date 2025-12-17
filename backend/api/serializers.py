@@ -36,7 +36,7 @@ class CarroSerializer(serializers.ModelSerializer):
 class CarroPreviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Carros
-        fields = ["id", "marca", "modelo", "ano", "matricula"]
+        fields = ["id", "categoria", "marca", "modelo", "ano", "matricula"]
 
 
 class ManutencaoSerializer(serializers.ModelSerializer):
