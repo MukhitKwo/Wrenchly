@@ -4,7 +4,7 @@ function navbar() {
 		<nav className="Navbar">
 			<div className="navbar-container">
 				<br />
-				Sobre Nós aqui
+				Apresentação toda bonitinha para ser trabalhada aqui!
 			</div>
 		</nav>
 	);

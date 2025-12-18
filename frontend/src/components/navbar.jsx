@@ -18,8 +18,8 @@ function Navbar() {
 					{/* 2. Todos os botões usam <Link> e a prop 'to' com os caminhos do seu Router */}
 					{/* <Link to="/">Início</Link> */}
 
-					<Link to="/contatos">Contatos</Link>
 					<Link to="/garagem">Garagem</Link>
+					<Link to="/contatos">Contatos</Link>
 
 					{/* <Link to="/sobre">Sobre Nós</Link> */}
 
