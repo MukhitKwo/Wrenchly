@@ -206,8 +206,7 @@ def loginUser(request):
                      "user_data": userData(user),
                      "garagem_data": crudData(res_crud_garagem, delete="user"),
                      "definicoes_data": crudData(res_crud_definicoes, delete="user"),
-                     "carroPreview_data": res_crud_carrosPreview.data,
-                     "notas_data": crudData(res_crud_notas.data, delete="garagem")},
+                     "carroPreview_data": res_crud_carrosPreview.data},
                     status=201)
 
 

@@ -8,17 +8,16 @@ export default function ProcurarCarroPorModelo() {
 	const garagem_id = getLocalStorage.garagem.id;
 
 	const [caracteristicas, setCaracteristicas] = useState({
-		categoria: null,
-		marca: null,
-		modelo: null,
-		ano: null,
-		// ano_produzido: null,
-		combustivel: null,
-		cilindrada: null,
-		cavalos: null,
-		transmissao: null,
-		quilometragem: null,
-		matricula: null,
+		categoria: "",
+		marca: "",
+		modelo: "",
+		ano: "",
+		combustivel: "",
+		cilindrada: "",
+		cavalos: "",
+		transmissao: "",
+		quilometragem: "",
+		matricula: "",
 		garagem: garagem_id,
 	});
 
