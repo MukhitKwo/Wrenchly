@@ -12,7 +12,7 @@ export default function ProcurarCarroPorModelo() {
 		marca: null,
 		modelo: null,
 		ano: null,
-		ano_produzido: null,
+		// ano_produzido: null,
 		combustivel: null,
 		cilindrada: null,
 		cavalos: null,
@@ -30,7 +30,7 @@ export default function ProcurarCarroPorModelo() {
 		}));
 	};
 
-	const optional = ["cavalos", "tipo_corpo", "matricula"];
+	const optional = ["cavalos", "matricula"];
 
 	const allFilled = Object.entries(caracteristicas)
 		.filter(([key]) => !optional.includes(key))
@@ -119,7 +119,7 @@ export default function ProcurarCarroPorModelo() {
 
 				<input type="number" min="0" placeholder="Ano" name="ano" onChange={handleChange} />
 
-				<input type="number" min="0" placeholder="Ano Produzido" name="ano_produzido" onChange={handleChange} />
+				{/* <input type="number" min="0" placeholder="Ano Produzido" name="ano_produzido" onChange={handleChange} /> */}
 
 				<select name="combustivel" onChange={handleChange}>
 					<option value="">Combustível</option>
@@ -148,7 +148,7 @@ export default function ProcurarCarroPorModelo() {
 				<input placeholder="Matrícula (opcional)" name="matricula" onChange={handleChange} />
 
 				<button type="button" onClick={adicionarCarro}>
-					Procurar
+					Procurar e Adicionar
 				</button>
 			</div>
 		</div>

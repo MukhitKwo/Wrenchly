@@ -29,16 +29,6 @@ class Garagens(models.Model):
         return f"{self.id} - {self.nome or f'Garagem do {self.user.username}'}"
 
 
-class Notas(models.Model):
-
-    garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
-
-    nota = models.TextField("Nota")  # type: ignore
-
-    def __str__(self):
-        return f"{self.garagem.id} - {self.nota}"
-
-
 class Carros(models.Model):
 
     garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
@@ -51,11 +41,11 @@ class Carros(models.Model):
 
     ano = models.PositiveIntegerField("Ano")  # type: ignore
 
-    ano_produzido = models.PositiveIntegerField("Ano Produzido")  # type: ignore
+    # ano_produzido = models.PositiveIntegerField("Ano Produzido")  # type: ignore
 
     combustivel = models.CharField("Combustivel", max_length=20)  # type: ignore
 
-    cilindrada = models.PositiveIntegerField("CC")  # type: ignore
+    cilindrada = models.PositiveIntegerField("Cilindrada")  # type: ignore
 
     cavalos = models.PositiveIntegerField("Cavalos", blank=True, null=True)  # type: ignore
 
@@ -105,11 +95,11 @@ class Preventivos(models.Model):
 
     diasEntreTroca = models.PositiveIntegerField("Dias entre troca")  # type: ignore
 
-    trocarNaData = models.DateField("Trocar na data")  # type: ignore
+    trocadoNaData = models.DateField("Trocado na data")  # type: ignore
 
     kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
 
-    trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0)  # type: ignore
+    trocadoNoKm = models.PositiveIntegerField("Trocado no km", default=0)  # type: ignore
 
     risco = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
 
@@ -127,9 +117,28 @@ class Cronicos(models.Model):
 
     kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
 
-    trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0)  # type: ignore
+    trocadoNoKm = models.PositiveIntegerField("Trocado no km", default=0)  # type: ignore
 
     risco = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
 
     def __str__(self):
         return f"({self.carro.modelo}) {self.nome} - CORRIGIR km"
+
+
+class Notas(models.Model):
+
+    garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+
+    manutencao = models.ForeignKey(Manutencoes, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+
+    nota = models.TextField("Nota")  # type: ignore
+
+    def __str__(self):
+        return f"{self.garagem.id} - {self.nota}"
+
+
+class CarrosSalvos(models.Model):
+
+    garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+
+    carro_nome = models.CharField("Nome", max_length=100)  # type: ignore

@@ -35,7 +35,8 @@ export default function Registo() {
 					user: data.user_data,
 					garagem: data.garagem_data,
 					definicoes: data.definicoes_data,
-					carros_preview: data.carroPreview_data
+					carros_preview: data.carroPreview_data,
+					notas: data.notas_data,
 				}));
 
 				navigate("/garagem"); // redirect to home page

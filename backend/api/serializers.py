@@ -3,7 +3,7 @@ from .models import *
 from django.contrib.auth.models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
@@ -15,7 +15,7 @@ class DefinicoesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class GaragemSerializer(serializers.ModelSerializer):
+class GaragensSerializer(serializers.ModelSerializer):
     class Meta:
         model = Garagens
         fields = '__all__'
@@ -27,31 +27,31 @@ class NotaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CarroSerializer(serializers.ModelSerializer):
+class CarrosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Carros
         fields = '__all__'
 
 
-class CarroPreviewSerializer(serializers.ModelSerializer):
+class CarrosPreviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Carros
         fields = ["id", "categoria", "marca", "modelo", "ano", "matricula"]
 
 
-class ManutencaoSerializer(serializers.ModelSerializer):
+class ManutencoesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manutencoes
         fields = '__all__'
 
 
-class PreventivoSerializer(serializers.ModelSerializer):
+class PreventivosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Preventivos
         fields = '__all__'
 
 
-class CronicoSerializer(serializers.ModelSerializer):
+class CronicosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cronicos
         fields = '__all__'

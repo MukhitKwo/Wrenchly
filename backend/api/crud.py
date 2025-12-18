@@ -101,7 +101,7 @@ def crud_Garagens(method, data=None, id=None, user=None):  # * fixed?
     filtros = {}
     if method not in ("POST"):
         filtros = {"user": user}
-    return crud(method, data, Garagens, GaragemSerializer, id, **filtros)
+    return crud(method, data, Garagens, GaragensSerializer, id, **filtros)
 
 
 def crud_Notas(method, data=None, id=None, user=None):
@@ -115,32 +115,32 @@ def crud_Carros(method, data=None, id=None, user=None):
     filtros = {}
     if method not in ("POST"):
         filtros = {"garagem__user": user}
-    return crud(method, data, Carros, CarroSerializer, id, **filtros)
+    return crud(method, data, Carros, CarrosSerializer, id, **filtros)
 
 
 def crud_CarrosPreview(method, data=None, id=None, user=None):
     filtros = {}
     if method not in ("POST"):
         filtros = {"garagem__user": user}
-    return crud(method, data, Carros, CarroPreviewSerializer, id, **filtros)
+    return crud(method, data, Carros, CarrosPreviewSerializer, id, **filtros)
 
 
 def crud_Manutencoes(method, data=None, id=None, user=None):
     filtros = {}
     if method not in ("POST"):
         filtros = {"carro__garagem__user": user}
-    return crud(method, data, Manutencoes, ManutencaoSerializer, id, **filtros)
+    return crud(method, data, Manutencoes, ManutencoesSerializer, id, **filtros)
 
 
 def crud_Preventivos(method, data=None, id=None, user=None):
     filtros = {}
     if method not in ("POST"):
         filtros = {"carro__garagem__user": user}
-    return crud(method, data, Preventivos, PreventivoSerializer, id, **filtros)
+    return crud(method, data, Preventivos, PreventivosSerializer, id, **filtros)
 
 
 def crud_Cronicos(method, data=None, id=None, user=None):
     filtros = {}
     if method not in ("POST"):
         filtros = {"carro__garagem__user": user}
-    return crud(method, data, Cronicos, CronicoSerializer, id, **filtros)
+    return crud(method, data, Cronicos, CronicosSerializer, id, **filtros)

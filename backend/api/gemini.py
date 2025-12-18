@@ -97,8 +97,9 @@ def carsBySpecs(specs: dict, dummyData=False):
     if dummyData:
         return GeminiResponse(success=True, message="This is dummy data!", data=getDummyData(2))
 
+    # TODO em vez de retornar so o nome do carro, retorna as caracteresticas tambem
     prompt = (
-        f"Lista Python de 15 carros que correspondem a estas especificações: {specs}. "
+        f"Lista Python de 15 veiculos que correspondem a estas especificações: {specs}. "
         "Incluir o nome completo e ano do carro, "
         "Não incluir texto adicional, não usar blocos de código (```), sem quebras de linha, "
         "exemplo: ['Audi A4 2005', 'Toyota Corolla 1998', ...]. "

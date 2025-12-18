@@ -1,9 +1,7 @@
 import { Link } from "react-router-dom";
 import './garagem.css';
-import { useState } from "react";
 
 export default function Garagem() {
-	const [secao, setSecao] = useState("homepage");
 	return (
 		<div className="page-box">
 			<h1>Garagem</h1>

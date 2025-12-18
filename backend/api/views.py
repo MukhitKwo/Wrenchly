@@ -32,7 +32,7 @@ from .crud import (
     crud_Preventivos
 )
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 #! ============ CSRF EXEMPT FOR SESSION AUTHENTICATED APIs ============
 
@@ -85,45 +85,43 @@ def getCarroModel(carro):
 
 def getCronicIssueData(issue, carro_data):
 
-    carro_id = carro_data["id"]
     carro_km = carro_data["quilometragem"]
-
-    media_kms = issue.get("media_km")
+    kmsEntretroca = issue.get("media_km")
+    trocadoNoKm = carro_km - int(kmsEntretroca/2)
+    risco_km = round((carro_km - trocadoNoKm)/kmsEntretroca, 3)
 
     return {
-        "carro": carro_id,
+        "carro": carro_data["id"],
         "nome": issue.get("problema"),
         "descricao": issue.get("descricao"),
-        "kmsEntreTroca": media_kms,
-        "trocarNoKm": media_kms,
-        "risco": round(carro_km/media_kms, 3)
+        "kmsEntreTroca": kmsEntretroca,
+        "trocadoNoKm": trocadoNoKm,
+        "risco": risco_km
     }
 
 
 def getPreventiveIssueData(issue, info, carro_data):
 
-    carro_id = carro_data["id"]
     carro_km = carro_data["quilometragem"]
+    kmsEntretroca = info.get("media_km")
+    trocadoNoKm = carro_km - int(kmsEntretroca/2)
+    risco_km = round((carro_km - trocadoNoKm)/kmsEntretroca, 3)
 
-    media_kms = info.get("media_km")
-    trocarNoKm = carro_km + media_kms // 2
+    dia_hoje = date.today()
+    diasEntreTroca = info.get("media_dias")
+    trocadoNaData = date.today() - timedelta(days=int(diasEntreTroca/2))
+    risco_days = round(1 - (dia_hoje - trocadoNaData).days / diasEntreTroca, 3)
 
-    media_dias = info.get("media_dias")
-    trocarNaData = date.today() + timedelta(days=media_dias//2)
-
-    risco_km = round(carro_km/media_kms, 3)
-    risco_days = round(1 - (trocarNaData - date.today()).days / media_dias, 3)
-
-    risco = round(risco_km * 0.8 + risco_days * 0.2, 3) # TODO risco a calcular mal (eu acho)
+    risco = round(risco_km * 0.8 + risco_days * 0.2, 3)
 
     return {
-        "carro": carro_id,
+        "carro": carro_data["id"],
         "nome": issue,
         "descricao": info.get("descricao"),
-        "kmsEntreTroca": media_kms,
-        "trocarNoKm": trocarNoKm,
-        "diasEntreTroca": media_dias,
-        "trocarNaData": trocarNaData,
+        "kmsEntreTroca": kmsEntretroca,
+        "trocadoNoKm": trocadoNoKm,
+        "diasEntreTroca": diasEntreTroca,
+        "trocadoNaData": trocadoNaData,
         "risco": risco
     }
 
@@ -167,9 +165,10 @@ def registerUser(request):
 
             return Response({"message": "User, Garagem and Definiçoes created",
                              "user_data": userData(user),
-                             "garagem_data": crudData(res_crud_garagem, "user"),
-                             "definicoes_data": crudData(res_crud_definicoes, "user"),
-                             "carroPreview_data": []},
+                             "garagem_data": crudData(res_crud_garagem, delete="user"),
+                             "definicoes_data": crudData(res_crud_definicoes, delete="user"),
+                             "carroPreview_data": [],
+                             "notas_data": []},
                             status=201)
 
     except Exception as e:
@@ -199,15 +198,16 @@ def loginUser(request):
 
     res_crud_carrosPreview = crud_CarrosPreview(method="GET", user=user)  # pode não haver carros
 
-    # TODO fazer get das notas tambem
+    res_crud_notas = crud_Notas(method="GET", user=user)  # pode não haver notas
 
     login(request, user)
 
     return Response({"message": "User, Garagem and Definiçoes found",
                      "user_data": userData(user),
-                     "garagem_data": crudData(res_crud_garagem, "user"),
-                     "definicoes_data": crudData(res_crud_definicoes, "user"),
-                     "carroPreview_data": res_crud_carrosPreview.data},
+                     "garagem_data": crudData(res_crud_garagem, delete="user"),
+                     "definicoes_data": crudData(res_crud_definicoes, delete="user"),
+                     "carroPreview_data": res_crud_carrosPreview.data,
+                     "notas_data": crudData(res_crud_notas.data, delete="garagem")},
                     status=201)
 
 
@@ -236,7 +236,7 @@ def atualizarDefinicoes(request, id):
         return Response({"message": res_crud_definicoes.message}, status=res_crud_definicoes.status)
 
     return Response({"message": "Settings updated",
-                     "definicoes_data": crudData(res_crud_definicoes, "user")},
+                     "definicoes_data": crudData(res_crud_definicoes, delete="user")},
                     status=200)
 
 
@@ -252,9 +252,9 @@ def adicionarCarroComModelo(request, id=None):
     if not res_crud_carros.success:
         return Response({"message": res_crud_carros.message}, status=res_crud_carros.status)
     carro_data = res_crud_carros.data
-    preview_data = CarroPreviewSerializer(carro_data).data
+    preview_data = CarrosPreviewSerializer(carro_data).data
     carro_modelo = getCarroModel(carro_data)
-    print(carro_modelo)
+
     # TODO usar transaction igual registro E formatar a imformação primeiro para aceitar na db
     res_gemini = carCronicIssues(carro_modelo, dummyData=True)
     if not res_gemini.success:
