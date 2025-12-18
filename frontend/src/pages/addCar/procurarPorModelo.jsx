@@ -42,7 +42,7 @@ export default function ProcurarCarroPorModelo() {
 		}
 
 		try {
-			const res = await fetch("/api/adicionarCarroComModelo/", {
+			const res = await fetch("/api/adicionarCarro/", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -148,7 +148,7 @@ export default function ProcurarCarroPorModelo() {
 				<input placeholder="Matrícula (opcional)" name="matricula" onChange={handleChange} />
 
 				<button type="button" onClick={adicionarCarro}>
-					Procurar e Adicionar
+					Adicionar
 				</button>
 			</div>
 		</div>

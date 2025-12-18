@@ -9,13 +9,15 @@ urlpatterns = [
     # REGISTRO E LOGIN
     path("registerUser/", registerUser),
     path("loginUser/", loginUser),
-    path("logoutUser", logoutUser),
+    path("logoutUser/", logoutUser),
 
     # DEFINIÇÔES
     path("atualizarDefinicoes/<int:id>", atualizarDefinicoes),
 
     # ADICIONAR CARRO
-    path("adicionarCarroComModelo/", adicionarCarroComModelo),
+    path("adicionarCarro/", adicionarCarro),
+    
+    path("procurarCarros/", procurarCarros),
 
     # # NOTAS
     # path("tabelaNota/", apiNotas),

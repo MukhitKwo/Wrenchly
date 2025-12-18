@@ -65,7 +65,7 @@ export default function Definicoes() {
 	const logoutUser = async () => {
 		if (window.confirm("Tens a certeza que queres sair da tua conta?.")) {
 			try {
-				const res = await fetch(`/api/logoutUser`, {
+				const res = await fetch(`/api/logoutUser/`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",

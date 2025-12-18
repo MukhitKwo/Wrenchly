@@ -32,7 +32,7 @@ from .crud import (
     crud_Preventivos
 )
 
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 
 #! ============ CSRF EXEMPT FOR SESSION AUTHENTICATED APIs ============
 
@@ -211,19 +211,7 @@ def loginUser(request):
                     status=201)
 
 
-#! ================== LOGOUT ================== 3
-@api_view(["POST"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def logoutUser(request):
-
-    logout(request)
-
-    return Response({"message": "User logged out"},
-                    status=200)
-
-
-#! ================== ATUALIZAR DEFINICOES ================== 4
+#! ================== ATUALIZAR DEFINICOES ================== 3
 @api_view(["PUT"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -240,11 +228,23 @@ def atualizarDefinicoes(request, id):
                     status=200)
 
 
+#! ================== LOGOUT ================== 4
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def logoutUser(request):
+
+    logout(request)
+
+    return Response({"message": "User logged out"},
+                    status=200)
+
+
 #! ============ ADICIONAR CARRO À GARAGEM ============ 5
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
-def adicionarCarroComModelo(request, id=None):
+def adicionarCarro(request):
     body = request.data
     caracteristicas = body.get("caracteristicas")
 
@@ -278,23 +278,20 @@ def adicionarCarroComModelo(request, id=None):
                     status=200)
 
 
-# #! ============ NOTAS ============
-# @api_view(["GET", "POST", "PUT", "DELETE"])
-# @authentication_classes([CsrfExemptSessionAuthentication])
-# @permission_classes([IsAuthenticated])
-# def apiNotas(request, id=None):
-#     if request.method in ["POST", "PUT"]:
-#         garagem_id = request.data.get("garagem")
-#         if not Garagens.objects.filter(
-#             garagem_id=garagem_id,
-#             user=request.user,
-#         ).exists():
-#             return Response({"success": False, "message": "Invalid garage"}, status=403)
+#! ============ PROCURAR CARROS POR ESPECIFICAÇÕES ============ 6
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def procurarCarros(request):
+    body = request.data
+    # caracteristicas = body.get("caracteristicas")
 
-#     return crud_Notas(request, id)
+    return Response({"message": "sup",
+                     "ola": "adeus"},
+                    status=200)
 
 
-# #! ============ CARROS ============
+# ============ CARROS ============
 # @api_view(["GET", "POST", "PUT", "DELETE"])
 # @authentication_classes([CsrfExemptSessionAuthentication])
 # @permission_classes([IsAuthenticated])
@@ -309,7 +306,7 @@ def adicionarCarroComModelo(request, id=None):
 #     return crud_Carros(request, id)
 
 
-# #! ============ MANUTENCOES ============
+# ============ MANUTENCOES ============
 # @api_view(["GET", "POST", "PUT", "DELETE"])
 # @authentication_classes([CsrfExemptSessionAuthentication])
 # @permission_classes([IsAuthenticated])
@@ -325,7 +322,7 @@ def adicionarCarroComModelo(request, id=None):
 #     return crud_Manutencoes(request, id)
 
 
-# #! ============ PREVENTIVOS ============
+# ============ PREVENTIVOS ============
 # @api_view(["GET", "POST", "PUT", "DELETE"])
 # @authentication_classes([CsrfExemptSessionAuthentication])
 # @permission_classes([IsAuthenticated])
@@ -341,7 +338,7 @@ def adicionarCarroComModelo(request, id=None):
 #     return crud_Preventivos(request, id)
 
 
-# #! ============ CRONICOS ============
+# ============ CRONICOS ============
 # @api_view(["GET", "POST", "PUT", "DELETE"])
 # @authentication_classes([CsrfExemptSessionAuthentication])
 # @permission_classes([IsAuthenticated])

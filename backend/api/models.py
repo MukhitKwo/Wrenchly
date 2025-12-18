@@ -26,7 +26,17 @@ class Garagens(models.Model):
     nome = models.CharField("Nome", max_length=50, blank=True, null=True)  # type: ignore
 
     def __str__(self):
-        return f"{self.id} - {self.nome or f'Garagem do {self.user.username}'}"
+        return f"{self.nome or f'Garagem do {self.user.username}'}"
+
+
+class Notas(models.Model):
+
+    garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+
+    nota = models.TextField("Nota")  # type: ignore
+
+    def __str__(self):
+        return f"{self.garagem.id} - {self.nota}"
 
 
 class Carros(models.Model):
@@ -56,7 +66,7 @@ class Carros(models.Model):
     matricula = models.CharField('Matricula', max_length=8, blank=True, null=True)  # type: ignore
 
     def __str__(self):
-        return f"{self.id} - {self.modelo} {self.ano_produzido}"
+        return f"{self.marca} {self.modelo} {self.ano}"
 
 
 class Manutencoes(models.Model):
@@ -82,7 +92,7 @@ class Manutencoes(models.Model):
     data = models.DateField("Data da Manutenção")  # type: ignore
 
     def __str__(self):
-        return f"({self.carro.modelo}) {self.nome} - {self.quilometragem}km - {self.data}"
+        return f"{self.nome} - {self.quilometragem}km - {self.data}"
 
 
 class Preventivos(models.Model):
@@ -104,7 +114,7 @@ class Preventivos(models.Model):
     risco = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
 
     def __str__(self):
-        return f"({self.carro.modelo}) {self.nome} - CORRIGIR km"
+        return f"{self.nome} - {self.carro.quilometragem}/{self.trocadoNoKm + self.kmsEntreTroca} kms"
 
 
 class Cronicos(models.Model):
@@ -122,19 +132,7 @@ class Cronicos(models.Model):
     risco = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
 
     def __str__(self):
-        return f"({self.carro.modelo}) {self.nome} - CORRIGIR km"
-
-
-class Notas(models.Model):
-
-    garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
-
-    manutencao = models.ForeignKey(Manutencoes, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
-
-    nota = models.TextField("Nota")  # type: ignore
-
-    def __str__(self):
-        return f"{self.garagem.id} - {self.nota}"
+        return f"{self.nome} -  {self.carro.quilometragem}/{self.trocadoNoKm + self.kmsEntreTroca} kms"
 
 
 class CarrosSalvos(models.Model):
@@ -142,3 +140,5 @@ class CarrosSalvos(models.Model):
     garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
     carro_nome = models.CharField("Nome", max_length=100)  # type: ignore
+
+    # TODO adicionar mais campos dps

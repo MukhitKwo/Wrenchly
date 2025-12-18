@@ -6,9 +6,6 @@ from .serializers import *
 
 
 def crud(method, data, model, serializer, id=None, **filters):
-    """
-    O CRUD deteta automaticamente o tipo de request e retorna o json correspondente
-    """
 
     if method == "POST":
         return create_object(data, serializer)
@@ -90,14 +87,14 @@ class CRUDResponse:
 
 #! ================== Funções CRUD_model ==================
 
-def crud_Definicoes(method, data=None, id=None, user=None):  # * fixed?
+def crud_Definicoes(method, data=None, id=None, user=None):
     filtros = {}
     if method not in ("POST"):
         filtros = {"user": user}
     return crud(method, data, Definicoes, DefinicoesSerializer, id, **filtros)
 
 
-def crud_Garagens(method, data=None, id=None, user=None):  # * fixed?
+def crud_Garagens(method, data=None, id=None, user=None):
     filtros = {}
     if method not in ("POST"):
         filtros = {"user": user}
