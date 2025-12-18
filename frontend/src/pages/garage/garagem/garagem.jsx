@@ -44,9 +44,9 @@ export default function Garagem() {
                     carros.map((carro, index) => (
                         <div key={index} className="carro-panel" style={{ border: "1px solid #ccc", borderRadius: "8px", padding: "15px", width: "200px", textAlign: "center", boxShadow: "2px 2px 6px rgba(0,0,0,0.1)" }}>
                             <h2>{carro.marca || carro.modelo || "Sem marca"}</h2>
+                            <p><strong>Marca:</strong> {carro.marca || "N/A"}</p>
                             <p><strong>Modelo:</strong> {carro.modelo || "N/A"}</p>
                             <p><strong>Ano:</strong> {carro.ano || "N/A"}</p>
-                            <p><strong>Cor:</strong> {carro.cor || "N/A"}</p>
                         </div>
                     ))
                 )}
