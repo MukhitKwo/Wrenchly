@@ -18,7 +18,7 @@ from .models import *  # apagar dps
 from .serializers import *  # apagar dps
 
 from .gemini import carCronicIssues, carsBySpecs, GeminiException
-from .preventivos import getPreventivos
+from .preventivos import getCommonPreventives
 from .email import send_email
 from .crud import (
     crud_CarrosPreview,
@@ -88,57 +88,61 @@ def getCrudData(res_crud, delete=None, fullList=False):
     return crud_data
 
 
-def getCarroModel(carro):
-    return f"({carro.get("categoria")}) {carro.get("marca")} {carro.get("modelo")} {carro.get("ano")}, {carro.get("cilindrada")}cc, {carro.get("transmissao")} {carro.get("combustivel")}"
+def getCarName(car):
+    return f"{car.get("marca")} {car.get("modelo")} {car.get("ano")}"
 
 
-def getCronicIssueData(issue, carro_data):
+def getCarroFullName(car):
+    return f"({car.get("categoria")}) {getCarName(car)}, {car.get("cilindrada")}cc, {car.get("transmissao")} {car.get("combustivel")}"
+
+
+def convertDataToCronic(issue, carro_data):
 
     carro_km = carro_data["quilometragem"]
 
     kmsEntretroca = issue.get("media_km")
-    trocadoNoKm = carro_km - int(kmsEntretroca/2)
-    trocarNoKm = carro_km + int(kmsEntretroca/2)
-    risco_km = round((trocarNoKm - trocadoNoKm)/kmsEntretroca, 3)
+    # trocadoNoKm = carro_km - int(kmsEntretroca/2)
+    # trocarNoKm = carro_km + int(kmsEntretroca/2)
+    # risco_km = round((trocarNoKm - trocadoNoKm)/kmsEntretroca, 3)
 
     return {
         "carro": carro_data["id"],
         "nome": issue.get("problema"),
         "descricao": issue.get("descricao"),
         "kmsEntreTroca": kmsEntretroca,
-        "trocadoNoKm": trocadoNoKm,
-        "trocarNoKm": trocarNoKm,
-        "risco": risco_km
+        "trocadoNoKm": None,
+        "trocarNoKm": None,
+        "risco": None
     }
 
 
-def getPreventiveIssueData(issue, info, carro_data):
+def convertDataToPreventive(issue, info, carro_data):
 
-    carro_km = carro_data["quilometragem"]
+    # carro_km = carro_data["quilometragem"]
 
     kmsEntretroca = info.get("media_km")
-    trocadoNoKm = carro_km - int(kmsEntretroca/2)
-    trocarNoKm = carro_km + int(kmsEntretroca/2)
-    risco_km = round((trocarNoKm - trocadoNoKm)/kmsEntretroca, 3)
+    # trocadoNoKm = carro_km - int(kmsEntretroca/2)
+    # trocarNoKm = carro_km + int(kmsEntretroca/2)
+    # risco_km = round((trocarNoKm - trocadoNoKm)/kmsEntretroca, 3)
 
     diasEntreTroca = info.get("media_dias")
-    trocadoNaData = date.today() - timedelta(days=int(diasEntreTroca/2))
-    trocarNaData = date.today() + timedelta(days=int(diasEntreTroca/2))
-    risco_days = round(1 - (trocarNaData - trocadoNaData).days / diasEntreTroca, 3)
+    # trocadoNaData = date.today() - timedelta(days=int(diasEntreTroca/2))
+    # trocarNaData = date.today() + timedelta(days=int(diasEntreTroca/2))
+    # risco_days = round(1 - (trocarNaData - trocadoNaData).days / diasEntreTroca, 3)
 
-    risco = round(risco_km * 0.8 + risco_days * 0.2, 3)
+    # risco = round(risco_km * 0.8 + risco_days * 0.2, 3)
 
     return {
         "carro": carro_data["id"],
         "nome": issue,
         "descricao": info.get("descricao"),
         "kmsEntreTroca": kmsEntretroca,
-        "trocadoNoKm": trocadoNoKm,
-        "trocarNoKm": trocarNoKm,
+        "trocadoNoKm": None,
+        "trocarNoKm": None,
         "diasEntreTroca": diasEntreTroca,
-        "trocadoNaData": trocadoNaData,
-        "trocarNaData": trocarNaData,
-        "risco": risco
+        "trocadoNaData": None,
+        "trocarNaData": None,
+        "risco": None
     }
 
 
@@ -216,7 +220,8 @@ def loginUser(request):
                      "user_data": userData(user),
                      "garagem_data": getCrudData(res_crud_garagem, delete="user"),
                      "definicoes_data": getCrudData(res_crud_definicoes, delete="user"),
-                     "carroPreview_data": res_crud_carrosPreview.data},
+                     "carroPreview_data": res_crud_carrosPreview.data,
+                     "notas_data": res_crud_notas.data},
                     status=201)
 
 
@@ -261,39 +266,47 @@ def adicionarCarro(request):
 
     try:
 
-        res_crud_carros = crud_Carros(method="POST", data=caracteristicas)
-        car_data = res_crud_carros.data
+        with transaction.atomic():
 
-        # TODO retorar nome completo, matricula e data proxima manutençao
-        preview_data = CarrosPreviewSerializer(car_data).data
+            res_crud_carros = crud_Carros(method="POST", data=caracteristicas)
+            car_data = res_crud_carros.data
 
-        # TODO usar transaction igual registro
-        car_name = getCarroModel(car_data)
-        res_gemini = carCronicIssues(car_name, dummyData=True)  # obter problemas cronicos
+            # TODO retorar nome completo, matricula e data proxima manutençao
+            # preview_data = CarrosPreviewSerializer(car_data).data
 
-        c = []
-        for cronico in res_gemini.data:  # salvar problemas cronicos
-            cronicData = getCronicIssueData(cronico, car_data)
-            c.append(cronicData)
+            car_name = getCarName(car_data)
 
-        res_crud_cronico = crud_Cronicos("POST", data=c)
+            car_name = getCarroFullName(car_data)
+            res_gemini = carCronicIssues(car_name, dummyData=True)  # obter problemas cronicos
 
-        p = []
-        preventivos = getPreventivos(car_data.get("combustivel"))  # obter e salvar preventivos
-        for key, value in preventivos.items():
-            preventiveData = getPreventiveIssueData(key, value, car_data)
-            p.append(preventiveData)
+            allCronicos = []
+            for cronico in res_gemini.data:  # salvar problemas cronicos
+                cronicData = convertDataToCronic(cronico, car_data)
+                allCronicos.append(cronicData)
 
-        res_crud_preventivo = crud_Preventivos("POST", data=p)
+            res_crud_cronico = crud_Cronicos("POST", data=allCronicos)
+
+            allPreventivos = []
+            preventivos = getCommonPreventives(car_data.get("combustivel"))  # obter e salvar preventivos
+            for key, value in preventivos.items():
+                preventiveData = convertDataToPreventive(key, value, car_data)
+                allPreventivos.append(preventiveData)
+
+            res_crud_preventivo = crud_Preventivos("POST", data=allPreventivos)
+            
+            carroPreviewData = f"{car_name}"
 
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
     except GeminiException as e:
         return Response({"message": e.message}, status=400)
+    except Exception as e:
+        return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
-    # TODO retornar nome completo, proxima manutenção e foto
-    return Response({"message": "Carro added",
-                     "carroPreview_data": preview_data},
+    return Response({"message": "Carro, Cronico and Preventivo created",
+                     "carro_name": car_name,
+                     "proximo_preventivo": None,
+                     "imagem": None},  # TODO retornar foto do carro
                     status=200)
 
 
@@ -313,6 +326,7 @@ def procurarCarros(request):
     try:
         res_gemini = carsBySpecs(existingSpecs, dummyData=True)
         candidateCars = res_gemini.data
+        
     except GeminiException as e:
         return Response({"message": e.message}, status=400)
 

@@ -1,4 +1,4 @@
-def getPreventivos(fuel_type):
+def getCommonPreventives(fuel_type):
     if fuel_type == "gasoleo":
         return preventivo_gasoleo()
     elif fuel_type == "gasolina":
