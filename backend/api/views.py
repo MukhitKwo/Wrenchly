@@ -1,3 +1,4 @@
+from os import error
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -17,7 +18,7 @@ from rest_framework.decorators import (
 from .models import *  # apagar dps
 from .serializers import *  # apagar dps
 
-from .gemini import carCronicIssues, carsBySpecs, GeminiResponse
+from .gemini import carCronicIssues, carsBySpecs, GeminiException
 from .preventivos import getPreventivos
 from .email import send_email
 from .crud import (
@@ -29,7 +30,8 @@ from .crud import (
     crud_CarrosPreview,
     crud_Manutencoes,
     crud_Cronicos,
-    crud_Preventivos
+    crud_Preventivos,
+    CRUDException
 )
 
 from datetime import date, timedelta
@@ -63,7 +65,7 @@ def userData(user):
     return user_data
 
 
-def crudData(res_crud, delete=None, fullList=False):
+def getCrudData(res_crud, delete=None, fullList=False):
 
     crud_data = res_crud.data
 
@@ -86,9 +88,11 @@ def getCarroModel(carro):
 def getCronicIssueData(issue, carro_data):
 
     carro_km = carro_data["quilometragem"]
+
     kmsEntretroca = issue.get("media_km")
     trocadoNoKm = carro_km - int(kmsEntretroca/2)
-    risco_km = round((carro_km - trocadoNoKm)/kmsEntretroca, 3)
+    trocarNoKm = carro_km + int(kmsEntretroca/2)
+    risco_km = round((trocarNoKm - trocadoNoKm)/kmsEntretroca, 3)
 
     return {
         "carro": carro_data["id"],
@@ -96,6 +100,7 @@ def getCronicIssueData(issue, carro_data):
         "descricao": issue.get("descricao"),
         "kmsEntreTroca": kmsEntretroca,
         "trocadoNoKm": trocadoNoKm,
+        "trocarNoKm": trocarNoKm,
         "risco": risco_km
     }
 
@@ -103,14 +108,16 @@ def getCronicIssueData(issue, carro_data):
 def getPreventiveIssueData(issue, info, carro_data):
 
     carro_km = carro_data["quilometragem"]
+
     kmsEntretroca = info.get("media_km")
     trocadoNoKm = carro_km - int(kmsEntretroca/2)
-    risco_km = round((carro_km - trocadoNoKm)/kmsEntretroca, 3)
+    trocarNoKm = carro_km + int(kmsEntretroca/2)
+    risco_km = round((trocarNoKm - trocadoNoKm)/kmsEntretroca, 3)
 
-    dia_hoje = date.today()
     diasEntreTroca = info.get("media_dias")
     trocadoNaData = date.today() - timedelta(days=int(diasEntreTroca/2))
-    risco_days = round(1 - (dia_hoje - trocadoNaData).days / diasEntreTroca, 3)
+    trocarNaData = date.today() + timedelta(days=int(diasEntreTroca/2))
+    risco_days = round(1 - (trocarNaData - trocadoNaData).days / diasEntreTroca, 3)
 
     risco = round(risco_km * 0.8 + risco_days * 0.2, 3)
 
@@ -120,8 +127,10 @@ def getPreventiveIssueData(issue, info, carro_data):
         "descricao": info.get("descricao"),
         "kmsEntreTroca": kmsEntretroca,
         "trocadoNoKm": trocadoNoKm,
+        "trocarNoKm": trocarNoKm,
         "diasEntreTroca": diasEntreTroca,
         "trocadoNaData": trocadoNaData,
+        "trocarNaData": trocarNaData,
         "risco": risco
     }
 
@@ -147,32 +156,26 @@ def registerUser(request):
 
             user = User.objects.create_user(username=username, email=email, password=password)
 
-            # TODO criar garagem e definiçoes em paralelo
-
             garagem_data = {"user": user.id, "nome": f"Garagem do {username}"}
             res_crud_garagem = crud_Garagens(method="POST", data=garagem_data)
-            if not res_crud_garagem.success:
-                # rollback a transação caso falhar
-                raise Exception(res_crud_garagem.message)
 
             definicoes_data = {"user": user.id}
             res_crud_definicoes = crud_Definicoes(method="POST", data=definicoes_data)
-            if not res_crud_definicoes.success:
-                # rollback a transação caso falhar
-                raise Exception(res_crud_definicoes.message)
 
-            login(request, user)
-
-            return Response({"message": "User, Garagem and Definiçoes created",
-                             "user_data": userData(user),
-                             "garagem_data": crudData(res_crud_garagem, delete="user"),
-                             "definicoes_data": crudData(res_crud_definicoes, delete="user"),
-                             "carroPreview_data": [],
-                             "notas_data": []},
-                            status=201)
-
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
     except Exception as e:
         return Response({"message": f"Registration failed: {str(e)}"}, status=400)
+
+    login(request, user)
+
+    return Response({"message": "User, Garagem and Definiçoes created",
+                     "user_data": userData(user),
+                     "garagem_data": getCrudData(res_crud_garagem, delete="user"),
+                     "definicoes_data": getCrudData(res_crud_definicoes, delete="user"),
+                     "carroPreview_data": [],
+                     "notas_data": []},
+                    status=201)
 
 
 #! ================== LOGIN ================== 2
@@ -188,24 +191,24 @@ def loginUser(request):
     if not user:
         return Response({"message": "User not found"}, status=401)
 
-    res_crud_garagem = crud_Garagens(method="GET", user=user)
-    if len(res_crud_garagem.data) < 1:
-        return Response({"message": "Garagem not found"}, status=res_crud_garagem.status)
+    try:
+        res_crud_garagem = crud_Garagens(method="GET", user=user)
 
-    res_crud_definicoes = crud_Definicoes(method="GET", user=user)
-    if len(res_crud_definicoes.data) < 1:
-        return Response({"message": "Definicoes not found"}, status=res_crud_definicoes.status)
+        res_crud_definicoes = crud_Definicoes(method="GET", user=user)
 
-    res_crud_carrosPreview = crud_CarrosPreview(method="GET", user=user)  # pode não haver carros
+        res_crud_carrosPreview = crud_CarrosPreview(method="GET", user=user)  # pode não haver carros
 
-    res_crud_notas = crud_Notas(method="GET", user=user)  # pode não haver notas
+        res_crud_notas = crud_Notas(method="GET", user=user)  # pode não haver notas
+
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
 
     login(request, user)
 
     return Response({"message": "User, Garagem and Definiçoes found",
                      "user_data": userData(user),
-                     "garagem_data": crudData(res_crud_garagem, delete="user"),
-                     "definicoes_data": crudData(res_crud_definicoes, delete="user"),
+                     "garagem_data": getCrudData(res_crud_garagem, delete="user"),
+                     "definicoes_data": getCrudData(res_crud_definicoes, delete="user"),
                      "carroPreview_data": res_crud_carrosPreview.data},
                     status=201)
 
@@ -217,13 +220,15 @@ def loginUser(request):
 def atualizarDefinicoes(request, id):
     body = request.data
     definicoes_data = body.get("definicoes")
-    res_crud_definicoes = crud_Definicoes(method="PUT", data=definicoes_data, id=id, user=request.user)
 
-    if not res_crud_definicoes.success:
-        return Response({"message": res_crud_definicoes.message}, status=res_crud_definicoes.status)
+    try:
+        res_crud_definicoes = crud_Definicoes(method="PUT", data=definicoes_data, id=id, user=request.user)
+
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
 
     return Response({"message": "Settings updated",
-                     "definicoes_data": crudData(res_crud_definicoes, delete="user")},
+                     "definicoes_data": getCrudData(res_crud_definicoes, delete="user")},
                     status=200)
 
 
@@ -247,31 +252,39 @@ def adicionarCarro(request):
     body = request.data
     caracteristicas = body.get("caracteristicas")
 
-    res_crud_carros = crud_Carros(method="POST", data=caracteristicas)
-    if not res_crud_carros.success:
-        return Response({"message": res_crud_carros.message}, status=res_crud_carros.status)
-    carro_data = res_crud_carros.data
-    preview_data = CarrosPreviewSerializer(carro_data).data
-    carro_modelo = getCarroModel(carro_data)
+    try:
 
-    # TODO usar transaction igual registro E formatar a imformação primeiro para aceitar na db
-    res_gemini = carCronicIssues(carro_modelo, dummyData=True)
-    if not res_gemini.success:
-        return Response({"message": res_gemini.message}, status=400)
+        res_crud_carros = crud_Carros(method="POST", data=caracteristicas)
+        car_data = res_crud_carros.data
 
-    for cronico in res_gemini.data:
-        cronicData = getCronicIssueData(cronico, carro_data)
-        res_crud_cronico = crud_Cronicos("POST", data=cronicData)
-        if not res_crud_cronico.success:
-            return Response({"message": res_crud_cronico.message}, status=res_crud_cronico.status)
+        # TODO retorar nome completo, matricula e data proxima manutençao
+        preview_data = CarrosPreviewSerializer(car_data).data
 
-    preventivos = getPreventivos(carro_data.get("combustivel"))
-    for key, value in preventivos.items():
-        preventiveData = getPreventiveIssueData(key, value, carro_data)
-        res_crud_preventivo = crud_Preventivos("POST", data=preventiveData)
-        if not res_crud_preventivo.success:
-            return Response({"message": res_crud_preventivo.message}, status=res_crud_preventivo.status)
+        # TODO usar transaction igual registro
+        car_name = getCarroModel(car_data)
+        res_gemini = carCronicIssues(car_name, dummyData=True)  # obter problemas cronicos
 
+        c = []
+        for cronico in res_gemini.data:  # salvar problemas cronicos
+            cronicData = getCronicIssueData(cronico, car_data)
+            c.append(cronicData)
+
+        res_crud_cronico = crud_Cronicos("POST", data=c)
+
+        p = []
+        preventivos = getPreventivos(car_data.get("combustivel"))  # obter e salvar preventivos
+        for key, value in preventivos.items():
+            preventiveData = getPreventiveIssueData(key, value, car_data)
+            p.append(preventiveData)
+
+        res_crud_preventivo = crud_Preventivos("POST", data=p)
+
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+    except GeminiException as e:
+        return Response({"message": e.message}, status=400)
+
+    # TODO retornar nome completo, proxima manutenção e foto
     return Response({"message": "Carro added",
                      "carroPreview_data": preview_data},
                     status=200)
@@ -283,10 +296,21 @@ def adicionarCarro(request):
 @permission_classes([IsAuthenticated])
 def procurarCarros(request):
     body = request.data
-    # caracteristicas = body.get("caracteristicas")
+    specs = body.get("specs")
 
-    return Response({"message": "sup",
-                     "ola": "adeus"},
+    existingSpecs = {}
+    for spec, value in specs.items():
+        if bool(value):
+            existingSpecs[spec] = value
+
+    try:
+        res_gemini = carsBySpecs(existingSpecs, dummyData=True)
+        candidateCars = res_gemini.data
+    except GeminiException as e:
+        return Response({"message": e.message}, status=400)
+
+    return Response({"message": "Got candidate cars",
+                     "candidateCars_data": candidateCars},
                     status=200)
 
 

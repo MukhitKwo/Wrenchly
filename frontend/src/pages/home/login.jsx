@@ -39,7 +39,7 @@ export default function Login() {
 					notas: data.notas_data,
 				}));
 
-				navigate("/garagem"); // redirect to home page
+				// navigate("/garagem"); // redirect to home page
 			}
 		} catch (err) {
 			console.error(err);

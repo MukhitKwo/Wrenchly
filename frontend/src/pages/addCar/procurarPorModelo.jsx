@@ -4,7 +4,6 @@ import { useLocalStorage } from "../../context/appContext";
 
 export default function ProcurarCarroPorModelo() {
 	const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
-
 	const garagem_id = getLocalStorage.garagem.id;
 
 	const [caracteristicas, setCaracteristicas] = useState({

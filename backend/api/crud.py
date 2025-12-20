@@ -21,7 +21,8 @@ def crud(method, data, model, serializer, id=None, **filters):
 
 def create_object(Data, Serializer):
     try:
-        serializer = Serializer(data=Data)  # converte o json para o objeto do serializer
+        many = isinstance(Data, list)
+        serializer = Serializer(data=Data, many=many)  # converte o json para o objeto do serializer
         serializer.is_valid(raise_exception=True)  # verifica se os dados são válidos (se não, devolve 400)
         serializer.save()  # guarda no BD
         return CRUDResponse(status=201, message="created", data=serializer.data)
@@ -75,7 +76,7 @@ def delete_object(Model, ID, **filters):
         CRUDResponse(status=404, message="ID not found")
 
 
-#! ================== Classe CRUDResponse ==================
+#! ================== CRUD Classes ==================
 
 class CRUDResponse:
     def __init__(self, status=200, message="", data=None):
@@ -85,59 +86,78 @@ class CRUDResponse:
         self.data = data
 
 
+class CRUDException(Exception):
+    def __init__(self, message, status=400):
+        self.message = message
+        self.status = status
+        super().__init__(message)
+
+
 #! ================== Funções CRUD_model ==================
 
 def crud_Definicoes(method, data=None, id=None, user=None):
-    filtros = {}
-    if method not in ("POST"):
-        filtros = {"user": user}
-    return crud(method, data, Definicoes, DefinicoesSerializer, id, **filtros)
+    filtros = {} if method == "POST" else {"user": user}
+    res_crud = crud(method, data, Definicoes, DefinicoesSerializer, id, **filtros)
+    if not res_crud.success:
+        raise CRUDException(res_crud.message, status=res_crud.status)
+    if method == "GET" and not res_crud.data:
+        raise CRUDException("No definicoes", status=404)
+    return res_crud
 
 
 def crud_Garagens(method, data=None, id=None, user=None):
-    filtros = {}
-    if method not in ("POST"):
-        filtros = {"user": user}
-    return crud(method, data, Garagens, GaragensSerializer, id, **filtros)
+    filtros = {} if method == "POST" else {"user": user}
+    res_crud = crud(method, data, Garagens, GaragensSerializer, id, **filtros)
+    if not res_crud.success:
+        raise CRUDException(res_crud.message, status=res_crud.status)
+    if method == "GET" and not res_crud.data:
+        raise CRUDException("No garagens", status=404)
+    return res_crud
 
 
 def crud_Notas(method, data=None, id=None, user=None):
-    filtros = {}
-    if method not in ("POST"):
-        filtros = {"garagem__user": user}
-    return crud(method, data, Notas, NotaSerializer, id, **filtros)
+    filtros = {} if method == "POST" else {"garagem__user": user}
+    res_crud = crud(method, data, Notas, NotaSerializer, id, **filtros)
+    if not res_crud.success:
+        raise CRUDException(res_crud.message, status=res_crud.status)
+    return res_crud
 
 
 def crud_Carros(method, data=None, id=None, user=None):
-    filtros = {}
-    if method not in ("POST"):
-        filtros = {"garagem__user": user}
-    return crud(method, data, Carros, CarrosSerializer, id, **filtros)
+    filtros = {} if method == "POST" else {"garagem__user": user}
+    res_crud = crud(method, data, Carros, CarrosSerializer, id, **filtros)
+    if not res_crud.success:
+        raise CRUDException(res_crud.message, status=res_crud.status)
+    return res_crud
 
 
 def crud_CarrosPreview(method, data=None, id=None, user=None):
-    filtros = {}
-    if method not in ("POST"):
-        filtros = {"garagem__user": user}
-    return crud(method, data, Carros, CarrosPreviewSerializer, id, **filtros)
+    filtros = {} if method == "POST" else {"garagem__user": user}
+    res_crud = crud(method, data, Carros, CarrosPreviewSerializer, id, **filtros)
+    if not res_crud.success:
+        raise CRUDException(res_crud.message, status=res_crud.status)
+    return res_crud
 
 
 def crud_Manutencoes(method, data=None, id=None, user=None):
-    filtros = {}
-    if method not in ("POST"):
-        filtros = {"carro__garagem__user": user}
-    return crud(method, data, Manutencoes, ManutencoesSerializer, id, **filtros)
+    filtros = {} if method == "POST" else {"carro__garagem__user": user}
+    res_crud = crud(method, data, Manutencoes, ManutencoesSerializer, id, **filtros)
+    if not res_crud.success:
+        raise CRUDException(res_crud.message, status=res_crud.status)
+    return res_crud
 
 
 def crud_Preventivos(method, data=None, id=None, user=None):
-    filtros = {}
-    if method not in ("POST"):
-        filtros = {"carro__garagem__user": user}
-    return crud(method, data, Preventivos, PreventivosSerializer, id, **filtros)
+    filtros = {} if method == "POST" else {"carro__garagem__user": user}
+    res_crud = crud(method, data, Preventivos, PreventivosSerializer, id, **filtros)
+    if not res_crud.success:
+        raise CRUDException(res_crud.message, status=res_crud.status)
+    return res_crud
 
 
 def crud_Cronicos(method, data=None, id=None, user=None):
-    filtros = {}
-    if method not in ("POST"):
-        filtros = {"carro__garagem__user": user}
-    return crud(method, data, Cronicos, CronicosSerializer, id, **filtros)
+    filtros = {} if method == "POST" else {"carro__garagem__user": user}
+    res_crud = crud(method, data, Cronicos, CronicosSerializer, id, **filtros)
+    if not res_crud.success:
+        raise CRUDException(res_crud.message, status=res_crud.status)
+    return res_crud

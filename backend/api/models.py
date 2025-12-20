@@ -107,9 +107,13 @@ class Preventivos(models.Model):
 
     trocadoNaData = models.DateField("Trocado na data")  # type: ignore
 
+    trocarNaData = models.DateField("Trocar na data")  # type: ignore
+
     kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
 
     trocadoNoKm = models.PositiveIntegerField("Trocado no km", default=0)  # type: ignore
+
+    trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0)  # type: ignore
 
     risco = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
 
@@ -128,6 +132,8 @@ class Cronicos(models.Model):
     kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
 
     trocadoNoKm = models.PositiveIntegerField("Trocado no km", default=0)  # type: ignore
+
+    trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0)  # type: ignore
 
     risco = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
 

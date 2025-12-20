@@ -14,13 +14,6 @@ if not gemini_key:
     print_yellow("[WARNING] GEMINI_API_KEY key missing. Gemini disabled.")
 
 
-class GeminiResponse:
-    def __init__(self, success=True, message=None, data=None):
-        self.success = success
-        self.message = message
-        self.data = data
-
-
 def call_gemini(prompt, schema, temp):
 
     if not client:
@@ -86,20 +79,23 @@ def carCronicIssues(car_model: str, dummyData=False):
         )
     )
 
-    return call_gemini(prompt, schema, 0.3)
+    res_gemini = call_gemini(prompt, schema, 0.3)
+    if not res_gemini.success:
+        raise GeminiException(res_gemini.message)
+    return res_gemini
 
 
 def carsBySpecs(specs: dict, dummyData=False):
 
     if not isinstance(specs, dict):
-        return GeminiResponse(success=False, message="Specs not a dictionary")
+        raise GeminiException(message="Specs not a dictionary")
 
     if dummyData:
         return GeminiResponse(success=True, message="This is dummy data!", data=getDummyData(2))
 
     # TODO em vez de retornar so o nome do carro, retorna as caracteresticas tambem
     prompt = (
-        f"Lista Python de 15 veiculos que correspondem a estas especificações: {specs}. "
+        f"Lista Python de 12 veiculos que correspondem a estas especificações: {specs}. "
         "Incluir o nome completo e ano do carro, "
         "Não incluir texto adicional, não usar blocos de código (```), sem quebras de linha, "
         "exemplo: ['Audi A4 2005', 'Toyota Corolla 1998', ...]. "
@@ -110,7 +106,28 @@ def carsBySpecs(specs: dict, dummyData=False):
         items=types.Schema(type=types.Type.STRING)
     )
 
-    return call_gemini(prompt, schema, 0.7)
+    res_gemini = call_gemini(prompt, schema, 0.7)
+    if not res_gemini.success:
+        raise GeminiException(res_gemini.message)
+    return res_gemini
+
+
+#! ================== Gemini Classes ==================
+
+class GeminiResponse:
+    def __init__(self, success=True, message=None, data=None):
+        self.success = success
+        self.message = message
+        self.data = data
+
+
+class GeminiException(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+#! ================== Dummy data ==================
 
 
 def getDummyData(cronics):
