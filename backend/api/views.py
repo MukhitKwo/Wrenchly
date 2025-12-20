@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db import transaction
 from django.db import DatabaseError
-
 from httpx import get
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
@@ -42,8 +41,16 @@ from datetime import date, timedelta
 class CsrfExemptSessionAuthentication(SessionAuthentication):
     def enforce_csrf(self, request):
         return
+#! ============ DEV LOG (DEBUG FRONTEND → TERMINAL) ============
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def dev_log(request):
+    print("\n==============================")
+    print("[DEV LOG] Dados recebidos do frontend:")
+    print(request.data) # testes dos dados recebidos do frontend
+    print("==============================\n")
 
-
+    return Response({"success": True})
 #! ================== EMAIL ==================
 
 

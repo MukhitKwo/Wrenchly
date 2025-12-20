@@ -1,36 +1,36 @@
 // src/index.js (NOVO CÓDIGO)
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import { AppProvider } from "./context/appContext.jsx"; // your context
+import "./index.css";
 
 // IMPORTAÇÕES NECESSÁRIAS DO ROUTER E DOS COMPONENTES
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App"; // O componente que servirá de Layout (com navbar e Footer)
 
 // Importa os seus componentes de página
-import Home from "./pages/home/home.jsx";
 import Contatos from "./pages/home/contatos.jsx";
+import Home from "./pages/home/home.jsx";
 import Sobre from "./pages/home/sobre.jsx";
 
 import Login from "./pages/home/login.jsx";
 import Registo from "./pages/home/registo.jsx";
 
-import Garagem from "./pages/garage/garagem/garagem.jsx";
-import Manutencoes from "./pages/garage/manutencoes.jsx";
-import Preventivos from "./pages/garage/preventivos.jsx";
 import Cronicos from "./pages/garage/cronicos.jsx";
+import Garagem from "./pages/garage/garagem/garagem.jsx";
+import Preventivos from "./pages/garage/preventivos.jsx";
 
+import CronicoDetalhe from "./pages/garage/cronicoDetalhe.jsx";
 import ManutencaoDetalhe from "./pages/garage/manutencaoDetalhe.jsx";
 import PreventivoDetalhe from "./pages/garage/preventivoDetalhe.jsx";
-import CronicoDetalhe from "./pages/garage/cronicoDetalhe.jsx";
 
-import ProcurarCarroPorModelo from "./pages/addCar/procurarPorModelo.jsx";
-import ProcurarPorEspecificacoes from "./pages/addCar/procurarPorEspecificacoes.jsx";
 import ListaCarrosRecomendados from "./pages/addCar/listaCarrosRecomendados.jsx";
 import ListaCarrosSalvos from "./pages/addCar/listaCarrosSalvos.jsx";
+import ProcurarPorEspecificacoes from "./pages/addCar/procurarPorEspecificacoes.jsx";
+import ProcurarCarroPorModelo from "./pages/addCar/procurarPorModelo.jsx";
 
 
+import ListaManutencoes from "./pages/garage/ListaManutencoes.jsx";
 import Definicoes from "./pages/settings/definicoes.jsx";
 import Perfil from "./pages/settings/perfil.jsx";
 
@@ -48,7 +48,7 @@ const router = createBrowserRouter([
 			{ path: "login", element: <Login /> },
 			{ path: "registo", element: <Registo /> },
 			{ path: "garagem", element: <Garagem /> },
-			{ path: "manutencoes", element: <Manutencoes /> },
+			{ path: "ListaManutencoes", element: <ListaManutencoes /> },
 			{ path: "preventivos", element: <Preventivos /> },
 			{ path: "cronicos", element: <Cronicos /> },
 			{ path: "garagem", element: <Garagem /> },
