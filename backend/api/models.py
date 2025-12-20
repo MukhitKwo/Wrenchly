@@ -105,17 +105,17 @@ class Preventivos(models.Model):
 
     diasEntreTroca = models.PositiveIntegerField("Dias entre troca")  # type: ignore
 
-    trocadoNaData = models.DateField("Trocado na data")  # type: ignore
+    trocadoNaData = models.DateField("Trocado na data", null=True)  # type: ignore
 
-    trocarNaData = models.DateField("Trocar na data")  # type: ignore
+    trocarNaData = models.DateField("Trocar na data", null=True)  # type: ignore
 
     kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
 
-    trocadoNoKm = models.PositiveIntegerField("Trocado no km", default=0)  # type: ignore
+    trocadoNoKm = models.PositiveIntegerField("Trocado no km", default=0, null=True)  # type: ignore
 
-    trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0)  # type: ignore
+    trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0,  null=True)  # type: ignore
 
-    risco = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
+    risco = models.FloatField("Risco (normalizado)", default=0.0, null=True)  # type: ignore
 
     def __str__(self):
         return f"{self.nome} - {self.carro.quilometragem}/{self.trocadoNoKm + self.kmsEntreTroca} kms"
@@ -131,11 +131,11 @@ class Cronicos(models.Model):
 
     kmsEntreTroca = models.PositiveIntegerField("kms entre troca")  # type: ignore
 
-    trocadoNoKm = models.PositiveIntegerField("Trocado no km", default=0)  # type: ignore
+    trocadoNoKm = models.PositiveIntegerField("Trocado no km", default=0, null=True)  # type: ignore
 
-    trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0)  # type: ignore
+    trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0, null=True)  # type: ignore
 
-    risco = models.FloatField("Risco (normalizado)", default=0.0)  # type: ignore
+    risco = models.FloatField("Risco (normalizado)", default=0.0, null=True)  # type: ignore
 
     def __str__(self):
         return f"{self.nome} -  {self.carro.quilometragem}/{self.trocadoNoKm + self.kmsEntreTroca} kms"

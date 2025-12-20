@@ -50,9 +50,6 @@ export default function ProcurarCarroPorModelo() {
 
 			const data = await res.json("");
 			console.log(data.message);
-			console.log(data.carro_name);
-			console.log(data.proximo_preventivo);
-			console.log(data.imagem);
 
 			if (res.ok) {
 				setLocalStorage((prev) => ({

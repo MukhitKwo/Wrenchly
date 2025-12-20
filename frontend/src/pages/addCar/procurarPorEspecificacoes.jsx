@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function ProcurarPorEspecificacoes() {
+	const navigate = useNavigate();
+
 	const [especificacoes, setEspecificacoes] = useState({
 		categoria: "",
 		marca: "",
@@ -46,7 +49,9 @@ export default function ProcurarPorEspecificacoes() {
 			console.log(data.message);
 
 			if (res.ok) {
-				console.log(data.candidateCars_data);
+				navigate("/listaCarrosRecomendados", {
+					state: { candidateCars: data.candidateCars_data },
+				});
 			}
 		} catch (error) {
 			console.log(error);
