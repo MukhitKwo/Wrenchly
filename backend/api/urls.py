@@ -6,7 +6,8 @@ urlpatterns = [
 
     path("email/", send_email_user),
 
-
+    path("dev-log/", dev_log),
+    
     # REGISTRO E LOGIN
     path("registerUser/", registerUser),
     path("loginUser/", loginUser),
@@ -21,7 +22,7 @@ urlpatterns = [
     path("procurarCarros/", procurarCarros),
     
     # DEV / DEBUG
-    path("dev-log/", dev_log),
+    path("adicionarPreventivos/", adicionarPreventivos),
 
     
 

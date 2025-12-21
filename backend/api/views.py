@@ -34,7 +34,7 @@ from .crud import (
     CRUDException
 )
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 #! ============ CSRF EXEMPT FOR SESSION AUTHENTICATED APIs ============
 
@@ -138,14 +138,9 @@ def loginUser(request):
             next_trocarNaData=Subquery(closest_date)
         )
 
-        carrosPreview_data = []
-        for car in CarrosPreviewSerializer(carros, many=True).data:
-
-            car_name = getCarName(car)
-            carPreview_data = {"id": car.get("id"), "nome": car_name, "matricula": car.get(
-                "matricula"), "proxima_manutencao": car.get(
-                "next_trocarNaData"), "foto": None}
-            carrosPreview_data.append(carPreview_data)
+        carrosPreview_data = CarrosPreviewSerializer(carros, many=True).data
+        for car in carrosPreview_data:
+            car["foto"] = None
 
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
@@ -205,17 +200,16 @@ def adicionarCarro(request):
         with transaction.atomic():
 
             res_crud_carros = crud_Carros(method="POST", data=caracteristicas)
-
             car_data = res_crud_carros.data
 
-            car_name = getCarName(car_data)
             car_full_name = getCarroFullName(car_data)
-
             cronicos_fromGemini = generateCarCronicIssues(car_full_name, dummyData=True)
             allCronicos = []
             for cronico in cronicos_fromGemini.data:
                 cronicData = convertIssueToCronic(cronico, car_data)
                 allCronicos.append(cronicData)
+
+            crud_Cronicos("POST", data=allCronicos)
 
             preventivos_fromFile = getCarPreventivesIssues(car_data.get("combustivel"))
             allPreventivos = []
@@ -224,9 +218,13 @@ def adicionarCarro(request):
                 allPreventivos.append(preventiveData)
 
             # TODO retornar foto do carro
-            # TODO fazer pagina para atualizar datas e kms
-            carroInfo_data = {"nome": car_name, "matricula": car_data.get(
-                "matricula"), "foto": None, "allPreventivos_data": allPreventivos, "allCronicos_data": allCronicos}
+            # TODO convert to serializer if possible
+            carro_data = {
+                "id": car_data.get("id"),
+                "full_name": getCarName(car_data),
+                "matricula": car_data.get("matricula"),
+                "foto": None,
+            }
 
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
@@ -236,7 +234,8 @@ def adicionarCarro(request):
         return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
     return Response({"message": "Carro created, Preventivo and Cronico defined",
-                     "carroInfo_data": carroInfo_data},
+                     "carro_data": carro_data,
+                     "allPreventivos": allPreventivos},
                     status=200)
 
 
@@ -244,22 +243,29 @@ def adicionarCarro(request):
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
-def adicionarPreventivosCronicos(request):
+def adicionarPreventivos(request):
     body = request.data
-    allPreventivos = body.get("allPreventivos")
-    allCronicos = body.get("allCronicos")
+    preventivos = body.get("preventivos")
 
     try:
 
-        cronicos_data = crud_Cronicos("POST", data=allCronicos).data
+        # print(preventivos)
+        date1 = datetime.strptime("2999-12-21", "%Y-%m-%d")
 
-        preventivos_data = crud_Preventivos("POST", data=allPreventivos).data
+        for preventivo in preventivos.copy():
+            date2 = datetime.strptime(preventivo.get("trocadoNaData"), "%Y-%m-%d")
+
+            date1 = min(date1, date2)
+
+        proxima_manutencao = date1.date()
+
+        preventivos_data = crud_Preventivos("POST", data=preventivos)
 
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
     return Response({"message": "Cronico and Preventivo created",
-                     "carroPreview_data": None},  # TODO retornar foto do carro
+                     "proxima_manutencao": proxima_manutencao},  # TODO retornar foto do carro
                     status=200)
 
 

@@ -9,8 +9,30 @@ export default function ListaCarrosRecomendados() {
 
 	return (
 		<div className="page-box">
-			<h1>Pagina listaCarrosRecomendados</h1>
-			<p>recomendados por especificaçoes</p>
+			<h1>Lista de Carros Recomendados</h1>
+			<p>Recomendados por especificações (nao funciona ainda)</p>
+
+			{candidateCars.length ? (
+				candidateCars.map((car, index) => (
+					<div
+						key={index}
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							border: "1px solid #ccc",
+							padding: "10px",
+							marginBottom: "8px",
+							borderRadius: "6px",
+						}}
+					>
+						<span>{car}</span>
+						<button>Save</button>
+					</div>
+				))
+			) : (
+				<p>Nenhum carro recomendado.</p>
+			)}
 		</div>
 	);
 }

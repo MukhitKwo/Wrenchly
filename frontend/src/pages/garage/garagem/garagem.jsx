@@ -6,10 +6,11 @@ import "./garagem.css";
 export default function Garagem() {
 	const { state: getLocalStorage } = useLocalStorage();
 	const carros = getLocalStorage.carros_preview;
+	const garagem = getLocalStorage.garagem;
 
 	return (
 		<div className="page-box">
-			<h1>Garagem</h1>
+			<h1>{garagem.nome}</h1>
 
 			<div style={{ display: "flex", justifyContent: "center", gap: "14px", padding: "20px" }}>
 				<Link to="/procurarPorModelo">
@@ -35,7 +36,7 @@ export default function Garagem() {
 function CarroCard({ carro }) {
 	return (
 		<div className="carro-panel">
-			<h2>{carro.nome || "Sem nome"}</h2>
+			<h2>{carro.full_name || "Sem nome"}</h2>
 			<p>
 				<strong>Matrícula:</strong> {carro.matricula ?? "N/A"}
 			</p>

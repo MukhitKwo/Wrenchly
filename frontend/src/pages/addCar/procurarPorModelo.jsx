@@ -55,7 +55,7 @@ export default function ProcurarCarroPorModelo() {
 
 			if (res.ok) {
 				navigate("/atualizarCronicosPreventivos", {
-					state: { carroInfo: data.carroInfo_data },
+					state: { carro: data.carro_data, preventivos: data.allPreventivos },
 				});
 
 				// setLocalStorage((prev) => ({
