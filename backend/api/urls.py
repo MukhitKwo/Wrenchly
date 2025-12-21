@@ -24,7 +24,16 @@ urlpatterns = [
     # DEV / DEBUG
     path("adicionarPreventivos/", adicionarPreventivos),
 
-    
+    #API GUILHERME
+    path("carrosSalvos/", listarCarrosSalvos),
+    path("manutencoes/", listarManutencoes),
+    path("manutencao/", salvarManutencao),
+    path("preventivos/", listarPreventivos),
+    path("preventivo/", salvarPreventivo),
+    path("cronicos/", listarCronicos),
+    path("cronico/", salvarCronico),
+
+
 
     # # NOTAS
     # path("tabelaNota/", apiNotas),
