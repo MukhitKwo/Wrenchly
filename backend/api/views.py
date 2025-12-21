@@ -295,68 +295,83 @@ def procurarCarros(request):
                      "candidateCars_data": candidateCars},
                     status=200)
 
-
-# ============ CARROS ============
-# @api_view(["GET", "POST", "PUT", "DELETE"])
-# @authentication_classes([CsrfExemptSessionAuthentication])
-# @permission_classes([IsAuthenticated])
-# def apiCarros(request, id=None):
-#     if request.method in ["POST", "PUT"]:
-#         garagem_id = request.data.get("garagem")
-
-#         if garagem_id:
-#             if not Garagens.objects.filter(garagem_id=garagem_id, user=request.user).exists():
-#                 return Response({"success": False, "message": "Invalid garage"}, status=403)
-
-#     return crud_Carros(request, id)
+# * ================== API Guilherme ==================
 
 
-# ============ MANUTENCOES ============
-# @api_view(["GET", "POST", "PUT", "DELETE"])
-# @authentication_classes([CsrfExemptSessionAuthentication])
-# @permission_classes([IsAuthenticated])
-# def apiManutencoes(request, id=None):
-#     if request.method in ["POST", "PUT"]:
-#         carro_id = request.data.get("carro")
-#         if not Carros.objects.filter(
-#             carro_id=carro_id,
-#             garagem__user=request.user,
-#         ).exists():
-#             return Response({"success": False, "message": "Invalid car"}, status=403)
-
-#     return crud_Manutencoes(request, id)
+# Listar carros salvos (stub)
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def listarCarrosSalvos(request):
+    return Response({
+        "message": "Lista de carros salvos (stub)",
+        "carros": []
+    }, status=200)
 
 
-# ============ PREVENTIVOS ============
-# @api_view(["GET", "POST", "PUT", "DELETE"])
-# @authentication_classes([CsrfExemptSessionAuthentication])
-# @permission_classes([IsAuthenticated])
-# def apiPreventivos(request, id=None):
-#     if request.method in ["POST", "PUT"]:
-#         carro_id = request.data.get("carro")
-#         if not Carros.objects.filter(
-#             carro_id=carro_id,
-#             garagem__user=request.user,
-#         ).exists():
-#             return Response({"success": False, "message": "Invalid car"}, status=403)
-
-#     return crud_Preventivos(request, id)
+# Manutenções (lista)
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def listarManutencoes(request):
+    return Response({
+        "message": "Lista de manutenções (stub)",
+    }, status=200)
 
 
-# ============ CRONICOS ============
-# @api_view(["GET", "POST", "PUT", "DELETE"])
-# @authentication_classes([CsrfExemptSessionAuthentication])
-# @permission_classes([IsAuthenticated])
-# def apiCronicos(request, id=None):
-#     if request.method in ["POST", "PUT"]:
-#         carro_id = request.data.get("carro")
-#         if not Carros.objects.filter(
-#             carro_id=carro_id,
-#             garagem__user=request.user,
-#         ).exists():
-#             return Response({"success": False, "message": "Invalid car"}, status=403)
+# Manutenções (criar/editar)
+@api_view(["POST", "PUT"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def salvarManutencao(request):
+    return Response({
+        "message": "Manutenção criada/atualizada (stub)",
+        "data": request.data
+    }, status=200)
 
-#     return crud_Cronicos(request, id)
+
+# Preventivos (lista)
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def listarPreventivos(request):
+    return Response({
+        "message": "Lista de preventivos (stub)",
+        "preventivos": []
+    }, status=200)
+
+
+# Preventivos (criar/editar)
+@api_view(["POST", "PUT"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def salvarPreventivo(request):
+    return Response({
+        "message": "Preventivo criado/atualizado (stub)",
+        "data": request.data
+    }, status=200)
+
+
+# Cronicos (lista)
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def listarCronicos(request):
+    return Response({
+        "message": "Lista de crónicos (stub)",
+        "cronicos": []
+    }, status=200)
+
+
+# Crónicos (criar/editar)
+@api_view(["POST", "PUT"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def salvarCronico(request):
+    return Response({
+        "message": "Crónico criado/atualizado (stub)",
+        "data": request.data
+    }, status=200)
 
 
 #! ================== Funções Helpers ==================
@@ -444,68 +459,3 @@ def convertIssueToPreventive(issue, carro_data):
         "trocarNaData": trocarNaData,
         "risco": 0
     }
-    #! ================== API Guilherme ==================
-    # Listar carros salvos (stub)
-@api_view(["GET"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def listarCarrosSalvos(request):
-    return Response({
-        "message": "Lista de carros salvos (stub)",
-        "carros": []
-    }, status=200)
-    #Manutenções (lista)
-@api_view(["GET"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def listarManutencoes(request):
-    return Response({
-        "message": "Lista de manutenções (stub)",
-        "manutencoes": []
-    }, status=200)
-    #Manutenções (criar/editar)
-@api_view(["POST", "PUT"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def salvarManutencao(request):
-    return Response({
-        "message": "Manutenção criada/atualizada (stub)",
-        "data": request.data
-    }, status=200)
-    #Preventivos (lista)
-@api_view(["GET"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def listarPreventivos(request):
-    return Response({
-        "message": "Lista de preventivos (stub)",
-        "preventivos": []
-    }, status=200)
-    #Preventivos (criar/editar)
-@api_view(["POST", "PUT"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def salvarPreventivo(request):
-    return Response({
-        "message": "Preventivo criado/atualizado (stub)",
-        "data": request.data
-    }, status=200)
-    #Cronicos (lista)
-@api_view(["GET"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def listarCronicos(request):
-    return Response({
-        "message": "Lista de crónicos (stub)",
-        "cronicos": []
-    }, status=200)
-    #Crónicos (criar/editar)
-@api_view(["POST", "PUT"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def salvarCronico(request):
-    return Response({
-        "message": "Crónico criado/atualizado (stub)",
-        "data": request.data
-    }, status=200)
-    

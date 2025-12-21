@@ -29,9 +29,26 @@ export default function ManutencaoDetalhe() {
 		console.log(manutencao);
 
 		try {
-			
+			const res = await fetch("/api/manutencao/", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ manutencao }),
+			});
+
+			const data = await res.json("");
+			console.log(data.message);
+
+			if (res.ok) {
+				console.log("sup");
+
+				// navigate("/atualizarCronicosPreventivos", {
+				// 	state: { carro: data.carro_data, preventivos: data.allPreventivos },
+				// });
+			}
 		} catch (error) {
-			
+			console.log(error);
 		}
 	};
 

@@ -4,7 +4,7 @@ import { useLocalStorage } from "../../context/appContext";
 export default function AtualizarCronicosPreventivos() {
 	const navigate = useNavigate();
 	const { state } = useLocation();
-	const { state: getLocalStorage } = useLocalStorage();
+	const { setState: setLocalStorage } = useLocalStorage();
 	//tava a dar erro aqui
 	//const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
 	const carro_data = state?.carro;
