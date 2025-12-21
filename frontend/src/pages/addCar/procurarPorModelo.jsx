@@ -1,13 +1,12 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useLocalStorage } from "../../context/appContext";
-import { useNavigate } from "react-router-dom";
-
 export default function ProcurarCarroPorModelo() {
 	const navigate = useNavigate();
-	const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
+	const { state: getLocalStorage } = useLocalStorage();
+	//tava a dar erro aqui
+	//const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
 	const garagem_id = getLocalStorage.garagem.id;
-
 	const [caracteristicas, setCaracteristicas] = useState({
 		categoria: "",
 		marca: "",

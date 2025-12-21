@@ -30,13 +30,19 @@ export default function PreventivoDetalhe() {
 			const existe = lista.some((p) => p.id === preventivo.id);
 
 			const listaAtualizada = existe
-				? lista.map((p) => (p.id === preventivo.id ? { ...p, ...preventivo } : p))
+				? lista.map((p) =>
+					p.id === preventivo.id ? { ...p, ...preventivo } : p
+				)
 				: [...lista, { ...preventivo, id: Date.now() }];
+
+			const preventivoFinal = existe
+				? { ...preventivo }
+				: { ...preventivo, id: Date.now() };
 
 			return {
 				...prev,
 				preventivos: listaAtualizada,
-				preventivo_selecionado: preventivo,
+				preventivo_selecionado: preventivoFinal,
 			};
 		});
 
@@ -46,6 +52,7 @@ export default function PreventivoDetalhe() {
 			payload: preventivo,
 		});
 	};
+
 
 
 

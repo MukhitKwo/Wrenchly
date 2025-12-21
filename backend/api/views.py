@@ -444,3 +444,68 @@ def convertIssueToPreventive(issue, carro_data):
         "trocarNaData": trocarNaData,
         "risco": 0
     }
+    #! ================== API Guilherme ==================
+    # Listar carros salvos (stub)
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def listarCarrosSalvos(request):
+    return Response({
+        "message": "Lista de carros salvos (stub)",
+        "carros": []
+    }, status=200)
+    #Manutenções (lista)
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def listarManutencoes(request):
+    return Response({
+        "message": "Lista de manutenções (stub)",
+        "manutencoes": []
+    }, status=200)
+    #Manutenções (criar/editar)
+@api_view(["POST", "PUT"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def salvarManutencao(request):
+    return Response({
+        "message": "Manutenção criada/atualizada (stub)",
+        "data": request.data
+    }, status=200)
+    #Preventivos (lista)
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def listarPreventivos(request):
+    return Response({
+        "message": "Lista de preventivos (stub)",
+        "preventivos": []
+    }, status=200)
+    #Preventivos (criar/editar)
+@api_view(["POST", "PUT"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def salvarPreventivo(request):
+    return Response({
+        "message": "Preventivo criado/atualizado (stub)",
+        "data": request.data
+    }, status=200)
+    #Cronicos (lista)
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def listarCronicos(request):
+    return Response({
+        "message": "Lista de crónicos (stub)",
+        "cronicos": []
+    }, status=200)
+    #Crónicos (criar/editar)
+@api_view(["POST", "PUT"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def salvarCronico(request):
+    return Response({
+        "message": "Crónico criado/atualizado (stub)",
+        "data": request.data
+    }, status=200)
+    
