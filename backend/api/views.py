@@ -136,6 +136,8 @@ def loginUser(request):
 
         carros = Carros.objects.annotate(
             next_trocarNaData=Subquery(closest_date)
+        ).filter(
+            garagem__user=user
         )
 
         carrosPreview_data = CarrosPreviewSerializer(carros, many=True).data

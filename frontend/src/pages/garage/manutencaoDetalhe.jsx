@@ -5,12 +5,12 @@ import { devLog } from "../../utils/devLog";
 
 export default function ManutencaoDetalhe() {
 	const { state: getLocalStorage } = useLocalStorage();
-	const carro_id = getLocalStorage?.carro_selecionado?.id || null;
+	const carro_id = getLocalStorage?.carro_selecionado?.id;
 
 	const [manutencao, setManutencao] = useState({
-		id: Date.now(),
-		tipo: "",
+		nome: "",
 		descricao: "",
+		tipo: "",
 		data: "",
 		custo: "",
 		quilometragem: "",
@@ -26,16 +26,13 @@ export default function ManutencaoDetalhe() {
 	};
 
 	const guardarManutencao = async () => {
-		console.log("=== MANUTENÇÃO SUBMETIDA ===");
 		console.log(manutencao);
 
-		await devLog({
-			tipo: "MANUTENCAO",
-			acao: "CRIAR",
-			payload: manutencao,
-		});
-
-		alert("Manutenção registada (ver TERMINAL do Django)");
+		try {
+			
+		} catch (error) {
+			
+		}
 	};
 
 	return (
@@ -53,9 +50,15 @@ export default function ManutencaoDetalhe() {
 			</div>
 
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
-				<input placeholder="Tipo de manutenção" name="tipo" value={manutencao.tipo} onChange={handleChange} />
+				<input placeholder="Nome" name="nome" value={manutencao.nome} onChange={handleChange} />
 
 				<textarea placeholder="Descrição" name="descricao" value={manutencao.descricao} onChange={handleChange} />
+
+				<select name="tipo" value={manutencao.tipo} onChange={handleChange}>
+					<option value="corretiva">Corretiva</option>
+					<option value="preventiva">Preventiva</option>
+					<option value="cronica">Cronica</option>
+				</select>
 
 				<input type="date" name="data" value={manutencao.data} onChange={handleChange} />
 
