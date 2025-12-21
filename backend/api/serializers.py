@@ -28,15 +28,18 @@ class NotaSerializer(serializers.ModelSerializer):
 
 
 class CarrosSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Carros
         fields = '__all__'
 
 
 class CarrosPreviewSerializer(serializers.ModelSerializer):
+    next_trocarNaData = serializers.DateField(read_only=True)
+
     class Meta:
         model = Carros
-        fields = ["id", "categoria", "marca", "modelo", "ano", "matricula"]
+        fields = ["id", "marca", "modelo", "ano", "matricula", "next_trocarNaData"]
 
 
 class ManutencoesSerializer(serializers.ModelSerializer):

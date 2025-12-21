@@ -28,6 +28,7 @@ import ListaCarrosRecomendados from "./pages/addCar/listaCarrosRecomendados.jsx"
 import ListaCarrosSalvos from "./pages/addCar/listaCarrosSalvos.jsx";
 import ProcurarPorEspecificacoes from "./pages/addCar/procurarPorEspecificacoes.jsx";
 import ProcurarCarroPorModelo from "./pages/addCar/procurarPorModelo.jsx";
+import AtualizarCronicosPreventivos from "./pages/addCar/atualizarCronicosPreventivos.jsx";
 
 
 import ListaManutencoes from "./pages/garage/ListaManutencoes.jsx";
@@ -48,7 +49,7 @@ const router = createBrowserRouter([
 			{ path: "login", element: <Login /> },
 			{ path: "registo", element: <Registo /> },
 			{ path: "garagem", element: <Garagem /> },
-			{ path: "ListaManutencoes", element: <ListaManutencoes /> },
+			{ path: "listaManutencoes/:id", element: <ListaManutencoes /> },
 			{ path: "preventivos", element: <Preventivos /> },
 			{ path: "cronicos", element: <Cronicos /> },
 			{ path: "garagem", element: <Garagem /> },
@@ -59,6 +60,7 @@ const router = createBrowserRouter([
 			{ path: "procurarPorEspecificacoes", element: <ProcurarPorEspecificacoes /> },
 			{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
 			{ path: "listaCarrosSalvos", element: <ListaCarrosSalvos /> },
+			{ path: "atualizarCronicosPreventivos", element: <AtualizarCronicosPreventivos /> },
 			{ path: "definicoes", element: <Definicoes /> },
 		],
 	},

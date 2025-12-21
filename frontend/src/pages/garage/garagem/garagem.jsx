@@ -21,33 +21,28 @@ export default function Garagem() {
 				{carros.length === 0 ? (
 					<p>Não tens carros na garagem.</p>
 				) : (
-					carros.map((carro, index) => (
-						<div
-							key={index}
-							className="carro-panel"
-							style={{
-								border: "1px solid #ccc",
-								borderRadius: "8px",
-								padding: "15px",
-								width: "200px",
-								textAlign: "center",
-								boxShadow: "2px 2px 6px rgba(0,0,0,0.1)",
-							}}
-						>
-							<h2>{carro.marca || carro.modelo || "Sem marca"}</h2>
-							<p>
-								<strong>Marca:</strong> {carro.marca || "N/A"}
-							</p>
-							<p>
-								<strong>Modelo:</strong> {carro.modelo || "N/A"}
-							</p>
-							<p>
-								<strong>Ano:</strong> {carro.ano || "N/A"}
-							</p>
-						</div>
+					carros.map((carro) => (
+						<Link key={carro.id} to={`/listaManutencoes/${carro.id}`} className="carro-link">
+							<CarroCard carro={carro} />
+						</Link>
 					))
 				)}
 			</div>
+		</div>
+	);
+}
+
+function CarroCard({ carro }) {
+	return (
+		<div className="carro-panel">
+			<h2>{carro.nome || "Sem nome"}</h2>
+			<p>
+				<strong>Matrícula:</strong> {carro.matricula ?? "N/A"}
+			</p>
+			<p>
+				<strong>Próxima manutenção:</strong> {carro.proxima_manutencao ?? "N/A"}
+			</p>
+			{carro.foto && <img src={carro.foto} alt={carro.nome} />}
 		</div>
 	);
 }

@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db import transaction
 from django.db import DatabaseError
+from django.db.models import OuterRef, Subquery
 from httpx import get
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import SessionAuthentication
@@ -17,8 +18,8 @@ from rest_framework.decorators import (
 from .models import *  # apagar dps
 from .serializers import *  # apagar dps
 
-from .gemini import carCronicIssues, carsBySpecs, GeminiException
-from .preventivos import getCommonPreventives
+from .gemini import generateCarCronicIssues, carsBySpecs, GeminiException
+from .preventivos import getCarPreventivesIssues
 from .email import send_email
 from .crud import (
     crud_CarrosPreview,
@@ -126,9 +127,25 @@ def loginUser(request):
 
         res_crud_definicoes = crud_Definicoes(method="GET", user=user)
 
-        res_crud_carrosPreview = crud_CarrosPreview(method="GET", user=user)  # TODO convert to full name
+        res_crud_notas = crud_Notas(method="GET", user=user)
 
-        res_crud_notas = crud_Notas(method="GET", user=user)  # pode não haver notas
+        # TODO convert to function
+        closest_date = Preventivos.objects.filter(
+            carro=OuterRef("pk")
+        ).order_by("trocarNaData").values("trocarNaData")[:1]
+
+        carros = Carros.objects.annotate(
+            next_trocarNaData=Subquery(closest_date)
+        )
+
+        carrosPreview_data = []
+        for car in CarrosPreviewSerializer(carros, many=True).data:
+
+            car_name = getCarName(car)
+            carPreview_data = {"id": car.get("id"), "nome": car_name, "matricula": car.get(
+                "matricula"), "proxima_manutencao": car.get(
+                "next_trocarNaData"), "foto": None}
+            carrosPreview_data.append(carPreview_data)
 
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
@@ -139,7 +156,7 @@ def loginUser(request):
                      "user_data": userData(user),
                      "garagem_data": getCrudData(res_crud_garagem, delete="user"),
                      "definicoes_data": getCrudData(res_crud_definicoes, delete="user"),
-                     "carroPreview_data": res_crud_carrosPreview.data,
+                     "carrosPreview_data": carrosPreview_data,
                      "notas_data": res_crud_notas.data},
                     status=201)
 
@@ -191,26 +208,25 @@ def adicionarCarro(request):
 
             car_data = res_crud_carros.data
 
+            car_name = getCarName(car_data)
             car_full_name = getCarroFullName(car_data)
-            res_gemini = carCronicIssues(car_full_name, dummyData=True)  # obter problemas cronicos
 
-            allCronicos = []  # TODO convert to fucntion
-            for cronico in res_gemini.data:  # salvar problemas cronicos
-                cronicData = convertDataToCronic(cronico, car_data)
+            cronicos_fromGemini = generateCarCronicIssues(car_full_name, dummyData=True)
+            allCronicos = []
+            for cronico in cronicos_fromGemini.data:
+                cronicData = convertIssueToCronic(cronico, car_data)
                 allCronicos.append(cronicData)
 
-            res_crud_cronico = crud_Cronicos("POST", data=allCronicos)
-
-            allPreventivos = []  # TODO convert to fucntion
-            preventivos = getCommonPreventives(car_data.get("combustivel"))  # obter e salvar preventivos
-            for key, value in preventivos.items():
-                preventiveData = convertDataToPreventive(key, value, car_data)
+            preventivos_fromFile = getCarPreventivesIssues(car_data.get("combustivel"))
+            allPreventivos = []
+            for preventivo in preventivos_fromFile:
+                preventiveData = convertIssueToPreventive(preventivo, car_data)
                 allPreventivos.append(preventiveData)
 
-            res_crud_preventivo = crud_Preventivos("POST", data=allPreventivos)
-
-            car_name = getCarName(car_data)
-            carroPreview_data = {"nome": car_name, "proxima_manutencao": None, "foto": None}
+            # TODO retornar foto do carro
+            # TODO fazer pagina para atualizar datas e kms
+            carroInfo_data = {"nome": car_name, "matricula": car_data.get(
+                "matricula"), "foto": None, "allPreventivos_data": allPreventivos, "allCronicos_data": allCronicos}
 
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
@@ -219,12 +235,35 @@ def adicionarCarro(request):
     except Exception as e:
         return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
-    return Response({"message": "Carro, Cronico and Preventivo created",
-                     "carroPreview_data": carroPreview_data},  # TODO retornar foto do carro
+    return Response({"message": "Carro created, Preventivo and Cronico defined",
+                     "carroInfo_data": carroInfo_data},
                     status=200)
 
 
-#! ============ PROCURAR CARROS POR ESPECIFICAÇÕES ============ 6
+#! ============ ADICIONAR CRONCICO E PREVENTIVO ATUALIZADOR AO CARRO ============ 6
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def adicionarPreventivosCronicos(request):
+    body = request.data
+    allPreventivos = body.get("allPreventivos")
+    allCronicos = body.get("allCronicos")
+
+    try:
+
+        cronicos_data = crud_Cronicos("POST", data=allCronicos).data
+
+        preventivos_data = crud_Preventivos("POST", data=allPreventivos).data
+
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Cronico and Preventivo created",
+                     "carroPreview_data": None},  # TODO retornar foto do carro
+                    status=200)
+
+
+#! ============ PROCURAR CARROS POR ESPECIFICAÇÕES ============ 7
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -349,13 +388,13 @@ def getCarroFullName(car):
     return f"({car.get("categoria")}) {getCarName(car)}, {car.get("cilindrada")}cc, {car.get("transmissao")} {car.get("combustivel")}"
 
 
-def convertDataToCronic(issue, carro_data):
+def convertIssueToCronic(issue, carro_data):
 
-    carro_km = carro_data["quilometragem"]
+    carro_km = carro_data.get("quilometragem")
 
     kmsEntretroca = issue.get("media_km")
     # trocadoNoKm = carro_km - int(kmsEntretroca/2)
-    # trocarNoKm = carro_km + int(kmsEntretroca/2)
+    trocarNoKm = carro_km + kmsEntretroca
     # risco_km = round((trocarNoKm - trocadoNoKm)/kmsEntretroca, 3)
 
     return {
@@ -363,37 +402,37 @@ def convertDataToCronic(issue, carro_data):
         "nome": issue.get("problema"),
         "descricao": issue.get("descricao"),
         "kmsEntreTroca": kmsEntretroca,
-        "trocadoNoKm": None,
-        "trocarNoKm": None,
-        "risco": None
+        "trocadoNoKm": carro_km,
+        "trocarNoKm": trocarNoKm,
+        "risco": 0
     }
 
 
-def convertDataToPreventive(issue, info, carro_data):
+def convertIssueToPreventive(issue, carro_data):
 
-    # carro_km = carro_data["quilometragem"]
+    carro_km = carro_data.get("quilometragem")
 
-    kmsEntretroca = info.get("media_km")
+    kmsEntretroca = issue.get("media_km")
     # trocadoNoKm = carro_km - int(kmsEntretroca/2)
-    # trocarNoKm = carro_km + int(kmsEntretroca/2)
+    trocarNoKm = carro_km + kmsEntretroca
     # risco_km = round((trocarNoKm - trocadoNoKm)/kmsEntretroca, 3)
 
-    diasEntreTroca = info.get("media_dias")
+    diasEntreTroca = issue.get("media_dias")
     # trocadoNaData = date.today() - timedelta(days=int(diasEntreTroca/2))
-    # trocarNaData = date.today() + timedelta(days=int(diasEntreTroca/2))
+    trocarNaData = date.today() + timedelta(days=diasEntreTroca)
     # risco_days = round(1 - (trocarNaData - trocadoNaData).days / diasEntreTroca, 3)
 
     # risco = round(risco_km * 0.8 + risco_days * 0.2, 3)
 
     return {
         "carro": carro_data["id"],
-        "nome": issue,
-        "descricao": info.get("descricao"),
+        "nome": issue.get("nome"),
+        "descricao": issue.get("descricao"),
         "kmsEntreTroca": kmsEntretroca,
-        "trocadoNoKm": None,
-        "trocarNoKm": None,
+        "trocadoNoKm": carro_km,
+        "trocarNoKm": trocarNoKm,
         "diasEntreTroca": diasEntreTroca,
-        "trocadoNaData": None,
-        "trocarNaData": None,
-        "risco": None
+        "trocadoNaData": date.today(),
+        "trocarNaData": trocarNaData,
+        "risco": 0
     }

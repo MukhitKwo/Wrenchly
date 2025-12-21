@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLocalStorage } from "../../context/appContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ProcurarCarroPorModelo() {
+	const navigate = useNavigate();
 	const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
 	const garagem_id = getLocalStorage.garagem.id;
 
@@ -52,10 +54,14 @@ export default function ProcurarCarroPorModelo() {
 			console.log(data.message);
 
 			if (res.ok) {
-				setLocalStorage((prev) => ({
-					...prev,
-					carros_preview: [...prev.carros_preview, data.carroPreview_data], // TODO fix this shit
-				}));
+				navigate("/atualizarCronicosPreventivos", {
+					state: { carroInfo: data.carroInfo_data },
+				});
+
+				// setLocalStorage((prev) => ({
+				// 	...prev,
+				// 	carros_preview: [...prev.carros_preview, data.carroPreview_data], // TODO fix this shit
+				// }));
 			}
 		} catch (error) {
 			console.log(error);

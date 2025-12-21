@@ -1,39 +1,62 @@
 /* por defeito */
 .buttonStyles {
-    background-color: #ffffff;
-    color: #111827;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+	background-color: #ffffff;
+	color: #111827;
+	border: 1px solid #d1d5db;
+	border-radius: 8px;
+	padding: 10px 18px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
 }
 
 /* Quando é passado o rato */
 .buttonStyles:hover {
-    background-color: #f9fafb;
-    border-color: #9ca3af;
+	background-color: #f9fafb;
+	border-color: #9ca3af;
 }
 
 /* quando é carregado o tab e este está focus */
 .buttonStyles:focus {
-    outline: none;
-    border-color: #2563eb;
-    /* azul elegante */
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+	outline: none;
+	border-color: #2563eb;
+	/* azul elegante */
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
 }
 
 /* Active (quando clicas) */
 .buttonStyles:active {
-    transform: translateY(1px);
-    background-color: #f3f4f6;
+	transform: translateY(1px);
+	background-color: #f3f4f6;
 }
 
 /* Disabled (se precisares no futuro) */
 .buttonStyles:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
+	opacity: 0.5;
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.carros-container {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	justify-content: center;
+}
+
+.carro-panel {
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	padding: 1em;
+	width: 300px;
+    height: 200px;
+	text-align: center;
+	box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.carro-link {
+	display: block; /* makes the link take the whole card area */
+	text-decoration: none; /* remove underline */
+	color: inherit; /* keep the text color */
 }

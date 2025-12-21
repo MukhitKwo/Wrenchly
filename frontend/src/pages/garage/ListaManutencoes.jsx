@@ -1,11 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useLocalStorage } from "../../context/appContext";
 import { devLog } from "../../utils/devLog";
-
+import { useParams } from "react-router-dom";
 
 export default function ListaManutencoes() {
     const navigate = useNavigate();
     const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
+    const { id } = useParams();
+
+    console.log(id);
+    
 
     // Fonte das manutenções (placeholder nesta fase)
     const manutencoes = getLocalStorage?.manutencoes || [];

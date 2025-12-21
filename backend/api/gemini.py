@@ -51,7 +51,7 @@ def call_gemini(prompt, schema, temp):
     return GeminiResponse(success=True, data=gemini_data)
 
 
-def carCronicIssues(car_model: str, dummyData=False):
+def generateCarCronicIssues(car_model: str, dummyData=False):
 
     if not isinstance(car_model, str):
         return GeminiResponse(success=False, message="Car not a string")

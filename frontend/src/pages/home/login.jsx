@@ -35,11 +35,11 @@ export default function Login() {
 					user: data.user_data,
 					garagem: data.garagem_data,
 					definicoes: data.definicoes_data,
-					carros_preview: data.carroPreview_data,
+					carros_preview: data.carrosPreview_data,
 					notas: data.notas_data,
 				}));
 
-				// navigate("/garagem"); // redirect to home page
+				navigate("/garagem"); // redirect to home page
 			}
 		} catch (err) {
 			console.error(err);
