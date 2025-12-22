@@ -13,6 +13,7 @@ dependencies = [
     "google-genai>=1.46.0",
     "psycopg2-binary>=2.9.11",
     "python-dotenv>=1.1.1",
+    "supabase>=2.27.0",
     "types-colorama>=0.4.15.20250801",
     "types-psycopg2>=2.9.21.20251012",
 ]

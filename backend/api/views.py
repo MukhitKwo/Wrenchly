@@ -31,10 +31,14 @@ from .crud import (
     crud_Manutencoes,
     crud_Cronicos,
     crud_Preventivos,
+    crud_CarrosSalvos,
     CRUDException
 )
 
 from datetime import date, timedelta, datetime
+
+from .imagens import StorageException, uploadImageToDB
+
 
 #! ============ CSRF EXEMPT FOR SESSION AUTHENTICATED APIs ============
 
@@ -66,7 +70,7 @@ def send_email_user(request):
     return Response({"success": True, "message": "Email enviado"})
 
 
-#! ================== Registro ================== 1
+#! ================== Registro ==================
 @api_view(["POST"])
 @permission_classes([AllowAny])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -109,7 +113,7 @@ def registerUser(request):
                     status=201)
 
 
-#! ================== LOGIN ================== 2
+#! ================== LOGIN ==================
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([AllowAny])
@@ -158,7 +162,7 @@ def loginUser(request):
                     status=201)
 
 
-#! ================== ATUALIZAR DEFINICOES ================== 3
+#! ================== ATUALIZAR DEFINICOES ==================
 @api_view(["PUT"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -177,7 +181,7 @@ def atualizarDefinicoes(request, id):
                     status=200)
 
 
-#! ================== LOGOUT ================== 4
+#! ================== LOGOUT ==================
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -189,7 +193,7 @@ def logoutUser(request):
                     status=200)
 
 
-#! ============ ADICIONAR CARRO À GARAGEM ============ 5
+#! ============ ADICIONAR CARRO À GARAGEM ============
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -204,14 +208,15 @@ def adicionarCarro(request):
             res_crud_carros = crud_Carros(method="POST", data=caracteristicas)
             car_data = res_crud_carros.data
 
-            car_full_name = getCarroFullName(car_data)
-            cronicos_fromGemini = generateCarCronicIssues(car_full_name, dummyData=True)
+            # print(upload_image())
+
+            cronicos_fromGemini = generateCarCronicIssues(getCarroFullName(car_data), dummyData=True)
             allCronicos = []
             for cronico in cronicos_fromGemini.data:
                 cronicData = convertIssueToCronic(cronico, car_data)
                 allCronicos.append(cronicData)
 
-            crud_Cronicos("POST", data=allCronicos)
+            crud_Cronicos(method="POST", data=allCronicos)
 
             preventivos_fromFile = getCarPreventivesIssues(car_data.get("combustivel"))
             allPreventivos = []
@@ -219,7 +224,6 @@ def adicionarCarro(request):
                 preventiveData = convertIssueToPreventive(preventivo, car_data)
                 allPreventivos.append(preventiveData)
 
-            # TODO retornar foto do carro
             # TODO convert to serializer if possible
             carro_data = {
                 "id": car_data.get("id"),
@@ -235,13 +239,32 @@ def adicionarCarro(request):
     except Exception as e:
         return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
-    return Response({"message": "Carro created, Preventivo and Cronico defined",
+    return Response({"message": "Carro and Cronicos created, Preventivos defined",
                      "carro_data": carro_data,
                      "allPreventivos": allPreventivos},
                     status=200)
 
 
-#! ============ ADICIONAR CRONCICO E PREVENTIVO ATUALIZADOR AO CARRO ============ 6
+#! ============ ADICIONAR IMAGEM AO CARRO ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def adicionarCarroImagem(request):
+    carro_id = request.POST.get("carro_id")
+    uploaded_file = request.FILES.get("image")
+
+    try:
+        url = uploadImageToDB(uploaded_file)
+        crud_Carros(method="PUT", data={"imagem_url": url}, id=carro_id, user=request.user)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+    except StorageException as e:
+        return Response({"message": e.message}, status=400)
+
+    return Response({"message": "Image added to car"}, status=201)
+
+
+#! ============ ADICIONAR PREVENTIVO ATUALIZADO AO CARRO ============
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -251,27 +274,39 @@ def adicionarPreventivos(request):
 
     try:
 
-        # print(preventivos)
-        date1 = datetime.strptime("2999-12-21", "%Y-%m-%d")
+        closestDate = datetime.strptime("2999-12-21", "%Y-%m-%d")
 
         for preventivo in preventivos.copy():
-            date2 = datetime.strptime(preventivo.get("trocadoNaData"), "%Y-%m-%d")
 
-            date1 = min(date1, date2)
+            # TODO fix this shit
+            preventivo["trocarNoKm"] = int(preventivo.get("trocadoNoKm")) + int(preventivo.get("kmsEntreTroca"))
+            risco_km = round((int(preventivo["trocarNoKm"]) - int(preventivo.get("trocadoNoKm"))) / int(preventivo.get("kmsEntreTroca")), 3)
 
-        proxima_manutencao = date1.date()
+            trocadoNaData = datetime.strptime(preventivo.get("trocadoNaData"), "%Y-%m-%d")
+            trocarNaData = datetime.strptime(preventivo.get("trocarNaData"), "%Y-%m-%d")
+            diasEntreTroca = int(preventivo.get("diasEntreTroca"))
 
-        preventivos_data = crud_Preventivos("POST", data=preventivos)
+            preventivo["trocarNaData"] = (trocadoNaData + timedelta(days=diasEntreTroca)).date()
+            risco_days = round(1 - (trocarNaData - trocadoNaData).days / diasEntreTroca, 3)
+
+            preventivo["risco"] = round(risco_km * 0.8 + risco_days * 0.2, 3)
+
+            tempDate = datetime.strptime(preventivo.get("trocadoNaData"), "%Y-%m-%d")
+            closestDate = min(closestDate, tempDate)
+
+        proxima_manutencao = closestDate.date()
+
+        crud_Preventivos("POST", data=preventivos)
 
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
-    return Response({"message": "Cronico and Preventivo created",
+    return Response({"message": "Preventivo updated and added to car",
                      "proxima_manutencao": proxima_manutencao},  # TODO retornar foto do carro
                     status=200)
 
 
-#! ============ PROCURAR CARROS POR ESPECIFICAÇÕES ============ 7
+#! ============ PROCURAR CARROS POR ESPECIFICAÇÕES ============
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -279,13 +314,8 @@ def procurarCarros(request):
     body = request.data
     specs = body.get("specs")
 
-    existingSpecs = {}
-    for spec, value in specs.items():
-        if bool(value):
-            existingSpecs[spec] = value
-
     try:
-        res_gemini = carsBySpecs(existingSpecs, dummyData=True)
+        res_gemini = carsBySpecs(specs, dummyData=True)
         candidateCars = res_gemini.data
 
     except GeminiException as e:
@@ -295,10 +325,27 @@ def procurarCarros(request):
                      "candidateCars_data": candidateCars},
                     status=200)
 
-# * ================== API Guilherme ==================
+
+#! ============ SALVAR CARROS ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def salvarCarros(request):
+    body = request.data
+    savedCars = body.get("savedCars")
+
+    print(savedCars)
+
+    try:
+        crud_CarrosSalvos(method="POST", data=savedCars)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Cars saved"},
+                    status=200)
 
 
-# Listar carros salvos (stub)
+# Listar carros salvos (stub) # TODO
 @api_view(["GET"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -309,25 +356,39 @@ def listarCarrosSalvos(request):
     }, status=200)
 
 
-# Manutenções (lista)
+#! ============ LISTA MANUTENÇÕES ============
 @api_view(["GET"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
 def listarManutencoes(request):
+    carro_id = request.GET.get("carro_id")
+
+    try:
+        res_crud_manutencoes = crud_Manutencoes(method="GET", user=request.user, car_id=carro_id)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
     return Response({
-        "message": "Lista de manutenções (stub)",
+        "message": "Manutencoes found",
+        "manutencoes_data": res_crud_manutencoes.data
     }, status=200)
 
 
-# Manutenções (criar/editar)
+#! ============ CRIAR MANUTENÇÃO ============
 @api_view(["POST", "PUT"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
 def salvarManutencao(request):
-    return Response({
-        "message": "Manutenção criada/atualizada (stub)",
-        "data": request.data
-    }, status=200)
+    body = request.data
+    manutencao = body.get("manutencao")
+
+    try:
+        crud_Manutencoes(method="POST", data=manutencao)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Manutencao created"},
+                    status=200)
 
 
 # Preventivos (lista)

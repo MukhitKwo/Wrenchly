@@ -21,8 +21,8 @@ def crud(method, data, model, serializer, id=None, **filters):
 
 def create_object(Data, Serializer):
     try:
-        many = isinstance(Data, list)
-        serializer = Serializer(data=Data, many=many)  # converte o json para o objeto do serializer
+        Many = isinstance(Data, list)
+        serializer = Serializer(data=Data, many=Many)  # converte o json para o objeto do serializer
         serializer.is_valid(raise_exception=True)  # verifica se os dados são válidos (se não, devolve 400)
         serializer.save()  # guarda no BD
         return CRUDResponse(status=201, message="created", data=serializer.data)
@@ -139,8 +139,8 @@ def crud_CarrosPreview(method, data=None, id=None, user=None):
     return res_crud
 
 
-def crud_Manutencoes(method, data=None, id=None, user=None):
-    filtros = {} if method == "POST" else {"carro__garagem__user": user}
+def crud_Manutencoes(method, data=None, id=None, user=None, car_id=None):
+    filtros = {} if method == "POST" else {"carro__garagem__user": user, "carro": car_id}
     res_crud = crud(method, data, Manutencoes, ManutencoesSerializer, id, **filtros)
     if not res_crud.success:
         raise CRUDException(res_crud.message, status=res_crud.status)
@@ -158,6 +158,14 @@ def crud_Preventivos(method, data=None, id=None, user=None):
 def crud_Cronicos(method, data=None, id=None, user=None):
     filtros = {} if method == "POST" else {"carro__garagem__user": user}
     res_crud = crud(method, data, Cronicos, CronicosSerializer, id, **filtros)
+    if not res_crud.success:
+        raise CRUDException(res_crud.message, status=res_crud.status)
+    return res_crud
+
+
+def crud_CarrosSalvos(method, data=None, id=None, user=None):
+    filtros = {} if method == "POST" else {"garagem__user": user}
+    res_crud = crud(method, data, CarrosSalvos, CarrosSalvosSerializer, id, **filtros)
     if not res_crud.success:
         raise CRUDException(res_crud.message, status=res_crud.status)
     return res_crud

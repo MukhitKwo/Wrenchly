@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocalStorage } from "../../context/appContext";
 import { devLog } from "../../utils/devLog";
 
-export default function Cronicos() {
+export default function ListaCronicos() {
     const navigate = useNavigate();
     const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
 

@@ -5,11 +5,10 @@ export default function AtualizarCronicosPreventivos() {
 	const navigate = useNavigate();
 	const { state } = useLocation();
 	const { setState: setLocalStorage } = useLocalStorage();
-	//tava a dar erro aqui
-	//const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
 	const carro_data = state?.carro;
 	const allPreventivos_data = state?.preventivos;
 	const [preventivos, setPreventivos] = useState(allPreventivos_data || []);
+
 	const handleChange = (index, field, value) => {
 		const updated = [...preventivos];
 		updated[index][field] = value;

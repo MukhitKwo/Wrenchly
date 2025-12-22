@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useLocalStorage } from "../../context/appContext";
 
 
-export default function Preventivos() {
+export default function ListaPreventivos() {
 	const navigate = useNavigate();
 	const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
 

@@ -1,20 +1,23 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useLocalStorage } from "../../context/appContext";
-import { devLog } from "../../utils/devLog";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export default function ManutencaoDetalhe() {
-	const { state: getLocalStorage } = useLocalStorage();
-	const carro_id = getLocalStorage?.carro_selecionado?.id;
+	const navigate = useNavigate();
+	const { state } = useLocation();
+	const carro_id = state?.carro_id;
+
+	const today = new Date();
+	const todayOnly = today.toISOString().split("T")[0]; // "YYYY-MM-DD"
 
 	const [manutencao, setManutencao] = useState({
-		nome: "",
-		descricao: "",
-		tipo: "",
-		data: "",
-		custo: "",
-		quilometragem: "",
 		carro: carro_id,
+		nome: "",
+		tipo: "corretiva",
+		descricao: "",
+		quilometragem: "",
+		custo: 0.0,
+		data: todayOnly,
 	});
 
 	const handleChange = (e) => {
@@ -26,14 +29,10 @@ export default function ManutencaoDetalhe() {
 	};
 
 	const guardarManutencao = async () => {
-		console.log(manutencao);
-
 		try {
 			const res = await fetch("/api/manutencao/", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ manutencao }),
 			});
 
@@ -41,11 +40,7 @@ export default function ManutencaoDetalhe() {
 			console.log(data.message);
 
 			if (res.ok) {
-				console.log("sup");
-
-				// navigate("/atualizarCronicosPreventivos", {
-				// 	state: { carro: data.carro_data, preventivos: data.allPreventivos },
-				// });
+				// hello
 			}
 		} catch (error) {
 			console.log(error);
@@ -57,9 +52,7 @@ export default function ManutencaoDetalhe() {
 			<h1>Manutenção</h1>
 
 			<div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
-				<Link to="/listaManutencoes">
-					<button>Voltar</button>
-				</Link>
+				<button onClick={() => navigate(-1)}>Voltar</button>
 
 				<button type="button" onClick={guardarManutencao}>
 					Guardar

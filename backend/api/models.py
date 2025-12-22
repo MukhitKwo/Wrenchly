@@ -65,6 +65,8 @@ class Carros(models.Model):
 
     matricula = models.CharField('Matricula', max_length=8, blank=True, null=True)  # type: ignore
 
+    imagem_url = models.URLField("Foto URL", blank=True, null=True)  # type: ignore
+
     def __str__(self):
         return f"{self.marca} {self.modelo} {self.ano}"
 
@@ -75,12 +77,6 @@ class Manutencoes(models.Model):
 
     nome = models.CharField("Nome", max_length=100)  # type: ignore
 
-    # TIPO_MANUTENCAO = [
-    #     ('corretivo', 'Corretivo'),
-    #     ('preventivo', 'Preventivo'),
-    #     ('cronico', 'Crônico'),
-    # ]
-    # * definir escolhas no frontend
     tipo = models.CharField("Tipo", max_length=10)  # type: ignore
 
     descricao = models.TextField("Descrição", blank=True, null=True)  # type: ignore
@@ -145,6 +141,6 @@ class CarrosSalvos(models.Model):
 
     garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
-    carro_nome = models.CharField("Nome", max_length=100)  # type: ignore
+    nome = models.CharField("Nome", max_length=100)  # type: ignore
 
     # TODO adicionar mais campos dps

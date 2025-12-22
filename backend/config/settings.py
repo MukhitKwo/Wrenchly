@@ -8,7 +8,6 @@ from utils.colors import *
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# ! para carregar cenas do .env
 dotenv_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(dotenv_path=dotenv_path)
 

@@ -40,7 +40,7 @@ class CarrosPreviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Carros
-        fields = ["id", "full_name", "matricula", "next_trocarNaData"]  # remove marca, modelo, ano
+        fields = ["id", "full_name", "matricula", "next_trocarNaData", "imagem_url"]  # remove marca, modelo, ano
 
     def get_full_name(self, obj):
         return f"{obj.marca} {obj.modelo} {obj.ano}"
@@ -61,4 +61,9 @@ class PreventivosSerializer(serializers.ModelSerializer):
 class CronicosSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cronicos
+        fields = '__all__'
+
+class CarrosSalvosSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarrosSalvos
         fields = '__all__'

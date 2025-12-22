@@ -7,7 +7,7 @@ urlpatterns = [
     path("email/", send_email_user),
 
     path("dev-log/", dev_log),
-    
+
     # REGISTRO E LOGIN
     path("registerUser/", registerUser),
     path("loginUser/", loginUser),
@@ -18,40 +18,21 @@ urlpatterns = [
 
     # ADICIONAR CARRO
     path("adicionarCarro/", adicionarCarro),
-    
-    path("procurarCarros/", procurarCarros),
-    
-    # DEV / DEBUG
+    path("adicionarCarroImagem/", adicionarCarroImagem),
     path("adicionarPreventivos/", adicionarPreventivos),
 
-    #API GUILHERME
+    # PROCURAR CARROS
+    path("procurarCarros/", procurarCarros),
+    path("salvarCarros/", salvarCarros),
+
     path("carrosSalvos/", listarCarrosSalvos),
-    path("manutencoes/", listarManutencoes),
+
+    path("listarManutencoes/", listarManutencoes),
+
     path("manutencao/", salvarManutencao),
     path("preventivos/", listarPreventivos),
     path("preventivo/", salvarPreventivo),
     path("cronicos/", listarCronicos),
     path("cronico/", salvarCronico),
 
-
-
-    # # NOTAS
-    # path("tabelaNota/", apiNotas),
-    # path("tabelaNota/<int:id>/", apiNotas),
-
-    # # CARROS
-    # path("tabelaCarro/", apiCarros),
-    # path("tabelaCarro/<int:id>/", apiCarros),
-
-    # # MANUTENÇÕES
-    # path("tabelaManutencao/", apiManutencoes),
-    # path("tabelaManutencao/<int:id>/", apiManutencoes),
-
-    # # PREVENTIVOS
-    # path("tabelaPreventivo/", apiPreventivos),
-    # path("tabelaPreventivo/<int:id>/", apiPreventivos),
-
-    # # CRÓNICOS
-    # path("tabelaCronico/", apiCronicos),
-    # path("tabelaCronico/<int:id>/", apiCronicos),
 ]

@@ -1,12 +1,10 @@
 // src/index.js (NOVO CÓDIGO)
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { AppProvider } from "./context/appContext.jsx"; // your context
-import "./index.css";
-
-// IMPORTAÇÕES NECESSÁRIAS DO ROUTER E DOS COMPONENTES
+import { AppProvider } from "./context/appContext.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App"; // O componente que servirá de Layout (com navbar e Footer)
+import "./index.css";
 
 // Importa os seus componentes de página
 import Contatos from "./pages/home/contatos.jsx";
@@ -16,24 +14,24 @@ import Sobre from "./pages/home/sobre.jsx";
 import Login from "./pages/home/login.jsx";
 import Registo from "./pages/home/registo.jsx";
 
-import Cronicos from "./pages/garage/cronicos.jsx";
-import Garagem from "./pages/garage/garagem/garagem.jsx";
-import Preventivos from "./pages/garage/preventivos.jsx";
+import Definicoes from "./pages/settings/definicoes.jsx";
+import Perfil from "./pages/settings/perfil.jsx";
 
-import CronicoDetalhe from "./pages/garage/cronicoDetalhe.jsx";
-import ManutencaoDetalhe from "./pages/garage/manutencaoDetalhe.jsx";
-import PreventivoDetalhe from "./pages/garage/preventivoDetalhe.jsx";
+import Garagem from "./pages/garage/garagem/garagem.jsx";
+
+import ListaManutencoes from "./pages/garage/listaManutencao.jsx";
+import ListaPreventivos from "./pages/garage/listaPreventivos.jsx";
+import ListaCronicos from "./pages/garage/listaCronicos.jsx";
+
+import Manutencao from "./pages/garage/manutencao.jsx";
+import Preventivo from "./pages/garage/preventivo.jsx";
+import Cronico from "./pages/garage/cronico.jsx";
 
 import ListaCarrosRecomendados from "./pages/addCar/listaCarrosRecomendados.jsx";
 import ListaCarrosSalvos from "./pages/addCar/listaCarrosSalvos.jsx";
 import ProcurarPorEspecificacoes from "./pages/addCar/procurarPorEspecificacoes.jsx";
-import ProcurarCarroPorModelo from "./pages/addCar/procurarPorModelo.jsx";
+import AdicionarCarroPorModelo from "./pages/addCar/adicionarPorModelo.jsx";
 import AtualizarCronicosPreventivos from "./pages/addCar/atualizarCronicosPreventivos.jsx";
-
-
-import ListaManutencoes from "./pages/garage/ListaManutencoes.jsx";
-import Definicoes from "./pages/settings/definicoes.jsx";
-import Perfil from "./pages/settings/perfil.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -46,22 +44,21 @@ const router = createBrowserRouter([
 			{ path: "sobre", element: <Sobre /> }, // Rota para "/sobre"
 			{ path: "contatos", element: <Contatos /> }, // Rota para "/contatos"
 			{ path: "perfil", element: <Perfil /> }, //rota para "/perfil"
-			{ path: "login", element: <Login /> },
 			{ path: "registo", element: <Registo /> },
+			{ path: "login", element: <Login /> },
+			{ path: "definicoes", element: <Definicoes /> },
 			{ path: "garagem", element: <Garagem /> },
 			{ path: "listaManutencoes/:id", element: <ListaManutencoes /> },
-			{ path: "preventivos", element: <Preventivos /> },
-			{ path: "cronicos", element: <Cronicos /> },
-			{ path: "garagem", element: <Garagem /> },
-			{ path: "manutencaoDetalhe", element: <ManutencaoDetalhe /> },
-			{ path: "preventivoDetalhe", element: <PreventivoDetalhe /> },
-			{ path: "cronicoDetalhe", element: <CronicoDetalhe /> },
-			{ path: "procurarPorModelo", element: <ProcurarCarroPorModelo /> },
+			{ path: "listaPreventivos", element: <ListaPreventivos /> },
+			{ path: "listaCronicos", element: <ListaCronicos /> },
+			{ path: "manutencao", element: <Manutencao /> },
+			{ path: "preventivo", element: <Preventivo /> },
+			{ path: "cronico", element: <Cronico /> },
+			{ path: "adicionarPorModelo", element: <AdicionarCarroPorModelo /> },
 			{ path: "procurarPorEspecificacoes", element: <ProcurarPorEspecificacoes /> },
+			{ path: "atualizarCronicosPreventivos", element: <AtualizarCronicosPreventivos /> },
 			{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
 			{ path: "listaCarrosSalvos", element: <ListaCarrosSalvos /> },
-			{ path: "atualizarCronicosPreventivos", element: <AtualizarCronicosPreventivos /> },
-			{ path: "definicoes", element: <Definicoes /> },
 		],
 	},
 ]);

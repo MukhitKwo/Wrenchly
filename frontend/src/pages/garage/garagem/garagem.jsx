@@ -13,7 +13,7 @@ export default function Garagem() {
 			<h1>{garagem.nome}</h1>
 
 			<div style={{ display: "flex", justifyContent: "center", gap: "14px", padding: "20px" }}>
-				<Link to="/procurarPorModelo">
+				<Link to="/adicionarPorModelo">
 					<button>Adicionar carro</button>
 				</Link>
 			</div>

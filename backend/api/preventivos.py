@@ -5,7 +5,7 @@ def getCarPreventivesIssues(fuel_type):
         return preventivo_gasolina()
     elif fuel_type == "hibrido":
         return preventivo_hibrido()
-    elif fuel_type == "automatico":
+    elif fuel_type == "eletrico":
         return preventivo_automatico()
     else:
         return {}
