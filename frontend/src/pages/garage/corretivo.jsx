@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
-export default function ManutencaoDetalhe() {
+export default function Corretivo() {
 	const navigate = useNavigate();
 	const { state } = useLocation();
 	const carro_id = state?.carro_id;
@@ -30,7 +30,7 @@ export default function ManutencaoDetalhe() {
 
 	const guardarManutencao = async () => {
 		try {
-			const res = await fetch("/api/manutencao/", {
+			const res = await fetch("/api/criarCorretivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ manutencao }),
@@ -38,10 +38,7 @@ export default function ManutencaoDetalhe() {
 
 			const data = await res.json("");
 			console.log(data.message);
-
-			if (res.ok) {
-				// hello
-			}
+			if (res.ok) navigate(-1);
 		} catch (error) {
 			console.log(error);
 		}
@@ -49,7 +46,7 @@ export default function ManutencaoDetalhe() {
 
 	return (
 		<div className="page-box">
-			<h1>Manutenção</h1>
+			<h1>Nova Manutenção Corretiva</h1>
 
 			<div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
 				<button onClick={() => navigate(-1)}>Voltar</button>

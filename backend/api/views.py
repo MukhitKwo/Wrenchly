@@ -28,7 +28,7 @@ from .crud import (
     crud_Notas,
     crud_Carros,
     crud_CarrosPreview,
-    crud_Manutencoes,
+    crud_Corretivos,
     crud_Cronicos,
     crud_Preventivos,
     crud_CarrosSalvos,
@@ -106,8 +106,8 @@ def registerUser(request):
 
     return Response({"message": "User, Garagem and Definiçoes created",
                      "user_data": userData(user),
-                     "garagem_data": getCrudData(res_crud_garagem, delete="user"),
-                     "definicoes_data": getCrudData(res_crud_definicoes, delete="user"),
+                     "garagem_data": clearCrudData(res_crud_garagem, delete="user"),
+                     "definicoes_data": clearCrudData(res_crud_definicoes, delete="user"),
                      "carroPreview_data": [],
                      "notas_data": []},
                     status=201)
@@ -155,8 +155,8 @@ def loginUser(request):
 
     return Response({"message": "User, Garagem and Definiçoes found",
                      "user_data": userData(user),
-                     "garagem_data": getCrudData(res_crud_garagem, delete="user"),
-                     "definicoes_data": getCrudData(res_crud_definicoes, delete="user"),
+                     "garagem_data": clearCrudData(res_crud_garagem, delete="user"),
+                     "definicoes_data": clearCrudData(res_crud_definicoes, delete="user"),
                      "carrosPreview_data": carrosPreview_data,
                      "notas_data": res_crud_notas.data},
                     status=201)
@@ -177,7 +177,7 @@ def atualizarDefinicoes(request, id):
         return Response({"message": e.message}, status=e.status)
 
     return Response({"message": "Settings updated",
-                     "definicoes_data": getCrudData(res_crud_definicoes, delete="user")},
+                     "definicoes_data": clearCrudData(res_crud_definicoes, delete="user")},
                     status=200)
 
 
@@ -207,8 +207,7 @@ def adicionarCarro(request):
 
             res_crud_carros = crud_Carros(method="POST", data=caracteristicas)
             car_data = res_crud_carros.data
-
-            # print(upload_image())
+            carro_km = int(car_data.get("quilometragem"))
 
             cronicos_fromGemini = generateCarCronicIssues(getCarroFullName(car_data), dummyData=True)
             allCronicos = []
@@ -241,6 +240,7 @@ def adicionarCarro(request):
 
     return Response({"message": "Carro and Cronicos created, Preventivos defined",
                      "carro_data": carro_data,
+                     "carro_kms": carro_km,
                      "allPreventivos": allPreventivos},
                     status=200)
 
@@ -271,6 +271,8 @@ def adicionarCarroImagem(request):
 def adicionarPreventivos(request):
     body = request.data
     preventivos = body.get("preventivos")
+    carro_kms = body.get("carro_kms")
+    print(carro_kms)
 
     try:
 
@@ -278,18 +280,14 @@ def adicionarPreventivos(request):
 
         for preventivo in preventivos.copy():
 
-            # TODO fix this shit
-            preventivo["trocarNoKm"] = int(preventivo.get("trocadoNoKm")) + int(preventivo.get("kmsEntreTroca"))
-            risco_km = round((int(preventivo["trocarNoKm"]) - int(preventivo.get("trocadoNoKm"))) / int(preventivo.get("kmsEntreTroca")), 3)
+            km = getTrocarNoKm(preventivo, carro_kms)
+            preventivo["trocarNaData"] = km.get("trocarNoKm")
 
-            trocadoNaData = datetime.strptime(preventivo.get("trocadoNaData"), "%Y-%m-%d")
-            trocarNaData = datetime.strptime(preventivo.get("trocarNaData"), "%Y-%m-%d")
-            diasEntreTroca = int(preventivo.get("diasEntreTroca"))
+            data = getTrocarNaData(preventivo)
+            preventivo["trocarNaData"] = data.get("trocarNaData")
 
-            preventivo["trocarNaData"] = (trocadoNaData + timedelta(days=diasEntreTroca)).date()
-            risco_days = round(1 - (trocarNaData - trocadoNaData).days / diasEntreTroca, 3)
-
-            preventivo["risco"] = round(risco_km * 0.8 + risco_days * 0.2, 3)
+            risco = round(int(km.get("risco_km")) * 0.8 + int(data.get("risco_dias")) * 0.2, 3)
+            preventivo["risco"] = risco
 
             tempDate = datetime.strptime(preventivo.get("trocadoNaData"), "%Y-%m-%d")
             closestDate = min(closestDate, tempDate)
@@ -356,83 +354,101 @@ def listarCarrosSalvos(request):
     }, status=200)
 
 
-#! ============ LISTA MANUTENÇÕES ============
+#! ============ LISTA TODAS MANUTENÇÕES ============
 @api_view(["GET"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
-def listarManutencoes(request):
+def obterTodasManutencoes(request):
     carro_id = request.GET.get("carro_id")
 
     try:
-        res_crud_manutencoes = crud_Manutencoes(method="GET", user=request.user, car_id=carro_id)
+        res_crud_carro = crud_Carros(method="GET", id=carro_id, user=request.user)
+        print(res_crud_carro.data)
+        res_crud_corretivos = crud_Corretivos(method="GET", user=request.user, car_id=carro_id)
+        res_crud_preventivos = crud_Preventivos(method="GET", user=request.user, car_id=carro_id)
+        res_crud_cronicos = crud_Cronicos(method="GET", user=request.user, car_id=carro_id)
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
     return Response({
         "message": "Manutencoes found",
-        "manutencoes_data": res_crud_manutencoes.data
+        "carro_data": res_crud_carro.data,
+        "corretivos_data": res_crud_corretivos.data,
+        "preventivos_data": res_crud_preventivos.data,
+        "cronicos_data": res_crud_cronicos.data,
     }, status=200)
 
 
-#! ============ CRIAR MANUTENÇÃO ============
+#! ============ CRIAR CORRETIVO ============
 @api_view(["POST", "PUT"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
-def salvarManutencao(request):
+def criarCorretivo(request):
     body = request.data
-    manutencao = body.get("manutencao")
+    corretivo = body.get("manutencao")
+
+    print(corretivo)
 
     try:
-        crud_Manutencoes(method="POST", data=manutencao)
+        crud_Corretivos(method="POST", data=corretivo)
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
-    return Response({"message": "Manutencao created"},
+    return Response({"message": "Corretivo created"},
                     status=200)
 
 
-# Preventivos (lista)
-@api_view(["GET"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def listarPreventivos(request):
-    return Response({
-        "message": "Lista de preventivos (stub)",
-        "preventivos": []
-    }, status=200)
-
-
-# Preventivos (criar/editar)
+#! ============ CRIAR PREVENTIVO ============
 @api_view(["POST", "PUT"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
-def salvarPreventivo(request):
-    return Response({
-        "message": "Preventivo criado/atualizado (stub)",
-        "data": request.data
-    }, status=200)
+def criarPreventivo(request):
+    body = request.data
+    preventivo = body.get("manutencao")
+    carro_kms = int(body.get("carro_kms"))
+
+    km = getTrocarNoKm(preventivo)
+    preventivo["trocarNoKm"] = km.get("trocarNoKm")
+
+    data = getTrocarNaData(preventivo)
+    preventivo["trocarNaData"] = data.get("trocarNaData")
+
+    preventivo["risco"] = round(int(km.get("risco_km")) * 0.8 + int(data.get("risco_dias")) * 0.2, 3)
+
+    print(preventivo)
+
+    try:
+        crud_Preventivos(method="POST", data=preventivo)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Corretivo created"},
+                    status=200)
 
 
-# Cronicos (lista)
-@api_view(["GET"])
-@authentication_classes([CsrfExemptSessionAuthentication])
-@permission_classes([IsAuthenticated])
-def listarCronicos(request):
-    return Response({
-        "message": "Lista de crónicos (stub)",
-        "cronicos": []
-    }, status=200)
-
-
-# Crónicos (criar/editar)
+#! ============ CRIAR CRONICO ============
 @api_view(["POST", "PUT"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
-def salvarCronico(request):
-    return Response({
-        "message": "Crónico criado/atualizado (stub)",
-        "data": request.data
-    }, status=200)
+def criarCronico(request):
+    body = request.data
+    cronico = body.get("manutencao")
+    carro_kms = int(body.get("carro_kms"))
+
+    km = getTrocarNoKm(cronico)
+    cronico["trocarNoKm"] = km.get("trocarNoKm")
+
+    cronico["risco"] = int(km.get("risco_km"))
+
+    print(cronico)
+
+    try:
+        crud_Cronicos(method="POST", data=cronico)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Corretivo created"},
+                    status=200)
 
 
 #! ================== Funções Helpers ==================
@@ -448,7 +464,7 @@ def userData(user):
     return user_data
 
 
-def getCrudData(res_crud, delete=None, fullList=False):
+def clearCrudData(res_crud, delete=None, fullList=False):
 
     crud_data = res_crud.data
 
@@ -474,34 +490,36 @@ def getCarroFullName(car):
 
 def convertIssueToCronic(issue, carro_data):
 
-    carro_km = carro_data.get("quilometragem")
+    carro_kms = int(carro_data.get("quilometragem"))
+    kmsEntretroca = int(issue.get("media_km"))
 
-    kmsEntretroca = issue.get("media_km")
-    # trocadoNoKm = carro_km - int(kmsEntretroca/2)
-    trocarNoKm = carro_km + kmsEntretroca
-    # risco_km = round((trocarNoKm - trocadoNoKm)/kmsEntretroca, 3)
+    kmsAtras = carro_kms % (kmsEntretroca * 1.5)  # TODO add buffer
+
+    trocadoNoKm = carro_kms - kmsAtras if kmsAtras < carro_kms else 0
+    trocarNoKm = trocadoNoKm + kmsEntretroca
+    risco = round((carro_kms - trocadoNoKm)/kmsEntretroca, 3)
 
     return {
         "carro": carro_data["id"],
         "nome": issue.get("problema"),
         "descricao": issue.get("descricao"),
         "kmsEntreTroca": kmsEntretroca,
-        "trocadoNoKm": carro_km,
+        "trocadoNoKm": carro_kms,
         "trocarNoKm": trocarNoKm,
-        "risco": 0
+        "risco": risco
     }
 
 
 def convertIssueToPreventive(issue, carro_data):
 
-    carro_km = carro_data.get("quilometragem")
+    carro_kms = int(carro_data.get("quilometragem"))
 
-    kmsEntretroca = issue.get("media_km")
-    # trocadoNoKm = carro_km - int(kmsEntretroca/2)
-    trocarNoKm = carro_km + kmsEntretroca
+    kmsEntretroca = int(issue.get("media_km"))
+    # trocadoNoKm = carro_kms - int(kmsEntretroca/2)
+    trocarNoKm = carro_kms + kmsEntretroca
     # risco_km = round((trocarNoKm - trocadoNoKm)/kmsEntretroca, 3)
 
-    diasEntreTroca = issue.get("media_dias")
+    diasEntreTroca = int(issue.get("media_dias"))
     # trocadoNaData = date.today() - timedelta(days=int(diasEntreTroca/2))
     trocarNaData = date.today() + timedelta(days=diasEntreTroca)
     # risco_days = round(1 - (trocarNaData - trocadoNaData).days / diasEntreTroca, 3)
@@ -513,10 +531,29 @@ def convertIssueToPreventive(issue, carro_data):
         "nome": issue.get("nome"),
         "descricao": issue.get("descricao"),
         "kmsEntreTroca": kmsEntretroca,
-        "trocadoNoKm": carro_km,
+        "trocadoNoKm": carro_kms,
         "trocarNoKm": trocarNoKm,
         "diasEntreTroca": diasEntreTroca,
         "trocadoNaData": date.today(),
         "trocarNaData": trocarNaData,
         "risco": 0
     }
+
+
+def getTrocarNoKm(manutencao, carro_kms):
+    trocarNoKm = int(manutencao.get("trocadoNoKm")) + int(manutencao.get("kmsEntreTroca"))
+
+    risco_km = round((carro_kms - int(manutencao.get("trocadoNoKm"))) / int(manutencao.get("kmsEntreTroca")), 3)
+
+    return {"trocarNoKm": trocarNoKm, "risco_km": risco_km}
+
+
+def getTrocarNaData(manutencao):
+    trocadoNaData = datetime.strptime(manutencao.get("trocadoNaData"), "%Y-%m-%d").date()  # definido como data
+    diasEntreTroca = int(manutencao.get("diasEntreTroca"))
+
+    trocarNaData = (trocadoNaData + timedelta(days=diasEntreTroca))  # é criado como uma data
+
+    risco_dias = round(1 - (date.today() - trocadoNaData).days / diasEntreTroca, 3)  # data - data, funciona sem .date()
+
+    return {"trocarNaData": trocarNaData, "risco_dias": risco_dias}

@@ -139,24 +139,24 @@ def crud_CarrosPreview(method, data=None, id=None, user=None):
     return res_crud
 
 
-def crud_Manutencoes(method, data=None, id=None, user=None, car_id=None):
+def crud_Corretivos(method, data=None, id=None, user=None, car_id=None):
     filtros = {} if method == "POST" else {"carro__garagem__user": user, "carro": car_id}
-    res_crud = crud(method, data, Manutencoes, ManutencoesSerializer, id, **filtros)
+    res_crud = crud(method, data, Corretivos, CorretivosSerializer, id, **filtros)
     if not res_crud.success:
         raise CRUDException(res_crud.message, status=res_crud.status)
     return res_crud
 
 
-def crud_Preventivos(method, data=None, id=None, user=None):
-    filtros = {} if method == "POST" else {"carro__garagem__user": user}
+def crud_Preventivos(method, data=None, id=None, user=None, car_id=None):
+    filtros = {} if method == "POST" else {"carro__garagem__user": user, "carro": car_id}
     res_crud = crud(method, data, Preventivos, PreventivosSerializer, id, **filtros)
     if not res_crud.success:
         raise CRUDException(res_crud.message, status=res_crud.status)
     return res_crud
 
 
-def crud_Cronicos(method, data=None, id=None, user=None):
-    filtros = {} if method == "POST" else {"carro__garagem__user": user}
+def crud_Cronicos(method, data=None, id=None, user=None, car_id=None):
+    filtros = {} if method == "POST" else {"carro__garagem__user": user, "carro": car_id}
     res_crud = crud(method, data, Cronicos, CronicosSerializer, id, **filtros)
     if not res_crud.success:
         raise CRUDException(res_crud.message, status=res_crud.status)

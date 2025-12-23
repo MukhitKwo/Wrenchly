@@ -4,8 +4,6 @@ from .views import dev_log
 
 urlpatterns = [
 
-    path("email/", send_email_user),
-
     path("dev-log/", dev_log),
 
     # REGISTRO E LOGIN
@@ -24,15 +22,12 @@ urlpatterns = [
     # PROCURAR CARROS
     path("procurarCarros/", procurarCarros),
     path("salvarCarros/", salvarCarros),
-
     path("carrosSalvos/", listarCarrosSalvos),
 
-    path("listarManutencoes/", listarManutencoes),
-
-    path("manutencao/", salvarManutencao),
-    path("preventivos/", listarPreventivos),
-    path("preventivo/", salvarPreventivo),
-    path("cronicos/", listarCronicos),
-    path("cronico/", salvarCronico),
+    # MANUTENÇÕES
+    path("obterTodasManutencoes/", obterTodasManutencoes),
+    path("criarCorretivo/", criarCorretivo),
+    path("criarPreventivo/", criarPreventivo),
+    path("criarCronico/", criarCronico),
 
 ]

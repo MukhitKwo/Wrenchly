@@ -1,63 +1,58 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useLocalStorage } from "../../context/appContext";
+import { useNavigate } from "react-router-dom";
 
-
-export default function ListaPreventivos() {
+export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 	const navigate = useNavigate();
-	const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
 
-	// 🔹 Temporário: usar dados do localStorage se existirem
-	const preventivos = getLocalStorage.preventivos || [];
-
-	const verPreventivo = (preventivo) => {
-		setLocalStorage((prev) => ({
-			...prev,
-			preventivo_selecionado: preventivo,
-		}));
-
-		console.log("=== PREVENTIVO SELECIONADO ===");
-		console.log(preventivo);
-
-		navigate("/preventivoDetalhe");
-	};
-
-
+	const corretivas = preventivos;
 
 	return (
-		<div style={{ padding: "20px" }}>
-			<h1>Lista de Preventivos</h1>
-			<p>Manutenções preventivas associadas aos veículos.</p>
+		<div
+			style={{
+				border: "1px solid #ddd",
+				borderRadius: "8px",
+				padding: "12px",
+			}}
+		>
+			<h3>Preventivos</h3>
 
-			<div style={{ marginBottom: "15px" }}>
-				<Link to="/preventivoDetalhe">
-					<button>Adicionar Preventivo</button>
-				</Link>
+			<div style={{ marginBottom: "12px" }}>
+				<button onClick={() => navigate("/preventivo", { state: { carro_id: carroId, carro_kms: carroKms } })}>Adicionar Novo</button>
 			</div>
 
-			{preventivos.length === 0 ? (
-				<p>Não existem preventivos registados.</p>
+			{corretivas.length === 0 ? (
+				<p style={{ opacity: 0.6 }}>No corrective maintenances.</p>
 			) : (
-				<div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-					{preventivos.map((p) => (
-						<div
-							key={p.id}
-							style={{
-								border: "1px solid #ccc",
-								padding: "10px",
-								borderRadius: "5px",
-							}}
-						>
-							<h3>{p.tipo}</h3>
-							<p>{p.descricao}</p>
-							<p>
-								<strong>Intervalo:</strong> {p.intervalo_km} km /{" "}
-								{p.intervalo_meses} meses
-							</p>
+				corretivas.map((manutencao) => (
+					<div
+						key={manutencao.id}
+						style={{
+							borderBottom: "1px solid #eee",
+							paddingBottom: "8px",
+							marginBottom: "8px",
+						}}
+					>
+						<strong>{manutencao.nome}</strong>
 
-							<button onClick={() => verPreventivo(p)}>Ver</button>
+						<p>
+							Trocar no Km: {manutencao.trocarNoKm} km | Data: {manutencao.trocarNaData}
+						</p>
+						<p>Risco: {manutencao.risco}</p>
+
+						{manutencao.notas && <p>Notes: {manutencao.notas}</p>}
+
+						<div style={{ display: "flex", gap: "8px" }}>
+							<button
+								onClick={() =>
+									navigate(`/manutencao/${manutencao.id}`, {
+										state: { carro_id: carroId },
+									})
+								}
+							>
+								View
+							</button>
 						</div>
-					))}
-				</div>
+					</div>
+				))
 			)}
 		</div>
 	);

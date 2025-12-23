@@ -1,87 +1,66 @@
-import { Link } from "react-router-dom";
-import { useLocalStorage } from "../../context/appContext";
-import { devLog } from "../../utils/devLog";
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
+export default function Preventivo() {
+	const navigate = useNavigate();
+	const { state } = useLocation();
+	const carro_id = state?.carro_id;
+	const carro_kms = state?.carro_kms;
 
-export default function PreventivoDetalhe() {
-	const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
+	const today = new Date().toISOString().split("T")[0];
 
-	const preventivo = getLocalStorage?.preventivo_selecionado || null;
+	const [manutencao, setManutencao] = useState({
+		carro: carro_id,
+		nome: "",
+		descricao: "",
+		diasEntreTroca: 0,
+		trocadoNaData: today,
+		kmsEntreTroca: "",
+		trocadoNoKm: "",
+	});
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
-
-		setLocalStorage((prev) => ({
+		setManutencao((prev) => ({
 			...prev,
-			preventivo_selecionado: {
-				...prev.preventivo_selecionado,
-				[name]: value,
-			},
+			[name]: value,
 		}));
 	};
 
-	const guardarPreventivo = async () => {
-		console.log("=== GUARDAR PREVENTIVO ===");
-		console.log(preventivo);
-
-		setLocalStorage((prev) => {
-			const lista = Array.isArray(prev.preventivos) ? prev.preventivos : [];
-
-			const existe = lista.some((p) => p.id === preventivo.id);
-
-			const listaAtualizada = existe
-				? lista.map((p) =>
-					p.id === preventivo.id ? { ...p, ...preventivo } : p
-				)
-				: [...lista, { ...preventivo, id: Date.now() }];
-
-			const preventivoFinal = existe
-				? { ...preventivo }
-				: { ...preventivo, id: Date.now() };
-
-			return {
-				...prev,
-				preventivos: listaAtualizada,
-				preventivo_selecionado: preventivoFinal,
-			};
-		});
-
-		await devLog({
-			tipo: "PREVENTIVO",
-			acao: preventivo.id ? "EDITAR" : "CRIAR",
-			payload: preventivo,
-		});
+	const guardarManutencao = async () => {
+		try {
+			const res = await fetch("/api/criarPreventivo/", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ manutencao, carro_kms }),
+			});
+			const data = await res.json();
+			console.log(data.message);
+			if (res.ok) navigate(-1);
+		} catch (error) {
+			console.log(error);
+		}
 	};
-
-
-
-
-	if (!preventivo) {
-		return (
-			<div className="page-box">
-				<h1>Preventivo</h1>
-				<p>Nenhum preventivo selecionado.</p>
-				<Link to="/preventivos">
-					<button>Voltar</button>
-				</Link>
-			</div>
-		);
-	}
 
 	return (
 		<div className="page-box">
-			<h1>Preventivo</h1>
+			<h1>Nova Manutenção Preventiva</h1>
 
-			<input name="tipo" value={preventivo.tipo} onChange={handleChange} />
-			<textarea name="descricao" value={preventivo.descricao} onChange={handleChange} />
-			<input name="intervalo_km" value={preventivo.intervalo_km} onChange={handleChange} />
-			<input name="intervalo_meses" value={preventivo.intervalo_meses} onChange={handleChange} />
+			<div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
+				<button onClick={() => navigate(-1)}>Voltar</button>
+				<button onClick={guardarManutencao}>Guardar</button>
+			</div>
 
-			<button onClick={guardarPreventivo}>Guardar</button>
+			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
+				<input placeholder="Nome" name="nome" value={manutencao.nome} onChange={handleChange} />
+				<textarea placeholder="Descrição" name="descricao" value={manutencao.descricao} onChange={handleChange} />
 
-			<Link to="/preventivos">
-				<button>Voltar à Lista</button>
-			</Link>
+				<input type="number" placeholder="Dias entre troca" name="diasEntreTroca" value={manutencao.diasEntreTroca} onChange={handleChange} />
+				<input type="date" name="trocadoNaData" value={manutencao.trocadoNaData} onChange={handleChange} />
+
+				<input type="number" placeholder="Kms entre troca" name="kmsEntreTroca" value={manutencao.kmsEntreTroca} onChange={handleChange} />
+				<input type="number" placeholder="Trocado no km" name="trocadoNoKm" value={manutencao.trocadoNoKm} onChange={handleChange} />
+			</div>
 		</div>
 	);
 }

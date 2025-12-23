@@ -71,7 +71,7 @@ class Carros(models.Model):
         return f"{self.marca} {self.modelo} {self.ano}"
 
 
-class Manutencoes(models.Model):
+class Corretivos(models.Model):
 
     carro = models.ForeignKey(Carros, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 

@@ -66,7 +66,7 @@ export default function ProcurarCarroPorModelo() {
 			}
 
 			if (res.ok) {
-				navigate("/atualizarCronicosPreventivos", { state: { carro: data.carro_data, preventivos: data.allPreventivos } });
+				navigate("/atualizarCronicosPreventivos", { state: { carro: data.carro_data, carroKms: data.carro_kms, preventivos: data.allPreventivos } });
 			}
 		} catch (error) {
 			console.log(error);

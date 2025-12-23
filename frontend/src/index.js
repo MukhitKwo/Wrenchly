@@ -19,11 +19,12 @@ import Perfil from "./pages/settings/perfil.jsx";
 
 import Garagem from "./pages/garage/garagem/garagem.jsx";
 
-import ListaManutencoes from "./pages/garage/listaManutencao.jsx";
+import TodasManutencoes from "./pages/garage/todasManutencoes.jsx";
+import ListaCorretivos from "./pages/garage/listaCorretivos.jsx";
 import ListaPreventivos from "./pages/garage/listaPreventivos.jsx";
 import ListaCronicos from "./pages/garage/listaCronicos.jsx";
 
-import Manutencao from "./pages/garage/manutencao.jsx";
+import Corretivo from "./pages/garage/corretivo.jsx";
 import Preventivo from "./pages/garage/preventivo.jsx";
 import Cronico from "./pages/garage/cronico.jsx";
 
@@ -48,10 +49,11 @@ const router = createBrowserRouter([
 			{ path: "login", element: <Login /> },
 			{ path: "definicoes", element: <Definicoes /> },
 			{ path: "garagem", element: <Garagem /> },
-			{ path: "listaManutencoes/:id", element: <ListaManutencoes /> },
-			{ path: "listaPreventivos", element: <ListaPreventivos /> },
-			{ path: "listaCronicos", element: <ListaCronicos /> },
-			{ path: "manutencao", element: <Manutencao /> },
+			{ path: "todasManutencoes/:id", element: <TodasManutencoes /> },
+			{ path: "listaCorretivos/:id", element: <ListaCorretivos /> },
+			{ path: "listaPreventivos/:id", element: <ListaPreventivos /> },
+			{ path: "listaCronicos/:id", element: <ListaCronicos /> },
+			{ path: "corretivo", element: <Corretivo /> },
 			{ path: "preventivo", element: <Preventivo /> },
 			{ path: "cronico", element: <Cronico /> },
 			{ path: "adicionarPorModelo", element: <AdicionarCarroPorModelo /> },

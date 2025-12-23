@@ -2,12 +2,17 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalStorage } from "../../context/appContext";
 export default function AtualizarCronicosPreventivos() {
-	const navigate = useNavigate();
 	const { state } = useLocation();
+	const navigate = useNavigate();
+
 	const { setState: setLocalStorage } = useLocalStorage();
-	const carro_data = state?.carro;
 	const allPreventivos_data = state?.preventivos;
 	const [preventivos, setPreventivos] = useState(allPreventivos_data || []);
+	const carro_data = state?.carro;
+	const carro_kms = state?.carroKms;
+
+	console.log(carro_kms);
+	
 
 	const handleChange = (index, field, value) => {
 		const updated = [...preventivos];
@@ -22,7 +27,7 @@ export default function AtualizarCronicosPreventivos() {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ preventivos }),
+				body: JSON.stringify({ preventivos, carro_kms }),
 			});
 
 			const data = await res.json("");

@@ -23,7 +23,7 @@ export default function Garagem() {
 					<p>Não tens carros na garagem.</p>
 				) : (
 					carros.map((carro) => (
-						<Link key={carro.id} to={`/listaManutencoes/${carro.id}`} className="carro-link">
+						<Link key={carro.id} to={`/todasManutencoes/${carro.id}`} className="carro-link">
 							<CarroCard carro={carro} />
 						</Link>
 					))

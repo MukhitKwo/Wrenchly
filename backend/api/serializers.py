@@ -46,9 +46,9 @@ class CarrosPreviewSerializer(serializers.ModelSerializer):
         return f"{obj.marca} {obj.modelo} {obj.ano}"
 
 
-class ManutencoesSerializer(serializers.ModelSerializer):
+class CorretivosSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Manutencoes
+        model = Corretivos
         fields = '__all__'
 
 

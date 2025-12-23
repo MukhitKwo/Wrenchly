@@ -1,123 +1,58 @@
-import { Link } from "react-router-dom";
-import { useLocalStorage } from "../../context/appContext";
-import { devLog } from "../../utils/devLog";
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
+export default function Cronico() {
+	const navigate = useNavigate();
+	const { state } = useLocation();
+	const carro_id = state?.carro_id;
 
-export default function CronicoDetalhe() {
-    const { state: getLocalStorage, setState: setLocalStorage } = useLocalStorage();
+	const [manutencao, setManutencao] = useState({
+		carro: carro_id,
+		nome: "",
+		descricao: "",
+		kmsEntreTroca: 0,
+		trocadoNoKm: "",
+	});
 
-    const cronico = getLocalStorage?.cronico_selecionado || null;
+	const handleChange = (e) => {
+		const { name, value } = e.target;
+		setManutencao((prev) => ({
+			...prev,
+			[name]: value,
+		}));
+	};
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+	const guardarManutencao = async () => {
+		try {
+			const res = await fetch("/api/criarCronico/", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ manutencao }),
+			});
+			const data = await res.json();
+			console.log(data.message);
+			if (res.ok) navigate(-1);
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
-        setLocalStorage((prev) => ({
-            ...prev,
-            cronico_selecionado: {
-                ...prev.cronico_selecionado,
-                [name]: type === "checkbox" ? checked : value,
-            },
-        }));
-    };
+	return (
+		<div className="page-box">
+			<h1>Nova Manutenção Crônica</h1>
 
-    const guardarEdicao = async () => {
-        console.log("=== EDITAR / GUARDAR CRÓNICO ===");
-        console.log(cronico);
+			<div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
+				<button onClick={() => navigate(-1)}>Voltar</button>
+				<button onClick={guardarManutencao}>Guardar</button>
+			</div>
 
-        setLocalStorage((prev) => {
-            const lista = Array.isArray(prev.cronicos) ? prev.cronicos : [];
+			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
+				<input placeholder="Nome" name="nome" value={manutencao.nome} onChange={handleChange} />
+				<textarea placeholder="Descrição" name="descricao" value={manutencao.descricao} onChange={handleChange} />
 
-            const existe = lista.some((c) => c.id === cronico.id);
-
-            const listaAtualizada = existe
-                ? lista.map((c) =>
-                    c.id === cronico.id ? { ...c, ...cronico } : c
-                )
-                : [...lista, { ...cronico, id: Date.now() }];
-
-            const cronicoFinal = existe
-                ? { ...cronico }
-                : { ...cronico, id: Date.now() };
-
-            return {
-                ...prev,
-                cronicos: listaAtualizada,
-                cronico_selecionado: cronicoFinal,
-            };
-        });
-
-        await devLog({
-            tipo: "CRONICO",
-            acao: cronico.id ? "EDITAR" : "CRIAR",
-            payload: cronico,
-        });
-    };
-
-
-
-
-    if (!cronico) {
-        return (
-            <div className="page-box">
-                <h1>Crónico</h1>
-                <p>Nenhum crónico selecionado.</p>
-                <Link to="/cronicos">
-                    <button>Voltar</button>
-                </Link>
-            </div>
-        );
-    }
-
-    return (
-        <div className="page-box">
-            <h1>Crónico</h1>
-
-            <div style={{ display: "grid", gap: "10px", maxWidth: "520px" }}>
-                <label>
-                    Nome
-                    <input
-                        type="text"
-                        name="nome"
-                        value={cronico.nome}
-                        onChange={handleChange}
-                    />
-                </label>
-
-                <label>
-                    Severidade (não editável)
-                    <input type="text" value={cronico.severidade} disabled />
-                </label>
-
-                <label style={{ display: "flex", gap: "10px" }}>
-                    <input
-                        type="checkbox"
-                        name="resolvido"
-                        checked={Boolean(cronico.resolvido)}
-                        onChange={handleChange}
-                    />
-                    Resolvido
-                </label>
-
-                <label>
-                    Descrição
-                    <textarea
-                        name="descricao"
-                        value={cronico.descricao}
-                        onChange={handleChange}
-                    />
-                </label>
-
-                <label>
-                    Quilometragem (não editável)
-                    <input type="number" value={cronico.quilometragem} disabled />
-                </label>
-
-                <button onClick={guardarEdicao}>Editar / Guardar</button>
-
-                <Link to="/cronicos">
-                    <button>Voltar à Lista</button>
-                </Link>
-            </div>
-        </div>
-    );
+				<input type="number" placeholder="Kms entre troca" name="kmsEntreTroca" value={manutencao.kmsEntreTroca} onChange={handleChange} />
+				<input type="number" placeholder="Trocado no km" name="trocadoNoKm" value={manutencao.trocadoNoKm} onChange={handleChange} />
+			</div>
+		</div>
+	);
 }
