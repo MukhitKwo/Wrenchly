@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { useLocalStorage } from "../../../context/appContext";
+import { useLocalAppState } from "../../../context/appState.local";
 
 import "./garagem.css";
 
 export default function Garagem() {
-	const { state: getLocalStorage } = useLocalStorage();
+	const { state: getLocalStorage } = useLocalAppState();
 	const carros = getLocalStorage.carros_preview;
 	const garagem = getLocalStorage.garagem;
 

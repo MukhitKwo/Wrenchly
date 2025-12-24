@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useLocalStorage } from "../../context/appContext";
+import { useLocalAppState } from "../../context/appState.local";
 export default function AtualizarCronicosPreventivos() {
 	const { state } = useLocation();
 	const navigate = useNavigate();
 
-	const { setState: setLocalStorage } = useLocalStorage();
+	const { setState: setLocalStorage } = useLocalAppState();
 	const allPreventivos_data = state?.preventivos;
 	const [preventivos, setPreventivos] = useState(allPreventivos_data || []);
 	const carro_data = state?.carro;

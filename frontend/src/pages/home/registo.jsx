@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useLocalStorage } from "../../context/appContext";
+import { useLocalAppState } from "../../context/appState.local";
 
 export default function Registo() {
 	const [email, setEmail] = React.useState("");
 	const [username, setUsername] = React.useState("");
 	const [password, setPassword] = React.useState("");
 	const navigate = useNavigate(); // hook to navigate programmatically
-	const { setState: setLocalStorage } = useLocalStorage(); // access global state
+	const { setState: setLocalStorage } = useLocalAppState(); // access global state
 
 	const registarUser = async () => {
 		// console.log({ email, username, password });

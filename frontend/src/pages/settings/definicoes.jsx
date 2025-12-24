@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { useLocalStorage } from "../../context/appContext";
 import { useNavigate } from "react-router-dom";
+import { useLocalAppState } from "../../context/appState.local";
+import { useSessionAppState } from "../../context/appState.session";
 
 export default function Definicoes() {
 	// obter definiçoes do localStorage
-	const { state: getLocalStorage, setState: setLocalStorage, clearAppState: clearLocalStorage } = useLocalStorage();
+	const { state: getLocalStorage, setState: setLocalStorage, clear: clearLocalStorage } = useLocalAppState();
+	const { clear: clearSessionStorage } = useSessionAppState();
 	const navigate = useNavigate();
 
 	// TODO fix temporario
@@ -14,28 +16,18 @@ export default function Definicoes() {
 		linguagem: "pt",
 	};
 
-	// definir todos os campos numa unica variavel (menos sets e mais facil de adicionar mais campos)
 	const [definicoes, setDefinicoes] = useState({
 		tema: definicoes_data.tema,
 		notificacoes: definicoes_data.notificacoes,
 		linguagem: definicoes_data.linguagem,
 	});
 
-	// sempre que algo muda/atualiza, esta função é executada
 	const handleChange = (e) => {
-		// obtem a informação do target (elemento que foi atualizado)
 		const { name, type, value, checked } = e.target;
-		// copia os campos previos (antigos) do settings (...prev)
 		setDefinicoes((prev) => ({
 			...prev,
-			// mas define o campo atualizado com o novo valor
-			// [name] é o name="" do elemento atualizado (ou a ser atualizado)
-			// type é o tipo (texto, checkbox, etc)
-			// se o tipo for "checkbox" (notificaçoes é checkbox), define o valor de "checked" (true ou false)
-			// se NÂO foi checkbox, define o volor de "value" (o valor)
 			[name]: type === "checkbox" ? checked : value,
 		}));
-		// por fim, troca o campo antigo pelo campo com valor atualizado na copia e salva
 	};
 
 	const atualizarDefinicoes = async () => {
@@ -76,8 +68,9 @@ export default function Definicoes() {
 				console.log(data.message);
 
 				if (res.ok) {
+					clearLocalStorage();
+					clearSessionStorage();
 					navigate("/login");
-					clearLocalStorage(); // TODO resolver erro de variaveis quando se apaga o storage
 				}
 			} catch (error) {
 				console.error(error);

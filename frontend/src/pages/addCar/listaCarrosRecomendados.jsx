@@ -1,12 +1,12 @@
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLocalStorage } from "../../context/appContext";
+import { useLocalAppState } from "../../context/appState.local";
 
 export default function ListaCarrosRecomendados() {
 	const navigate = useNavigate();
 	const { state } = useLocation();
-	const { state: getLocalStorage } = useLocalStorage();
+	const { state: getLocalStorage } = useLocalAppState();
 	const garagem_id = getLocalStorage.garagem.id;
 	const candidateCars = state?.candidateCars || [];
 	const [savedCars, setSavedCars] = useState([]);

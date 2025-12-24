@@ -10,6 +10,7 @@ urlpatterns = [
     path("registerUser/", registerUser),
     path("loginUser/", loginUser),
     path("logoutUser/", logoutUser),
+    path("apagarUser/", apagarUser),
 
     # DEFINIÇÔES
     path("atualizarDefinicoes/<int:id>", atualizarDefinicoes),

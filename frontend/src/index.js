@@ -1,8 +1,9 @@
 // src/index.js (NOVO CÓDIGO)
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { AppProvider } from "./context/appContext.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { LocalAppStateProvider } from "./context/appState.local.jsx";
+import { SessionAppStateProvider } from "./context/appState.session.jsx";
 import App from "./App"; // O componente que servirá de Layout (com navbar e Footer)
 import "./index.css";
 
@@ -69,9 +70,11 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
 	<React.StrictMode>
-		<AppProvider>
-			<RouterProvider router={router} />
-		</AppProvider>
+		<LocalAppStateProvider>
+			<SessionAppStateProvider>
+				<RouterProvider router={router} />
+			</SessionAppStateProvider>
+		</LocalAppStateProvider>
 	</React.StrictMode>
 );
 

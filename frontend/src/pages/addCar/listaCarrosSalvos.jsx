@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useLocalStorage } from "../../context/appContext";
+import { useLocalAppState } from "../../context/appState.local";
 
 export default function ListaCarrosSalvos() {
     const navigate = useNavigate();
-    const { state: getLocalStorage } = useLocalStorage();
+    const { state: getLocalStorage } = useLocalAppState();
 
     // Fonte principal: carros_preview (vem do loginUser)
     const carrosGuardados = getLocalStorage?.carros_preview || [];

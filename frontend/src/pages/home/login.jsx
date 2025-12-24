@@ -1,13 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useLocalStorage } from "../../context/appContext";
+import { useLocalAppState } from "../../context/appState.local";
+import { useSessionAppState } from "../../context/appState.session";
 
 export default function Login() {
 	// const [email, setEmail] = React.useState("");
 	const [username, setUsername] = React.useState("");
 	const [password, setPassword] = React.useState("");
 	const navigate = useNavigate(); // hook to navigate programmatically
-	const { setState: setLocalStorage } = useLocalStorage(); // access global state
+	const { setState: setLocalStorage } = useLocalAppState();
+	const { setState: setSessionStorage } = useSessionAppState();
 
 	const loginUser = async () => {
 		// console.log({ email, username, password });
@@ -30,14 +32,13 @@ export default function Login() {
 			console.log(data.message);
 
 			if (res.ok) {
-				setLocalStorage((prev) => ({
-					...prev,
+				setLocalStorage({
 					user: data.user_data,
 					garagem: data.garagem_data,
 					definicoes: data.definicoes_data,
 					carros_preview: data.carrosPreview_data,
 					notas: data.notas_data,
-				}));
+				});
 
 				navigate("/garagem"); // redirect to home page
 			}

@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { useSessionAppState } from "../../context/appState.session";
 
 export default function Corretivo() {
+	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
 	const navigate = useNavigate();
 	const { state } = useLocation();
 	const carro_id = state?.carro_id;
+	const carro_kms = state?.carro_kms;
+	const viewed_cars = getSessionStorage.carros_vistos;
 
 	const today = new Date();
 	const todayOnly = today.toISOString().split("T")[0]; // "YYYY-MM-DD"
@@ -33,12 +37,32 @@ export default function Corretivo() {
 			const res = await fetch("/api/criarCorretivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ manutencao }),
+				body: JSON.stringify({ manutencao, carro_kms }),
 			});
 
 			const data = await res.json("");
 			console.log(data.message);
-			if (res.ok) navigate(-1);
+
+			if (res.ok) {
+				// TODO save new maintenance on session
+
+				const updatedCarros = viewed_cars.map((car) =>
+					car.id === Number(carro_id)
+						? {
+								...car,
+								quilometragem: Number(data.carro_km),
+								manutencoes: {
+									...car.manutencoes,
+									corretivos: [...car.manutencoes.corretivos, data.corretivo_data],
+								},
+						  }
+						: car
+				);
+
+				setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCarros }));
+
+				navigate(-1);
+			}
 		} catch (error) {
 			console.log(error);
 		}

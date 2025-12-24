@@ -193,6 +193,18 @@ def logoutUser(request):
                     status=200)
 
 
+#! ================== APAGAR CONTA ==================
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def apagarUser(request):
+
+    logout(request)
+
+    return Response({"message": "User logged out"},
+                    status=200)
+
+
 #! ============ ADICIONAR CARRO À GARAGEM ============
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -363,7 +375,6 @@ def obterTodasManutencoes(request):
 
     try:
         res_crud_carro = crud_Carros(method="GET", id=carro_id, user=request.user)
-        print(res_crud_carro.data)
         res_crud_corretivos = crud_Corretivos(method="GET", user=request.user, car_id=carro_id)
         res_crud_preventivos = crud_Preventivos(method="GET", user=request.user, car_id=carro_id)
         res_crud_cronicos = crud_Cronicos(method="GET", user=request.user, car_id=carro_id)
@@ -386,15 +397,22 @@ def obterTodasManutencoes(request):
 def criarCorretivo(request):
     body = request.data
     corretivo = body.get("manutencao")
-
-    print(corretivo)
+    carro_kms = int(body.get("carro_kms"))
 
     try:
-        crud_Corretivos(method="POST", data=corretivo)
+        corretivo_data = crud_Corretivos(method="POST", data=corretivo).data
+        if int(corretivo.get("quilometragem")) > carro_kms:
+            car_id = int(corretivo.get("carro"))
+            new_kms = int(corretivo.get("quilometragem"))
+            updated_carro_data = crud_Carros(method="PUT", data={"quilometragem": new_kms}, id=car_id, user=request.user).data
+            carro_kms = updated_carro_data.get("quilometragem")
+
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
-    return Response({"message": "Corretivo created"},
+    return Response({"message": "Corretivo created",
+                     "corretivo_data": corretivo_data,
+                     "carro_km": carro_kms},
                     status=200)
 
 

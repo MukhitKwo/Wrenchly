@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-export default function ListaCorretivos({ corretivos, carroId }) {
+export default function ListaCorretivos({ corretivos, carroId, carroKms }) {
 	const navigate = useNavigate();
 
 	const corretivas = corretivos;
@@ -16,7 +16,7 @@ export default function ListaCorretivos({ corretivos, carroId }) {
 			<h3>Corretivos</h3>
 
 			<div style={{ marginBottom: "12px" }}>
-				<button onClick={() => navigate("/corretivo", { state: { carro_id: carroId } })}>Adicionar Novo</button>
+				<button onClick={() => navigate("/corretivo", { state: { carro_id: carroId, carro_kms: carroKms } })}>Adicionar Novo</button>
 			</div>
 
 			{corretivas.length === 0 ? (
