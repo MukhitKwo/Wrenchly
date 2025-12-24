@@ -9,7 +9,7 @@ export default function Definicoes() {
 	const { clear: clearSessionStorage } = useSessionAppState();
 	const navigate = useNavigate();
 
-	// TODO fix temporario
+	// TODO fix temporario (temporary my ass LMAO)
 	const definicoes_data = getLocalStorage?.definicoes || {
 		tema: "claro",
 		notificacoes: false,
@@ -78,6 +78,30 @@ export default function Definicoes() {
 		}
 	};
 
+	const apagarUser = async () => {
+		if (window.confirm("Tens a certeza que queres apagar da tua conta?.")) {
+			try {
+				const res = await fetch(`/api/apagarUser/`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				});
+
+				const data = await res.json();
+				console.log(data.message);
+
+				if (res.ok) {
+					clearLocalStorage();
+					clearSessionStorage();
+					navigate("/registo");
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	};
+
 	return (
 		<div>
 			<h1>Definições</h1>
@@ -107,7 +131,9 @@ export default function Definicoes() {
 			</div>
 
 			<button onClick={atualizarDefinicoes}>Salvar</button>
+			<br />
 			<button onClick={logoutUser}>Sair da Conta</button>
+			<button onClick={apagarUser}>Apagar Conta</button>
 		</div>
 	);
 }

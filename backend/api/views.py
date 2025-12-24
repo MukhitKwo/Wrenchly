@@ -18,7 +18,7 @@ from rest_framework.decorators import (
 from .models import *  # apagar dps
 from .serializers import *  # apagar dps
 
-from .gemini import generateCarCronicIssues, carsBySpecs, GeminiException
+from .gemini import generateCarCronicIssues, findCarsBySpecs, GeminiException
 from .preventivos import getCarPreventivesIssues
 from .email import send_email
 from .crud import (
@@ -31,7 +31,7 @@ from .crud import (
     crud_Corretivos,
     crud_Cronicos,
     crud_Preventivos,
-    crud_CarrosSalvos,
+    crud_CarrosGuardados,
     CRUDException
 )
 
@@ -139,13 +139,14 @@ def loginUser(request):
         ).order_by("trocarNaData").values("trocarNaData")[:1]
 
         carros = Carros.objects.annotate(
-            next_trocarNaData=Subquery(closest_date)
+            proxima_manutencao=Subquery(closest_date)
         ).filter(
             garagem__user=user
         )
 
         carrosPreview_data = CarrosPreviewSerializer(carros, many=True).data
         for car in carrosPreview_data:
+            print(car["proxima_manutencao"])
             car["foto"] = None
 
     except CRUDException as e:
@@ -199,9 +200,14 @@ def logoutUser(request):
 @permission_classes([IsAuthenticated])
 def apagarUser(request):
 
-    logout(request)
+    try:
+        # TODO also delete image of car (if exists)
+        user = User.objects.get(id=request.user.id)
+        user.delete()
+    except User.DoesNotExist:
+        return Response({"message": "User not found"}, status=404)
 
-    return Response({"message": "User logged out"},
+    return Response({"message": "User deleted"},
                     status=200)
 
 
@@ -235,7 +241,6 @@ def adicionarCarro(request):
                 preventiveData = convertIssueToPreventive(preventivo, car_data)
                 allPreventivos.append(preventiveData)
 
-            # TODO convert to serializer if possible
             carro_data = {
                 "id": car_data.get("id"),
                 "full_name": getCarName(car_data),
@@ -312,7 +317,7 @@ def adicionarPreventivos(request):
         return Response({"message": e.message}, status=e.status)
 
     return Response({"message": "Preventivo updated and added to car",
-                     "proxima_manutencao": proxima_manutencao},  # TODO retornar foto do carro
+                     "proxima_manutencao": proxima_manutencao},
                     status=200)
 
 
@@ -325,7 +330,7 @@ def procurarCarros(request):
     specs = body.get("specs")
 
     try:
-        res_gemini = carsBySpecs(specs, dummyData=True)
+        res_gemini = findCarsBySpecs(specs, dummyData=True)
         candidateCars = res_gemini.data
 
     except GeminiException as e:
@@ -344,10 +349,10 @@ def salvarCarros(request):
     body = request.data
     savedCars = body.get("savedCars")
 
-    print(savedCars)
+    # print(savedCars)
 
     try:
-        crud_CarrosSalvos(method="POST", data=savedCars)
+        crud_CarrosGuardados(method="POST", data=savedCars)
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
@@ -355,14 +360,21 @@ def salvarCarros(request):
                     status=200)
 
 
-# Listar carros salvos (stub) # TODO
+#! ============ LISTA TODOS CARROS GUARDADOS ============
 @api_view(["GET"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
-def listarCarrosSalvos(request):
+def listarCarrosGuardados(request):
+
+    try:
+        res_crud_carrosGuardados = crud_CarrosGuardados(method="GET", user=request.user)
+        # print(clearCrudData(res_crud_carrosGuardados, delete="garagem", wholeList=True))
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
     return Response({
         "message": "Lista de carros salvos (stub)",
-        "carros": []
+        "carrosGuardados_data": clearCrudData(res_crud_carrosGuardados, delete="garagem", wholeList=True)
     }, status=200)
 
 
@@ -425,7 +437,7 @@ def criarPreventivo(request):
     preventivo = body.get("manutencao")
     carro_kms = int(body.get("carro_kms"))
 
-    km = getTrocarNoKm(preventivo)
+    km = getTrocarNoKm(preventivo, carro_kms)
     preventivo["trocarNoKm"] = km.get("trocarNoKm")
 
     data = getTrocarNaData(preventivo)
@@ -433,14 +445,15 @@ def criarPreventivo(request):
 
     preventivo["risco"] = round(int(km.get("risco_km")) * 0.8 + int(data.get("risco_dias")) * 0.2, 3)
 
-    print(preventivo)
+    # print(preventivo)
 
     try:
-        crud_Preventivos(method="POST", data=preventivo)
+        preventivo_data = crud_Preventivos(method="POST", data=preventivo).data
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
-    return Response({"message": "Corretivo created"},
+    return Response({"message": "Corretivo created",
+                     "preventivo_data": preventivo_data},
                     status=200)
 
 
@@ -453,19 +466,20 @@ def criarCronico(request):
     cronico = body.get("manutencao")
     carro_kms = int(body.get("carro_kms"))
 
-    km = getTrocarNoKm(cronico)
+    km = getTrocarNoKm(cronico, carro_kms)
     cronico["trocarNoKm"] = km.get("trocarNoKm")
 
     cronico["risco"] = int(km.get("risco_km"))
 
-    print(cronico)
+    # print(cronico)
 
     try:
-        crud_Cronicos(method="POST", data=cronico)
+        cronico_data = crud_Cronicos(method="POST", data=cronico).data
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
-    return Response({"message": "Corretivo created"},
+    return Response({"message": "Corretivo created",
+                     "cronico_data": cronico_data},
                     status=200)
 
 
@@ -482,12 +496,12 @@ def userData(user):
     return user_data
 
 
-def clearCrudData(res_crud, delete=None, fullList=False):
+def clearCrudData(res_crud, delete=None, wholeList=False):
 
     crud_data = res_crud.data
 
     if isinstance(crud_data, list):
-        if fullList:
+        if wholeList:
             for data in crud_data:
                 del data[delete]
             return crud_data
@@ -511,7 +525,7 @@ def convertIssueToCronic(issue, carro_data):
     carro_kms = int(carro_data.get("quilometragem"))
     kmsEntretroca = int(issue.get("media_km"))
 
-    kmsAtras = carro_kms % (kmsEntretroca * 1.5)  # TODO add buffer
+    kmsAtras = carro_kms % (kmsEntretroca * 1.5)
 
     trocadoNoKm = carro_kms - kmsAtras if kmsAtras < carro_kms else 0
     trocarNoKm = trocadoNoKm + kmsEntretroca

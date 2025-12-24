@@ -85,7 +85,7 @@ def generateCarCronicIssues(car_model: str, dummyData=False):
     return res_gemini
 
 
-def carsBySpecs(specs: dict, dummyData=False):
+def findCarsBySpecs(specs: dict, dummyData=False):
 
     if not isinstance(specs, dict):
         raise GeminiException(message="Specs not a dictionary")
@@ -93,7 +93,6 @@ def carsBySpecs(specs: dict, dummyData=False):
     if dummyData:
         return GeminiResponse(success=True, message="This is dummy data!", data=getDummyData(2))
 
-    # TODO em vez de retornar so o nome do carro, retorna as caracteresticas tambem
     prompt = (
         f"Lista Python de 12 veiculos que correspondem a estas especificações: {specs}. "
         "Incluir o nome completo e ano do carro, "
@@ -107,6 +106,41 @@ def carsBySpecs(specs: dict, dummyData=False):
     )
 
     res_gemini = call_gemini(prompt, schema, 0.7)
+    if not res_gemini.success:
+        raise GeminiException(res_gemini.message)
+    return res_gemini
+
+
+def getSpecsOfCar(car_model: str, dummyData=False):
+
+    if not isinstance(car_model, str):
+        return GeminiResponse(success=False, message="Car not a string")
+
+    if dummyData:
+        return GeminiResponse(success=True, message="This is dummy data!", data=getDummyData(3))
+
+    prompt = (
+        f"Retorna um dicionário JSON com as especificações do carro {car_model}, "
+        f"inclui categoria, marca, modelo, ano, combustivel, cilindrada, cavalos e transmissao. "
+        f"Caso o carro não exista, retorna um dicionário vazio."
+    )
+
+    schema = types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "categoria": types.Schema(type=types.Type.STRING),
+            "marca": types.Schema(type=types.Type.STRING),
+            "modelo": types.Schema(type=types.Type.STRING),
+            "ano": types.Schema(type=types.Type.INTEGER),
+            "combustivel": types.Schema(type=types.Type.STRING),
+            "cilindrada": types.Schema(type=types.Type.INTEGER),
+            "cavalos": types.Schema(type=types.Type.INTEGER),
+            "transmissao": types.Schema(type=types.Type.STRING),
+        },
+        required=["categoria", "marca", "modelo", "ano", "combustivel", "cilindrada", "cavalos", "transmissao"]
+    )
+
+    res_gemini = call_gemini(prompt, schema, 0.1)
     if not res_gemini.success:
         raise GeminiException(res_gemini.message)
     return res_gemini

@@ -23,7 +23,7 @@ urlpatterns = [
     # PROCURAR CARROS
     path("procurarCarros/", procurarCarros),
     path("salvarCarros/", salvarCarros),
-    path("carrosSalvos/", listarCarrosSalvos),
+    path("carrosGuardados/", listarCarrosGuardados),
 
     # MANUTENÇÕES
     path("obterTodasManutencoes/", obterTodasManutencoes),

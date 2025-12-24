@@ -35,12 +35,12 @@ class CarrosSerializer(serializers.ModelSerializer):
 
 
 class CarrosPreviewSerializer(serializers.ModelSerializer):
-    next_trocarNaData = serializers.DateField(read_only=True, allow_null=True)
+    proxima_manutencao = serializers.DateField(read_only=True, allow_null=True)
     full_name = serializers.SerializerMethodField()  # new field
 
     class Meta:
         model = Carros
-        fields = ["id", "full_name", "matricula", "next_trocarNaData", "imagem_url"]  # remove marca, modelo, ano
+        fields = ["id", "full_name", "matricula", "proxima_manutencao", "imagem_url"]  # remove marca, modelo, ano
 
     def get_full_name(self, obj):
         return f"{obj.marca} {obj.modelo} {obj.ano}"
@@ -63,7 +63,7 @@ class CronicosSerializer(serializers.ModelSerializer):
         model = Cronicos
         fields = '__all__'
 
-class CarrosSalvosSerializer(serializers.ModelSerializer):
+class CarrosGuardadosSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CarrosSalvos
+        model = CarrosGuardados
         fields = '__all__'

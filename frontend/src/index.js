@@ -18,6 +18,13 @@ import Registo from "./pages/home/registo.jsx";
 import Definicoes from "./pages/settings/definicoes.jsx";
 import Perfil from "./pages/settings/perfil.jsx";
 
+import NovoCarro from "./pages/addCar/novoCarro.jsx";
+import AdicionarCarroPorModelo from "./pages/addCar/adicionarPorModelo.jsx";
+import AtualizarCronicosPreventivos from "./pages/addCar/atualizarCronicosPreventivos.jsx";
+import ProcurarPorEspecificacoes from "./pages/addCar/procurarPorEspecificacoes.jsx";
+import ListaCarrosRecomendados from "./pages/addCar/listaCarrosRecomendados.jsx";
+import MostrarCarrosGuardados from "./pages/addCar/escolherCarroGuardado.jsx";
+
 import Garagem from "./pages/garage/garagem/garagem.jsx";
 
 import TodasManutencoes from "./pages/garage/todasManutencoes.jsx";
@@ -28,12 +35,6 @@ import ListaCronicos from "./pages/garage/listaCronicos.jsx";
 import Corretivo from "./pages/garage/corretivo.jsx";
 import Preventivo from "./pages/garage/preventivo.jsx";
 import Cronico from "./pages/garage/cronico.jsx";
-
-import ListaCarrosRecomendados from "./pages/addCar/listaCarrosRecomendados.jsx";
-import ListaCarrosSalvos from "./pages/addCar/listaCarrosSalvos.jsx";
-import ProcurarPorEspecificacoes from "./pages/addCar/procurarPorEspecificacoes.jsx";
-import AdicionarCarroPorModelo from "./pages/addCar/adicionarPorModelo.jsx";
-import AtualizarCronicosPreventivos from "./pages/addCar/atualizarCronicosPreventivos.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -49,6 +50,12 @@ const router = createBrowserRouter([
 			{ path: "registo", element: <Registo /> },
 			{ path: "login", element: <Login /> },
 			{ path: "definicoes", element: <Definicoes /> },
+			{ path: "novoCarro", element: <NovoCarro /> },
+			{ path: "adicionarPorModelo", element: <AdicionarCarroPorModelo /> },
+			{ path: "procurarPorEspecificacoes", element: <ProcurarPorEspecificacoes /> },
+			{ path: "atualizarCronicosPreventivos", element: <AtualizarCronicosPreventivos /> },
+			{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
+			{ path: "listaCarrosSalvos", element: <MostrarCarrosGuardados /> },
 			{ path: "garagem", element: <Garagem /> },
 			{ path: "todasManutencoes/:id", element: <TodasManutencoes /> },
 			{ path: "listaCorretivos/:id", element: <ListaCorretivos /> },
@@ -57,11 +64,6 @@ const router = createBrowserRouter([
 			{ path: "corretivo", element: <Corretivo /> },
 			{ path: "preventivo", element: <Preventivo /> },
 			{ path: "cronico", element: <Cronico /> },
-			{ path: "adicionarPorModelo", element: <AdicionarCarroPorModelo /> },
-			{ path: "procurarPorEspecificacoes", element: <ProcurarPorEspecificacoes /> },
-			{ path: "atualizarCronicosPreventivos", element: <AtualizarCronicosPreventivos /> },
-			{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
-			{ path: "listaCarrosSalvos", element: <ListaCarrosSalvos /> },
 		],
 	},
 ]);

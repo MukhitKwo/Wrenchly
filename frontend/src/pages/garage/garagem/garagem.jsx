@@ -13,7 +13,7 @@ export default function Garagem() {
 			<h1>{garagem.nome}</h1>
 
 			<div style={{ display: "flex", justifyContent: "center", gap: "14px", padding: "20px" }}>
-				<Link to="/adicionarPorModelo">
+				<Link to="/novoCarro">
 					<button>Adicionar carro</button>
 				</Link>
 			</div>
@@ -33,6 +33,21 @@ export default function Garagem() {
 	);
 }
 
+function diasParaManutencao(data) {
+	if (!data) return "N/A";
+
+	const proximaManutencao = new Date(data);
+	const hoje = new Date();
+	const diffMillis = proximaManutencao - hoje;
+	const diffDias = Math.ceil(diffMillis / (1000 * 60 * 60 * 24));
+
+	if (diffDias >= 0) {
+		return `${diffDias} dias`;
+	} else {
+		return "Pendente";
+	}
+}
+
 function CarroCard({ carro }) {
 	return (
 		<div className="carro-panel">
@@ -41,7 +56,7 @@ function CarroCard({ carro }) {
 				<strong>Matrícula:</strong> {carro.matricula ?? "N/A"}
 			</p>
 			<p>
-				<strong>Próxima manutenção:</strong> {carro.proxima_manutencao ?? "N/A"}
+				<strong>Próxima manutenção:</strong> {diasParaManutencao(carro.proxima_manutencao)}
 			</p>
 			{carro.foto && <img src={carro.foto} alt={carro.nome} />}
 		</div>

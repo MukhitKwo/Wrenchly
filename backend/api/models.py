@@ -137,10 +137,9 @@ class Cronicos(models.Model):
         return f"{self.nome} -  {self.carro.quilometragem}/{self.trocadoNoKm + self.kmsEntreTroca} kms"
 
 
-class CarrosSalvos(models.Model):
+class CarrosGuardados(models.Model):
 
     garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
     nome = models.CharField("Nome", max_length=100)  # type: ignore
 
-    # TODO adicionar mais campos dps

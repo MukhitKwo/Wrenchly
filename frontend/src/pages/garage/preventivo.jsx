@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSessionAppState } from "../../context/appState.session";
 
 export default function Preventivo() {
+	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
 	const navigate = useNavigate();
 	const { state } = useLocation();
 	const carro_id = state?.carro_id;
 	const carro_kms = state?.carro_kms;
+	const viewed_cars = getSessionStorage.carros_vistos;
 
 	const today = new Date().toISOString().split("T")[0];
 
@@ -34,9 +37,27 @@ export default function Preventivo() {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ manutencao, carro_kms }),
 			});
+
 			const data = await res.json();
 			console.log(data.message);
-			if (res.ok) navigate(-1);
+
+			if (res.ok) {
+				const updatedCarros = viewed_cars.map((car) =>
+					car.id === Number(carro_id)
+						? {
+								...car,
+								manutencoes: {
+									...car.manutencoes,
+									preventivos: [...car.manutencoes.preventivos, data.preventivo_data],
+								},
+						  }
+						: car
+				);
+
+				setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCarros }));
+
+				navigate(-1);
+			}
 		} catch (error) {
 			console.log(error);
 		}

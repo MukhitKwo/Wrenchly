@@ -163,9 +163,9 @@ def crud_Cronicos(method, data=None, id=None, user=None, car_id=None):
     return res_crud
 
 
-def crud_CarrosSalvos(method, data=None, id=None, user=None):
+def crud_CarrosGuardados(method, data=None, id=None, user=None):
     filtros = {} if method == "POST" else {"garagem__user": user}
-    res_crud = crud(method, data, CarrosSalvos, CarrosSalvosSerializer, id, **filtros)
+    res_crud = crud(method, data, CarrosGuardados, CarrosGuardadosSerializer, id, **filtros)
     if not res_crud.success:
         raise CRUDException(res_crud.message, status=res_crud.status)
     return res_crud

@@ -44,8 +44,6 @@ export default function Corretivo() {
 			console.log(data.message);
 
 			if (res.ok) {
-				// TODO save new maintenance on session
-
 				const updatedCarros = viewed_cars.map((car) =>
 					car.id === Number(carro_id)
 						? {

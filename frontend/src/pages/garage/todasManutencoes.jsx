@@ -45,7 +45,6 @@ export default function TodasManutencoes() {
 
 			console.log(data.message);
 			if (res.ok) {
-				// TODO salvar em SessionStorage
 				setCarro(data.carro_data);
 				setCorretivos(data.corretivos_data);
 				setPreventivos(data.preventivos_data);
