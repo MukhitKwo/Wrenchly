@@ -1,24 +1,29 @@
 from pathlib import Path
 from dotenv import load_dotenv
 from supabase import create_client
-import os
+from django.conf import settings
+from utils.colors import *
 import uuid
 import mimetypes
 
 dotenv_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(dotenv_path=dotenv_path)
 
+SUPABASE_URL = settings.SUPABASE_URL
+SUPABASE_SERVICE_KEY = settings.SUPABASE_SERVICE_KEY
 
-supabase = create_client(
-    os.getenv("SUPABASE_URL", ""),
-    os.getenv("SUPABASE_SERVICE_KEY", ""),
-)
+if not SUPABASE_URL or SUPABASE_SERVICE_KEY:
+    print_yellow("[WARNING] SUPABASE_URL or SUPABASE_SERVICE_KEY key missing. Image Storage disabled.")
+    supabase = None
+else:
+    supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 
 def uploadImageToDB(file_obj, bucket="car_pictures"):
-    """
-    Upload a Django UploadedFile to Supabase storage and return its public URL.
-    """
+
+    if not supabase:
+        raise StorageException(message="Configuration error")
+
     try:
         # generate unique filename
         ext = file_obj.name.split(".")[-1]

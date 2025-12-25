@@ -241,6 +241,8 @@ def adicionarCarro(request):
                 preventiveData = convertIssueToPreventive(preventivo, car_data)
                 allPreventivos.append(preventiveData)
 
+            # crud_Preventivos(method="POST", data=allCronicos)
+
             carro_data = {
                 "id": car_data.get("id"),
                 "full_name": getCarName(car_data),
@@ -314,7 +316,7 @@ def adicionarPreventivos(request):
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
-    return Response({"message": "Preventivo updated and added to car",
+    return Response({"message": "Preventivo added to car",
                      "proxima_manutencao": closestDate},
                     status=200)
 

@@ -1,11 +1,9 @@
-import re
 from google import genai
 from google.genai import types
 from google.genai.errors import APIError
 from django.conf import settings
 import json
 from utils.colors import *
-from django.core.exceptions import ImproperlyConfigured
 
 gemini_key = settings.GEMINI_API_KEY
 client = genai.Client(api_key=gemini_key) if gemini_key else None
@@ -17,7 +15,7 @@ if not gemini_key:
 def call_gemini(prompt, schema, temp):
 
     if not client:
-        raise ImproperlyConfigured("Gemini's client is not configured.")
+        return GeminiResponse(success=False, message="Configuration error", data=e)
 
     cfg = types.GenerateContentConfig(
         response_schema=schema,
@@ -36,9 +34,6 @@ def call_gemini(prompt, schema, temp):
         return GeminiResponse(success=False, message="Gemini API error", data=e)
     except json.JSONDecodeError:
         return GeminiResponse(success=False, message="Invalid JSON")
-
-    except ImproperlyConfigured as e:
-        return GeminiResponse(success=False, message="Configuration error", data=e)
 
     if not response.text:  # texto vazio
         return GeminiResponse(success=False, message="No content")

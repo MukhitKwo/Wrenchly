@@ -28,8 +28,6 @@ export default function ProcurarCarroPorModelo() {
 	const [file, setFile] = useState(null);
 
 	const handleChange = (e) => {
-		console.log(caracteristicas);
-		
 		const { name, value } = e.target;
 		setCaracteristicas((prev) => ({
 			...prev,

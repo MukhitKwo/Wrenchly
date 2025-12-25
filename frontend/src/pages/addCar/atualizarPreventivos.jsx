@@ -11,9 +11,6 @@ export default function AtualizarPreventivos() {
 	const carro_data = state?.carro;
 	const carro_kms = state?.carroKms;
 
-	console.log(carro_kms);
-	
-
 	const handleChange = (index, field, value) => {
 		const updated = [...preventivos];
 		updated[index][field] = value;
