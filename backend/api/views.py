@@ -18,7 +18,7 @@ from rest_framework.decorators import (
 from .models import *  # apagar dps
 from .serializers import *  # apagar dps
 
-from .gemini import generateCarCronicIssues, findCarsBySpecs, GeminiException
+from .gemini import generateCarCronicIssues, findCarsBySpecs, getSpecsOfCar, GeminiException
 from .preventivos import getCarPreventivesIssues
 from .email import send_email
 from .crud import (
@@ -289,16 +289,15 @@ def adicionarPreventivos(request):
     body = request.data
     preventivos = body.get("preventivos")
     carro_kms = body.get("carro_kms")
-    print(carro_kms)
 
     try:
 
-        closestDate = datetime.strptime("2999-12-21", "%Y-%m-%d")
+        closestDate = datetime.strptime("2999-12-21", "%Y-%m-%d").date()
 
         for preventivo in preventivos.copy():
 
             km = getTrocarNoKm(preventivo, carro_kms)
-            preventivo["trocarNaData"] = km.get("trocarNoKm")
+            preventivo["trocarNokm"] = km.get("trocarNoKm")
 
             data = getTrocarNaData(preventivo)
             preventivo["trocarNaData"] = data.get("trocarNaData")
@@ -306,10 +305,9 @@ def adicionarPreventivos(request):
             risco = round(int(km.get("risco_km")) * 0.8 + int(data.get("risco_dias")) * 0.2, 3)
             preventivo["risco"] = risco
 
-            tempDate = datetime.strptime(preventivo.get("trocadoNaData"), "%Y-%m-%d")
-            closestDate = min(closestDate, tempDate)
+            print(preventivo.get("trocarNaData"))
 
-        proxima_manutencao = closestDate.date()
+            closestDate = min(closestDate, preventivo.get("trocarNaData"))
 
         crud_Preventivos("POST", data=preventivos)
 
@@ -317,7 +315,7 @@ def adicionarPreventivos(request):
         return Response({"message": e.message}, status=e.status)
 
     return Response({"message": "Preventivo updated and added to car",
-                     "proxima_manutencao": proxima_manutencao},
+                     "proxima_manutencao": closestDate},
                     status=200)
 
 
@@ -368,17 +366,58 @@ def listarCarrosGuardados(request):
 
     try:
         res_crud_carrosGuardados = crud_CarrosGuardados(method="GET", user=request.user)
-        # print(clearCrudData(res_crud_carrosGuardados, delete="garagem", wholeList=True))
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
     return Response({
-        "message": "Lista de carros salvos (stub)",
+        "message": "Lista de carros salvos",
         "carrosGuardados_data": clearCrudData(res_crud_carrosGuardados, delete="garagem", wholeList=True)
     }, status=200)
 
 
+#! ============ OBTER SPECS DO CARRO GUARDADO ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def obterCarroSpecs(request):
+    car_name = request.data.get("nome")
+
+    try:
+        gemini_carSpecs = getSpecsOfCar(car_name, dummyData=True).data
+        gemini_carSpecs["quilometragem"] = ""
+        gemini_carSpecs["matricula"] = ""
+        gemini_carSpecs["foto"] = ""
+        # gemini_carSpecs["garagem"] = ""
+        print(gemini_carSpecs)
+    except GeminiException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({
+        "message": "Specs do carro obtido",
+        "carro_data": gemini_carSpecs
+    }, status=200)
+
+
+#! ============ APAGAR CARRO GUARDADO ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def apagarCarroGuardado(request):
+    id = int(request.data.get("id"))
+
+    try:
+        crud_CarrosGuardados(method="DELETE", id=id, user=request.user)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({
+        "message": "Carro guardado apagado",
+    }, status=200)
+
+
 #! ============ LISTA TODAS MANUTENÇÕES ============
+
+
 @api_view(["GET"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])

@@ -34,12 +34,13 @@ export default function TodasManutencoes() {
 				return;
 			}
 		} else if (viewed_cars.length === 0) {
-			setSessionStorage({ carros_vistos: [] });
+			setSessionStorage((prev) => ({
+				...prev,
+				carros_vistos: [], // append instead of overwrite
+			}));
 		}
 
 		try {
-			console.log("api");
-
 			const res = await fetch(`/api/obterTodasManutencoes/?carro_id=${id}`);
 			const data = await res.json();
 

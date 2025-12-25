@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
-export default function AtualizarCronicosPreventivos() {
+export default function AtualizarPreventivos() {
 	const { state } = useLocation();
 	const navigate = useNavigate();
 

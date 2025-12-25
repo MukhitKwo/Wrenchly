@@ -119,10 +119,17 @@ def getSpecsOfCar(car_model: str, dummyData=False):
     if dummyData:
         return GeminiResponse(success=True, message="This is dummy data!", data=getDummyData(3))
 
+    valid_categorias = ["carro:sedan", "carro:suv", "carro:hatchback", "carro:coupe", "carro:carrinha"]
+    valid_combustiveis = ["gasoleo", "gasolina", "eletrico", "hibrido"]
+    valid_transmissoes = ["manual:5speed", "manual:6speed", "automatica"]
+
     prompt = (
-        f"Retorna um dicionário JSON com as especificações do carro {car_model}, "
-        f"inclui categoria, marca, modelo, ano, combustivel, cilindrada, cavalos e transmissao. "
-        f"Caso o carro não exista, retorna um dicionário vazio."
+        f"Retorna um objeto JSON com as especificações técnicas do carro: {car_model}. "
+        f"Regras estritas de preenchimento baseadas nos valores de um formulário web:\n"
+        f"1. **Categoria**: Escolhe a mais adequada apenas entre: {', '.join(valid_categorias)}.\n"
+        f"2. **Combustivel**: Mapeia para um destes valores: {', '.join(valid_combustiveis)} (ex: Diesel -> gasoleo).\n"
+        f"3. **Transmissão**: Mapeia para um destes valores: {', '.join(valid_transmissoes)}.\n"
+        f"5. Se o carro não for encontrado, retorna um JSON vazio {{}}."
     )
 
     schema = types.Schema(
@@ -164,8 +171,8 @@ class GeminiException(Exception):
 #! ================== Dummy data ==================
 
 
-def getDummyData(cronics):
-    if cronics == 1:
+def getDummyData(data):
+    if data == 1:
         return [
             {
                 "problema": "Falha na Corrente de Distribuição (Motor N47) (DUMMY)",
@@ -193,5 +200,16 @@ def getDummyData(cronics):
                 "media_km": 140000
             }
         ]
-    else:
+    elif data == 2:
         return ['Volkswagen Golf 2.0 TDI 2011', 'Renault Clio 1.5 dCi 2015', 'BMW 320d 2009', 'Mercedes-Benz C220 2012', 'Audi A3 2010', 'Peugeot 208 2016', 'Ford Focus 2013', 'Toyota Yaris 2014', 'Honda Civic 2008', 'Fiat Punto 2011', 'Opel Corsa 2012', 'Nissan Qashqai 2010', 'Seat Ibiza 2013', 'Citroën C3 2015', 'Volvo V40 2014']
+    elif data == 3:
+        return {
+            "categoria": "carro:sedan",
+            "marca": "BMW",
+            "modelo": "320d",
+            "ano": 2018,
+            "combustivel": "gasoleo",
+            "cilindrada": 1995,
+            "cavalos": 190,
+            "transmissao": "automatica"
+        }

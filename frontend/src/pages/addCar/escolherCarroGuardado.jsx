@@ -1,70 +1,114 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useLocalAppState } from "../../context/appState.local";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSessionAppState } from "../../context/appState.session";
 
 export default function MostrarCarrosGuardados() {
 	const navigate = useNavigate();
-	const { state: getLocalStorage } = useLocalAppState();
-
-	const [carrosSalvos, setCarrosSalvos] = useState([]);
-
-	// Fonte principal: carros_preview (vem do loginUser)
-	// const carrosSalvos = getLocalStorage?.carros_preview || [];
+	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
+	const saved_cars = getSessionStorage?.carros_guardados || [];
+	const [carrosGuardados, setCarrosGuardados] = useState([]);
 
 	const obterCarros = async () => {
+		if (saved_cars.length > 0) {
+			setCarrosGuardados(saved_cars);
+		} else if (saved_cars.length === 0) {
+			setSessionStorage((prev) => ({
+				...prev,
+				carros_guardados: [],
+			}));
+		}
+
 		try {
-			const res = await fetch("/api/carrosGuardados/", {
-				method: "GET",
+			const res = await fetch("/api/carrosGuardados/");
+			const data = await res.json();
+
+			if (res.ok) {
+				setCarrosGuardados(data.carrosGuardados_data);
+
+				setSessionStorage((prev) => ({
+					...prev,
+					carros_guardados: data.carrosGuardados_data,
+				}));
+			}
+		} catch (err) {
+			console.error("Erro a buscar carros", err);
+		}
+	};
+
+	useEffect(() => {
+		obterCarros();
+	}, []);
+
+	const adicionarCarro = async (nome) => {
+		try {
+			const res = await fetch("/api/obterCarroSpecs/", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ nome }),
 			});
 
 			const data = await res.json();
 			console.log(data.message);
 
 			if (res.ok) {
-				setCarrosSalvos(data.carrosGuardados_data);
-				console.log(data.carrosGuardados_data);
+				navigate("/adicionarPorModelo", {
+					state: {
+						initialCarro: data.carro_data,
+					},
+				});
 			}
-		} catch (error) {}
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const esquecerCarro = async (id) => {
+		try {
+			const res = await fetch("/api/apagarCarroGuardado/", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ id }),
+			});
+
+			const data = await res.json();
+			console.log(data.message);
+
+			if (res.ok) {
+				setCarrosGuardados((prev) => prev.filter((carro) => carro.id !== id));
+
+				// also update session storage if needed
+				setSessionStorage((prev) => ({
+					...prev,
+					carros_guardados: (prev.carros_guardados || []).filter((carro) => carro.id !== id),
+				}));
+			}
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	return (
-		<div style={{ padding: "20px" }}>
-			<h1>Lista de Carros Guardados</h1>
+		<div>
+			<h1>Carros Guardados</h1>
 
-			<button type="button" onClick={() => obterCarros()}>
-				Obter Carros (temporario)
-			</button>
-
-			{carrosSalvos.length === 0 ? (
-				<p>Não existem carros guardados.</p>
+			{carrosGuardados.length === 0 ? (
+				<p>Nada guardado.</p>
 			) : (
-				<div>
-					{carrosSalvos.map((carro, idx) => {
-						const marca = carro?.marca || carro?.caracteristicas?.marca || "—";
-						const modelo = carro?.modelo || carro?.caracteristicas?.modelo || "—";
-						const ano = carro?.ano || carro?.caracteristicas?.ano || "—";
+				<ul>
+					{carrosGuardados.map((carro) => (
+						<li key={carro.id} style={{ marginBottom: "8px" }}>
+							<strong>{carro.nome}</strong>
 
-						return (
-							<div
-								key={carro?.id ?? carro?.carro_id ?? idx}
-								style={{
-									border: "1px solid #ccc",
-									padding: "10px",
-									marginBottom: "10px",
-									borderRadius: "6px",
-								}}
-							>
-								<p>
-									<strong>{marca}</strong> {modelo} ({ano})
-								</p>
+							<button style={{ marginLeft: "10px" }} onClick={() => esquecerCarro(carro.id)}>
+								Esquecer
+							</button>
 
-								<div style={{ display: "flex", gap: "10px" }}>
-									<button type="button">Adicionar Carro</button>
-								</div>
-							</div>
-						);
-					})}
-				</div>
+							<button style={{ marginLeft: "6px" }} onClick={() => adicionarCarro(carro.nome)}>
+								Adicionar
+							</button>
+						</li>
+					))}
+				</ul>
 			)}
 		</div>
 	);

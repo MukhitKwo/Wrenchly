@@ -66,14 +66,14 @@ def update_object(Data, Model, Serializer, ID, **filters):
 def delete_object(Model, ID, **filters):
 
     if not ID:  # sem id não há o que apagar
-        CRUDResponse(status=400, message="ID required")
+        return CRUDResponse(status=400, message="ID required")
 
     try:
         obj = Model.objects.get(pk=ID, **filters)  # procura o objeto
         obj.delete()  # apaga o registo
-        CRUDResponse(status=200, message="deleted")
+        return CRUDResponse(status=200, message="deleted")
     except Model.DoesNotExist:
-        CRUDResponse(status=404, message="ID not found")
+        return CRUDResponse(status=404, message="ID not found")
 
 
 #! ================== CRUD Classes ==================

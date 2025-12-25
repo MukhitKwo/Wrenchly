@@ -20,7 +20,7 @@ import Perfil from "./pages/settings/perfil.jsx";
 
 import NovoCarro from "./pages/addCar/novoCarro.jsx";
 import AdicionarCarroPorModelo from "./pages/addCar/adicionarPorModelo.jsx";
-import AtualizarCronicosPreventivos from "./pages/addCar/atualizarCronicosPreventivos.jsx";
+import AtualizarPreventivos from "./pages/addCar/atualizarPreventivos.jsx";
 import ProcurarPorEspecificacoes from "./pages/addCar/procurarPorEspecificacoes.jsx";
 import ListaCarrosRecomendados from "./pages/addCar/listaCarrosRecomendados.jsx";
 import MostrarCarrosGuardados from "./pages/addCar/escolherCarroGuardado.jsx";
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
 			{ path: "novoCarro", element: <NovoCarro /> },
 			{ path: "adicionarPorModelo", element: <AdicionarCarroPorModelo /> },
 			{ path: "procurarPorEspecificacoes", element: <ProcurarPorEspecificacoes /> },
-			{ path: "atualizarCronicosPreventivos", element: <AtualizarCronicosPreventivos /> },
+			{ path: "atualizarPreventivos", element: <AtualizarPreventivos /> },
 			{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
 			{ path: "listaCarrosSalvos", element: <MostrarCarrosGuardados /> },
 			{ path: "garagem", element: <Garagem /> },
