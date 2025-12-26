@@ -58,8 +58,9 @@ function CarroCard({ carro }) {
 			</p>
 			<p>
 				<strong>Próxima manutenção:</strong> {diasParaManutencao(carro.proxima_manutencao)}
+				{/* <img src={carro.imagem_url} alt="description" style={{ width: 200, height: 200 }} />; */}
 			</p>
-			{carro.foto && <img src={carro.foto} alt={carro.nome} />}
+			{carro.imagem_url && <img src={carro.imagem_url} alt={carro.nome} style={{ width: 200, height: 200 }} />}
 		</div>
 	);
 }

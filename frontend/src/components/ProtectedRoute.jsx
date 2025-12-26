@@ -11,7 +11,7 @@ export default function ProtectedRoute({ children }) {
 	useEffect(() => {
 		// Simula validação de sessão (API no futuro)
 		const timer = setTimeout(() => {
-			if (state?.user) {
+			if (state?.user) { // verificar com cookie do django
 				setAutenticado(true);
 			}
 			setLoading(false);
@@ -22,7 +22,7 @@ export default function ProtectedRoute({ children }) {
 
 	// Spinner global
 	if (loading) {
-		return <LoadingSpinner text="A verificar sessão..." />;
+		return <LoadingSpinner/>;
 	}
 
 	//  Bloqueio de acesso

@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { getRiskColor } from "../../utils/riskColor";
 
-
 export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 	const navigate = useNavigate();
 
@@ -35,8 +34,6 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 							marginBottom: "8px",
 						}}
 					>
-
-
 						<strong>{manutencao.nome}</strong>
 
 						<p>
@@ -53,7 +50,6 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 								{manutencao.risco}
 							</span>
 						</p>
-
 
 						{manutencao.notas && <p>Notes: {manutencao.notas}</p>}
 

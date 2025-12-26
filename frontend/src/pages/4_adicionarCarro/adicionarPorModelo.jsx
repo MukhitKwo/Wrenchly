@@ -20,7 +20,7 @@ export default function ProcurarCarroPorModelo() {
 		transmissao: "",
 		quilometragem: "",
 		matricula: "",
-		foto: "",
+		imagem_url: "",
 		garagem: garagem_id,
 		...initialCarro,
 	});
@@ -35,7 +35,7 @@ export default function ProcurarCarroPorModelo() {
 		}));
 	};
 
-	const optional = ["cavalos", "matricula", "foto"];
+	const optional = ["cavalos", "matricula", "imagem_url"];
 	const allFilled = Object.entries(caracteristicas)
 		.filter(([key]) => !optional.includes(key))
 		.every(([, value]) => value !== null && value !== "");
@@ -64,9 +64,14 @@ export default function ProcurarCarroPorModelo() {
 				});
 				const imgData = await resImage.json();
 				console.log(imgData.message);
+
+				if (res.ok) {
+					data.carro_data.imagem_url = imgData.imagem_url || null;
+				}
 			}
 
 			if (res.ok) {
+				
 				navigate("/atualizarPreventivos", {
 					state: {
 						carro: data.carro_data,

@@ -64,15 +64,15 @@ const router = createBrowserRouter([
 			{ path: "listaCarrosSalvos", element: <ProtectedRoute><MostrarCarrosGuardados /></ProtectedRoute> },
 
 			{ path: "garagem", element: <ProtectedRoute><Garagem /></ProtectedRoute> },
-			{ path: "todasManutencoes/:id", element: <ProtectedRoute><TodasManutencoes /></ProtectedRoute> },
+			{ path: "todasManutencoes/:carro_id", element: <ProtectedRoute><TodasManutencoes /></ProtectedRoute> },
 
 			{ path: "novoCorretivo", element: <ProtectedRoute><NovoCorretivo /></ProtectedRoute> },
 			{ path: "novoPreventivo", element: <ProtectedRoute><NovoPreventivo /></ProtectedRoute> },
 			{ path: "novoCronico", element: <ProtectedRoute><NovoCronico /></ProtectedRoute> },
 
-			{ path: "todasManutencoes/:id/corretivo/:manutencao_id", element: <ProtectedRoute><VerCorretivo /></ProtectedRoute> },
-			{ path: "todasManutencoes/:id/preventivo/:manutencao_id", element: <ProtectedRoute><VerPreventivo /></ProtectedRoute> },
-			{ path: "todasManutencoes/:id/cronico/:manutencao_id", element: <ProtectedRoute><VerCronico /></ProtectedRoute> },
+			{ path: "todasManutencoes/:carro_id/corretivo/:manutencao_id", element: <ProtectedRoute><VerCorretivo /></ProtectedRoute> },
+			{ path: "todasManutencoes/:carro_id/preventivo/:manutencao_id", element: <ProtectedRoute><VerPreventivo /></ProtectedRoute> },
+			{ path: "todasManutencoes/:carro_id/cronico/:manutencao_id", element: <ProtectedRoute><VerCronico /></ProtectedRoute> },
 		],
 	},
 ]);

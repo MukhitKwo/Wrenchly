@@ -83,7 +83,7 @@ class Corretivos(models.Model):
 
     quilometragem = models.PositiveIntegerField("Quilometragem")  # type: ignore
 
-    custo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)   # type: ignore
+    custo = models.DecimalField(max_digits=10, decimal_places=2, null=True, default=0.0)   # type: ignore
 
     data = models.DateField("Data da Manutenção")  # type: ignore
 

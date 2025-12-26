@@ -14,7 +14,12 @@ export default function VerPreventivo() {
 	const [carro_km, setCarro_km] = useState(null);
 
 	useEffect(() => {
+		console.log(viewed_cars);
+		console.log(carro_id);
+		console.log(manutencao_id);
+		
 		const car = viewed_cars.find((c) => c.id === Number(carro_id));
+		console.log(car);
 		if (!car) return;
 
 		setCarro_km(car.quilometragem);

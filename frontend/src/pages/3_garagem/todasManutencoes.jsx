@@ -15,6 +15,7 @@ export default function TodasManutencoes() {
 	const [corretivos, setCorretivos] = useState([]);
 	const [preventivos, setPreventivos] = useState([]);
 	const [cronicos, setCronicos] = useState([]);
+	const [carroKms, setCarroKms] = useState();
 
 	useEffect(() => {
 		if (effectRan.current) return;
@@ -27,6 +28,7 @@ export default function TodasManutencoes() {
 			const car_data = viewed_cars.find((car) => car.id === Number(carro_id));
 
 			if (car_data != null) {
+				setCarroKms(car_data.quilometragem);
 				setCarro(car_data);
 				setCorretivos(car_data.manutencoes.corretivos);
 				setPreventivos(car_data.manutencoes.preventivos);
@@ -41,8 +43,10 @@ export default function TodasManutencoes() {
 		}
 
 		try {
+			console.log(carro_id);
+
 			const res = await fetch(`/api/obterTodasManutencoes/?carro_id=${carro_id}`);
-			
+
 			const data = await res.json();
 			console.log(data.message);
 
@@ -51,6 +55,7 @@ export default function TodasManutencoes() {
 				setCorretivos(data.corretivos_data);
 				setPreventivos(data.preventivos_data);
 				setCronicos(data.cronicos_data);
+				setCarroKms(data.carro_data.quilometragem)
 
 				setSessionStorage((prev) => ({
 					...prev,
@@ -75,6 +80,7 @@ export default function TodasManutencoes() {
 	return (
 		<div style={{ padding: "20px" }}>
 			<h1>Manutenções</h1>
+			<h3>Carro tem: {carroKms}km</h3>
 
 			<div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
 				<Link to="/garagem">

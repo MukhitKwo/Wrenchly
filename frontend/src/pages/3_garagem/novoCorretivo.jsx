@@ -23,15 +23,13 @@ export default function NovoCorretivo() {
 		tipo: "corretiva",
 		descricao: "",
 		quilometragem: "",
-		custo: 0.0,
+		custo: "",
 		data: todayOnly,
 		notas: "",
 		...manutencaoData,
 	});
 
 	const handleChange = (e) => {
-		console.log(manutencao);
-		
 		const { name, value } = e.target;
 		setManutencao((prev) => ({
 			...prev,
