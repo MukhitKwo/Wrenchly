@@ -16,6 +16,7 @@ export default function Garagem() {
 				<Link to="/novoCarro">
 					<button>Adicionar carro</button>
 				</Link>
+				<button>Notas todos os carros</button>
 			</div>
 
 			<div className="carros-container" style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>

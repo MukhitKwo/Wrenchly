@@ -81,6 +81,7 @@ export default function TodasManutencoes() {
 					<button>Voltar</button>
 				</Link>
 				<button>Editar Carro</button>
+				<button>Caraterísticas</button>
 			</div>
 
 			{/* ONE grid */}

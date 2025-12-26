@@ -22,6 +22,7 @@ export default function NovoCorretivo() {
 		quilometragem: "",
 		custo: 0.0,
 		data: todayOnly,
+		notas: "",
 	});
 
 	const handleChange = (e) => {
@@ -94,6 +95,7 @@ export default function NovoCorretivo() {
 				<input type="number" placeholder="Custo (€)" name="custo" value={manutencao.custo} onChange={handleChange} />
 
 				<input type="number" placeholder="Quilometragem" name="quilometragem" value={manutencao.quilometragem} onChange={handleChange} />
+				<textarea placeholder="Notas" name="notas" value={manutencao.notas} onChange={handleChange} />
 			</div>
 		</div>
 	);
