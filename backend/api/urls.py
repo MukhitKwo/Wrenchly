@@ -26,12 +26,20 @@ urlpatterns = [
     path("carrosGuardados/", listarCarrosGuardados),
     path("obterCarroSpecs/", obterCarroSpecs),
     path("apagarCarroGuardado/", apagarCarroGuardado),
-    
+
 
     # MANUTENÇÕES
     path("obterTodasManutencoes/", obterTodasManutencoes),
     path("criarCorretivo/", criarCorretivo),
+    path("editarCorretivo/", editarCorretivo),
+    path("apagarCorretivo/", apagarCorretivo),
+
     path("criarPreventivo/", criarPreventivo),
+    path("editarPreventivo/", editarPreventivo),
+    path("apagarPreventivo/", apagarPreventivo),
+
     path("criarCronico/", criarCronico),
+    path("editarCronico/", editarCronico),
+    path("apagarCronico/", apagarCronico),
 
 ]

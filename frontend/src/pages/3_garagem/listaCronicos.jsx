@@ -38,16 +38,9 @@ export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 
 						{manutencao.notas && <p>Notes: {manutencao.notas}</p>}
 
+						{/* ver cronico */}
 						<div style={{ display: "flex", gap: "8px" }}>
-							<button
-								onClick={() =>
-									navigate(`/manutencao/${manutencao.id}`, {
-										state: { carro_id: carroId },
-									})
-								}
-							>
-								View
-							</button>
+							<button onClick={() => navigate(`/todasManutencoes/${carroId}/cronico/${manutencao.id}`)}>Ver</button>
 						</div>
 					</div>
 				))

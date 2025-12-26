@@ -89,7 +89,7 @@ export default function ProcurarCarroPorModelo() {
 				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
 					<label style={{ width: "160px" }}>Categoria</label>
 					<select name="categoria" value={caracteristicas.categoria} onChange={handleChange} style={{ flex: 1 }}>
-						<option value="">Tipo / Categoria</option>
+						<option value="">---</option>
 						<optgroup label="Carro">
 							<option value="carro:sedan">Sedan</option>
 							<option value="carro:suv">SUV</option>

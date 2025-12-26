@@ -467,6 +467,46 @@ def criarCorretivo(request):
                     status=200)
 
 
+#! ============ EDITAR CORRETIVO ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def editarCorretivo(request):
+    body = request.data
+    corretivo = body.get("manutencao")
+
+    id = int(corretivo.pop("id"))
+    carro_id = int(corretivo.pop("carro"))
+
+    try:
+        corretivo_data = crud_Corretivos(method="PUT", data=corretivo, id=id, car_id=carro_id, user=request.user).data
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Corretivo updated",
+                     "corretivo_data": corretivo_data},
+                    status=200)
+
+
+#! ============ APAGAR CORRETIVO ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def apagarCorretivo(request):
+    body = request.data
+    id = int(body.get("id"))
+    carro_id = int(body.get("carro_id"))
+
+    try:
+        crud_Corretivos(method="DELETE", id=id, car_id=carro_id, user=request.user)
+        pass
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Corretivo updated"},
+                    status=200)
+
+
 #! ============ CRIAR PREVENTIVO ============
 @api_view(["POST", "PUT"])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -495,6 +535,55 @@ def criarPreventivo(request):
                      "preventivo_data": preventivo_data},
                     status=200)
 
+ #! ============ EDITAR PREVENTIVO ============
+
+
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def editarPreventivo(request):
+    body = request.data
+    preventivo = body.get("manutencao")
+    carro_km = int(body.get("carro_km"))
+
+    id = int(preventivo.pop("id"))
+    carro_id = int(preventivo.pop("carro"))
+
+    km = getTrocarNoKm(preventivo, carro_km)
+    preventivo["trocarNoKm"] = km.get("trocarNoKm")
+
+    data = getTrocarNaData(preventivo)
+    preventivo["trocarNaData"] = data.get("trocarNaData")
+
+    preventivo["risco"] = round(int(km.get("risco_km")) * 0.8 + int(data.get("risco_dias")) * 0.2, 3)
+
+    try:
+        preventivo_data = crud_Preventivos(method="PUT", data=preventivo, id=id, car_id=carro_id, user=request.user).data
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Preventivo updated",
+                     "preventivo_data": preventivo_data},
+                    status=200)
+
+
+#! ============ APAGAR PREVENTIVO ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def apagarPreventivo(request):
+    body = request.data
+    id = int(body.get("id"))
+    carro_id = int(body.get("carro_id"))
+
+    try:
+        crud_Preventivos(method="DELETE", id=id, car_id=carro_id, user=request.user)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Preventivo deleted"},
+                    status=200)
+
 
 #! ============ CRIAR CRONICO ============
 @api_view(["POST", "PUT"])
@@ -507,7 +596,6 @@ def criarCronico(request):
 
     km = getTrocarNoKm(cronico, carro_kms)
     cronico["trocarNoKm"] = km.get("trocarNoKm")
-
     cronico["risco"] = int(km.get("risco_km"))
 
     # print(cronico)
@@ -519,6 +607,51 @@ def criarCronico(request):
 
     return Response({"message": "Corretivo created",
                      "cronico_data": cronico_data},
+                    status=200)
+
+
+#! ============ EDITAR CRONICO ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def editarCronico(request):
+    body = request.data
+    cronico = body.get("manutencao")
+    carro_km = int(body.get("carro_km"))
+
+    id = int(cronico.pop("id"))
+    carro_id = int(cronico.pop("carro"))
+
+    km = getTrocarNoKm(cronico, carro_km)
+    cronico["trocarNoKm"] = km.get("trocarNoKm")
+
+    cronico["risco"] = int(km.get("risco_km"))
+
+    try:
+        cronico_data = crud_Cronicos(method="PUT", data=cronico, id=id, car_id=carro_id, user=request.user).data
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Cronico updated",
+                     "cronico_data": cronico_data},
+                    status=200)
+
+
+#! ============ APAGAR CRONICO ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def apagarCronico(request):
+    body = request.data
+    id = int(body.get("id"))
+    carro_id = int(body.get("carro_id"))
+
+    try:
+        crud_Cronicos(method="DELETE", id=id, car_id=carro_id, user=request.user)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Cronico deleted"},
                     status=200)
 
 

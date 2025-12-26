@@ -33,8 +33,11 @@ import ListaPreventivos from "./pages/3_garagem/listaPreventivos.jsx";
 import ListaCronicos from "./pages/3_garagem/listaCronicos.jsx";
 
 import NovoCorretivo from "./pages/3_garagem/novoCorretivo.jsx";
+import VerCorretivo from "./pages/3_garagem/verCorretivo.jsx";
 import NovoPreventivo from "./pages/3_garagem/novoPreventivo.jsx";
+import VerPreventivo from "./pages/3_garagem/verPreventivo.jsx";
 import NovoCronico from "./pages/3_garagem/novoCronico.jsx";
+import VerCronico from "./pages/3_garagem/verCronico.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -57,13 +60,16 @@ const router = createBrowserRouter([
 			{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
 			{ path: "listaCarrosSalvos", element: <MostrarCarrosGuardados /> },
 			{ path: "garagem", element: <Garagem /> },
-			{ path: "todasManutencoes/:id", element: <TodasManutencoes /> },
-			{ path: "listaCorretivos/:id", element: <ListaCorretivos /> },
-			{ path: "listaPreventivos/:id", element: <ListaPreventivos /> },
-			{ path: "listaCronicos/:id", element: <ListaCronicos /> },
+			{ path: "todasManutencoes/:carro_id", element: <TodasManutencoes /> },
+			{ path: "listaCorretivos", element: <ListaCorretivos /> },
+			{ path: "listaPreventivos", element: <ListaPreventivos /> },
+			{ path: "listaCronicos", element: <ListaCronicos /> },
 			{ path: "novoCorretivo", element: <NovoCorretivo /> },
+			{ path: "/todasManutencoes/:carro_id/corretivo/:manutencao_id", element: <VerCorretivo /> },
 			{ path: "novoPreventivo", element: <NovoPreventivo /> },
+			{ path: "/todasManutencoes/:carro_id/preventivo/:manutencao_id", element: <VerPreventivo /> },
 			{ path: "novoCronico", element: <NovoCronico /> },
+			{ path: "/todasManutencoes/:carro_id/cronico/:manutencao_id", element: <VerCronico /> },
 		],
 	},
 ]);

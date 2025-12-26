@@ -7,7 +7,7 @@ import ListaCronicos from "./listaCronicos";
 
 export default function TodasManutencoes() {
 	const effectRan = useRef(false);
-	const { id } = useParams();
+	const { carro_id } = useParams();
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
 	const viewed_cars = getSessionStorage?.carros_vistos || [];
 
@@ -24,7 +24,7 @@ export default function TodasManutencoes() {
 
 	const verManutencoes = async () => {
 		if (viewed_cars.length > 0) {
-			const car_data = viewed_cars.find((car) => car.id === Number(id));
+			const car_data = viewed_cars.find((car) => car.id === Number(carro_id));
 
 			if (car_data != null) {
 				setCarro(car_data);
@@ -41,10 +41,11 @@ export default function TodasManutencoes() {
 		}
 
 		try {
-			const res = await fetch(`/api/obterTodasManutencoes/?carro_id=${id}`);
+			const res = await fetch(`/api/obterTodasManutencoes/?carro_id=${carro_id}`);
+			
 			const data = await res.json();
-
 			console.log(data.message);
+
 			if (res.ok) {
 				setCarro(data.carro_data);
 				setCorretivos(data.corretivos_data);
@@ -84,9 +85,9 @@ export default function TodasManutencoes() {
 
 			{/* ONE grid */}
 			<div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
-				<ListaCorretivos corretivos={corretivos} carroId={id} carroKms={carro?.quilometragem || 0} />
-				<ListaPreventivos preventivos={preventivos} carroId={id} carroKms={carro?.quilometragem || 0} />
-				<ListaCronicos cronicos={cronicos} carroId={id} carroKms={carro?.quilometragem || 0} />
+				<ListaCorretivos corretivos={corretivos} carroId={carro_id} carroKms={carro?.quilometragem || 0} />
+				<ListaPreventivos preventivos={preventivos} carroId={carro_id} carroKms={carro?.quilometragem || 0} />
+				<ListaCronicos cronicos={cronicos} carroId={carro_id} carroKms={carro?.quilometragem || 0} />
 			</div>
 		</div>
 	);
