@@ -1,3 +1,4 @@
+
 function navbar() {
 	return (
 		// ja tem navbar na App
@@ -9,5 +10,4 @@ function navbar() {
 		</nav>
 	);
 }
-
 export default navbar;
