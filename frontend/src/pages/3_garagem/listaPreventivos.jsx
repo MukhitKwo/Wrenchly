@@ -5,7 +5,7 @@ import { getRiskColor } from "../../utils/riskColor";
 export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 	const navigate = useNavigate();
 
-	const corretivas = preventivos;
+	const preventivoData = preventivos;
 
 	return (
 		<div
@@ -21,10 +21,10 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 				<button onClick={() => navigate("/novoPreventivo", { state: { carro_id: carroId, carro_kms: carroKms } })}>Adicionar Novo</button>
 			</div>
 
-			{corretivas.length === 0 ? (
+			{preventivoData.length === 0 ? (
 				<p style={{ opacity: 0.6 }}>No corrective maintenances.</p>
 			) : (
-				corretivas.map((manutencao) => (
+				preventivoData.map((manutencao) => (
 					<div
 						key={manutencao.id}
 						style={{
@@ -60,6 +60,17 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 						{/* ver preventivo */}
 						<div style={{ display: "flex", gap: "8px" }}>
 							<button onClick={() => navigate(`/todasManutencoes/${carroId}/preventivo/${manutencao.id}`)}>Ver</button>
+							<button
+								onClick={() =>
+									navigate("/novoCorretivo", {
+										state: {
+											manutencaoData: manutencao,
+										},
+									})
+								}
+							>
+								Fazer
+							</button>
 						</div>
 					</div>
 				))

@@ -10,6 +10,9 @@ export default function NovoCorretivo() {
 	const carro_id = state?.carro_id;
 	const carro_kms = state?.carro_kms;
 	const viewed_cars = getSessionStorage.carros_vistos;
+	const manutencaoData = state?.manutencaoData || {};
+
+	const { nome, descricao, tipo = "preventivo" } = manutencaoData;
 
 	const today = new Date();
 	const todayOnly = today.toISOString().split("T")[0]; // "YYYY-MM-DD"
@@ -23,9 +26,12 @@ export default function NovoCorretivo() {
 		custo: 0.0,
 		data: todayOnly,
 		notas: "",
+		...manutencaoData,
 	});
 
 	const handleChange = (e) => {
+		console.log(manutencao);
+		
 		const { name, value } = e.target;
 		setManutencao((prev) => ({
 			...prev,
