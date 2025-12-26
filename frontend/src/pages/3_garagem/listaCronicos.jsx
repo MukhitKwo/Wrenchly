@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 
-export default function ListaCorretivos({ corretivos, carroId, carroKms }) {
+export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 	const navigate = useNavigate();
 
-	const corretivas = corretivos;
+	const corretivas = cronicos;
 
 	return (
 		<div
@@ -13,10 +13,10 @@ export default function ListaCorretivos({ corretivos, carroId, carroKms }) {
 				padding: "12px",
 			}}
 		>
-			<h3>Corretivos</h3>
+			<h3>Cronicos</h3>
 
 			<div style={{ marginBottom: "12px" }}>
-				<button onClick={() => navigate("/corretivo", { state: { carro_id: carroId, carro_kms: carroKms } })}>Adicionar Novo</button>
+				<button onClick={() => navigate("/novoCronico", { state: { carro_id: carroId, carro_kms: carroKms } })}>Adicionar Novo</button>
 			</div>
 
 			{corretivas.length === 0 ? (
@@ -33,8 +33,8 @@ export default function ListaCorretivos({ corretivos, carroId, carroKms }) {
 					>
 						<strong>{manutencao.nome}</strong>
 
-						<p>No Kms: {manutencao.quilometragem}</p>
-						<p>Date: {manutencao.data}</p>
+						<p>Trocar no Km: {manutencao.trocarNoKm} km</p>
+						<p>Risco: {manutencao.risco}</p>
 
 						{manutencao.notas && <p>Notes: {manutencao.notas}</p>}
 

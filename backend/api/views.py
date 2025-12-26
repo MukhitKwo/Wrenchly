@@ -307,8 +307,6 @@ def adicionarPreventivos(request):
             risco = round(int(km.get("risco_km")) * 0.8 + int(data.get("risco_dias")) * 0.2, 3)
             preventivo["risco"] = risco
 
-            print(preventivo.get("trocarNaData"))
-
             closestDate = min(closestDate, preventivo.get("trocarNaData"))
 
         crud_Preventivos("POST", data=preventivos)

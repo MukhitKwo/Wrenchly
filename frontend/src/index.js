@@ -8,33 +8,33 @@ import App from "./App"; // O componente que servirá de Layout (com navbar e Fo
 import "./index.css";
 
 // Importa os seus componentes de página
-import Contatos from "./pages/home/contatos.jsx";
-import Home from "./pages/home/home.jsx";
-import Sobre from "./pages/home/sobre.jsx";
+import Contatos from "./pages/1_homepage/contatos.jsx";
+import Home from "./pages/1_homepage/home.jsx";
+import Sobre from "./pages/1_homepage/sobre.jsx";
 
-import Login from "./pages/home/login.jsx";
-import Registo from "./pages/home/registo.jsx";
+import Login from "./pages/1_homepage/login.jsx";
+import Registo from "./pages/1_homepage/registo.jsx";
 
-import Definicoes from "./pages/settings/definicoes.jsx";
-import Perfil from "./pages/settings/perfil.jsx";
+import Definicoes from "./pages/2_definicoes/definicoes.jsx";
+import Perfil from "./pages/2_definicoes/perfil.jsx";
 
-import NovoCarro from "./pages/addCar/novoCarro.jsx";
-import AdicionarCarroPorModelo from "./pages/addCar/adicionarPorModelo.jsx";
-import AtualizarPreventivos from "./pages/addCar/atualizarPreventivos.jsx";
-import ProcurarPorEspecificacoes from "./pages/addCar/procurarPorEspecificacoes.jsx";
-import ListaCarrosRecomendados from "./pages/addCar/listaCarrosRecomendados.jsx";
-import MostrarCarrosGuardados from "./pages/addCar/escolherCarroGuardado.jsx";
+import NovoCarro from "./pages/4_adicionarCarro/novoCarro.jsx";
+import AdicionarCarroPorModelo from "./pages/4_adicionarCarro/adicionarPorModelo.jsx";
+import AtualizarPreventivos from "./pages/4_adicionarCarro/atualizarPreventivos.jsx";
+import ProcurarPorEspecificacoes from "./pages/4_adicionarCarro/procurarPorEspecificacoes.jsx";
+import ListaCarrosRecomendados from "./pages/4_adicionarCarro/listaCarrosRecomendados.jsx";
+import MostrarCarrosGuardados from "./pages/4_adicionarCarro/escolherCarroGuardado.jsx";
 
-import Garagem from "./pages/garage/garagem/garagem.jsx";
+import Garagem from "./pages/3_garagem/garagem/garagem.jsx";
 
-import TodasManutencoes from "./pages/garage/todasManutencoes.jsx";
-import ListaCorretivos from "./pages/garage/listaCorretivos.jsx";
-import ListaPreventivos from "./pages/garage/listaPreventivos.jsx";
-import ListaCronicos from "./pages/garage/listaCronicos.jsx";
+import TodasManutencoes from "./pages/3_garagem/todasManutencoes.jsx";
+import ListaCorretivos from "./pages/3_garagem/listaCorretivos.jsx";
+import ListaPreventivos from "./pages/3_garagem/listaPreventivos.jsx";
+import ListaCronicos from "./pages/3_garagem/listaCronicos.jsx";
 
-import Corretivo from "./pages/garage/corretivo.jsx";
-import Preventivo from "./pages/garage/preventivo.jsx";
-import Cronico from "./pages/garage/cronico.jsx";
+import NovoCorretivo from "./pages/3_garagem/novoCorretivo.jsx";
+import NovoPreventivo from "./pages/3_garagem/novoPreventivo.jsx";
+import NovoCronico from "./pages/3_garagem/novoCronico.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -61,9 +61,9 @@ const router = createBrowserRouter([
 			{ path: "listaCorretivos/:id", element: <ListaCorretivos /> },
 			{ path: "listaPreventivos/:id", element: <ListaPreventivos /> },
 			{ path: "listaCronicos/:id", element: <ListaCronicos /> },
-			{ path: "corretivo", element: <Corretivo /> },
-			{ path: "preventivo", element: <Preventivo /> },
-			{ path: "cronico", element: <Cronico /> },
+			{ path: "novoCorretivo", element: <NovoCorretivo /> },
+			{ path: "novoPreventivo", element: <NovoPreventivo /> },
+			{ path: "novoCronico", element: <NovoCronico /> },
 		],
 	},
 ]);

@@ -12,7 +12,7 @@ load_dotenv(dotenv_path=dotenv_path)
 SUPABASE_URL = settings.SUPABASE_URL
 SUPABASE_SERVICE_KEY = settings.SUPABASE_SERVICE_KEY
 
-if not SUPABASE_URL or SUPABASE_SERVICE_KEY:
+if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
     print_yellow("[WARNING] SUPABASE_URL or SUPABASE_SERVICE_KEY key missing. Image Storage disabled.")
     supabase = None
 else:
