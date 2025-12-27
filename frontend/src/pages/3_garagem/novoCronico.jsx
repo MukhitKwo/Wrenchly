@@ -14,8 +14,8 @@ export default function Cronico() {
 		carro: carro_id,
 		nome: "",
 		descricao: "",
-		kmsEntreTroca: 0,
-		trocadoNoKm: "",
+		kmsEntreTroca: "",
+		trocadoNoKm: carro_kms,
 	});
 
 	const handleChange = (e) => {
@@ -38,13 +38,24 @@ export default function Cronico() {
 			console.log(data.message);
 
 			if (res.ok) {
+
+				console.log(data.cronico_data);
+				
+
+				const AdicionarRisco = (man) => ({
+					...man,
+					risco: man.kmsEntreTroca ? Number(((carro_kms - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2)) : null,
+				});
+
+				const novoCronicoComRisco = AdicionarRisco(data.cronico_data);
+
 				const updatedCarros = viewed_cars.map((car) =>
 					car.id === Number(carro_id)
 						? {
 								...car,
 								manutencoes: {
 									...car.manutencoes,
-									cronicos: [...car.manutencoes.cronicos, data.cronico_data],
+									cronicos: [...car.manutencoes.cronicos, novoCronicoComRisco],
 								},
 						  }
 						: car

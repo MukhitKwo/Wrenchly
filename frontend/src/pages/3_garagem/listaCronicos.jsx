@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { getRiskColor } from "../../utils/riskColor";
 
-
 export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 	const navigate = useNavigate();
 
@@ -35,7 +34,6 @@ export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 							marginBottom: "8px",
 						}}
 					>
-
 						<strong>{manutencao.nome}</strong>
 
 						<p>Trocar no Km: {manutencao.trocarNoKm} km</p>
@@ -51,12 +49,25 @@ export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 							</span>
 						</p>
 
-
 						{manutencao.notas && <p>Notes: {manutencao.notas}</p>}
 
 						{/* ver cronico */}
 						<div style={{ display: "flex", gap: "8px" }}>
 							<button onClick={() => navigate(`/todasManutencoes/${carroId}/cronico/${manutencao.id}`)}>Ver</button>
+							<button
+								onClick={() =>
+									navigate("/novoCorretivo", {
+										state: {
+											carro_id: carroId,
+											carro_kms: carroKms,
+											manutencaoData: manutencao,
+											tipo: "cronico",
+										},
+									})
+								}
+							>
+								Fazer
+							</button>
 						</div>
 					</div>
 				))

@@ -111,7 +111,7 @@ class Preventivos(models.Model):
 
     trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0,  null=True)  # type: ignore
 
-    risco = models.FloatField("Risco (normalizado)", default=0.0, null=True)  # type: ignore
+    # risco = models.FloatField("Risco (normalizado)", default=0.0, null=True)  # type: ignore
 
     def __str__(self):
         return f"{self.nome} - {self.carro.quilometragem}/{self.trocadoNoKm + self.kmsEntreTroca} kms"
@@ -131,7 +131,7 @@ class Cronicos(models.Model):
 
     trocarNoKm = models.PositiveIntegerField("Trocar no km", default=0, null=True)  # type: ignore
 
-    risco = models.FloatField("Risco (normalizado)", default=0.0, null=True)  # type: ignore
+    # risco = models.FloatField("Risco (normalizado)", default=0.0, null=True)  # type: ignore
 
     def __str__(self):
         return f"{self.nome} -  {self.carro.quilometragem}/{self.trocadoNoKm + self.kmsEntreTroca} kms"
@@ -139,7 +139,6 @@ class Cronicos(models.Model):
 
 class CarrosGuardados(models.Model):
 
-    garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+    carro = models.ForeignKey(Carros, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
     nome = models.CharField("Nome", max_length=100)  # type: ignore
-

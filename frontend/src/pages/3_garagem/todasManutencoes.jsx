@@ -51,11 +51,23 @@ export default function TodasManutencoes() {
 			console.log(data.message);
 
 			if (res.ok) {
+				const carroKms = data.carro_data.quilometragem;
+
+				const AdicionarRisco = (manutencao) =>
+					manutencao.map((man) => ({
+						...man,
+						risco: Number(((carroKms - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2)), // TODO risco com data e km (75/25?)
+					}));
+
+				const preventivoComRisco = AdicionarRisco(data.preventivos_data);
+				const cronicoComRisco = AdicionarRisco(data.cronicos_data);
+
 				setCarro(data.carro_data);
+				setCarroKms(carroKms);
+
 				setCorretivos(data.corretivos_data);
-				setPreventivos(data.preventivos_data);
-				setCronicos(data.cronicos_data);
-				setCarroKms(data.carro_data.quilometragem)
+				setPreventivos(preventivoComRisco);
+				setCronicos(cronicoComRisco);
 
 				setSessionStorage((prev) => ({
 					...prev,
@@ -64,9 +76,9 @@ export default function TodasManutencoes() {
 						{
 							...data.carro_data,
 							manutencoes: {
-								preventivos: data.preventivos_data,
 								corretivos: data.corretivos_data,
-								cronicos: data.cronicos_data,
+								preventivos: preventivoComRisco,
+								cronicos: cronicoComRisco,
 							},
 						},
 					],

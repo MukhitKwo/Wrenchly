@@ -132,8 +132,8 @@ export default function Definicoes() {
 
 			<button onClick={atualizarDefinicoes}>Salvar</button>
 			<br />
-			<button onClick={logoutUser}>Sair da Conta</button>
 			<button onClick={apagarUser}>Apagar Conta</button>
+			<button onClick={logoutUser}>Sair da Conta</button>
 		</div>
 	);
 }

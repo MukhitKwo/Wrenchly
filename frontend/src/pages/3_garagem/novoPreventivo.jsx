@@ -16,10 +16,10 @@ export default function NovoPreventivo() {
 		carro: carro_id,
 		nome: "",
 		descricao: "",
-		diasEntreTroca: 0,
+		diasEntreTroca: "",
 		trocadoNaData: today,
 		kmsEntreTroca: "",
-		trocadoNoKm: "",
+		trocadoNoKm: carro_kms,
 	});
 
 	const handleChange = (e) => {
@@ -42,13 +42,20 @@ export default function NovoPreventivo() {
 			console.log(data.message);
 
 			if (res.ok) {
+				const AdicionarRisco = (man) => ({
+					...man,
+					risco: man.kmsEntreTroca ? Number(((carro_kms - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2)) : null, // TODO risco com data
+				});
+
+				const novoPreventivoComRisco = AdicionarRisco(data.preventivo_data);
+
 				const updatedCarros = viewed_cars.map((car) =>
 					car.id === Number(carro_id)
 						? {
 								...car,
 								manutencoes: {
 									...car.manutencoes,
-									preventivos: [...car.manutencoes.preventivos, data.preventivo_data],
+									preventivos: [...car.manutencoes.preventivos, novoPreventivoComRisco],
 								},
 						  }
 						: car

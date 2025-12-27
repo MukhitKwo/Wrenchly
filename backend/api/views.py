@@ -298,22 +298,12 @@ def adicionarPreventivos(request):
 
         for preventivo in preventivos.copy():
 
-            km = getTrocarNoKm(preventivo, carro_kms)
-            preventivo["trocarNokm"] = km.get("trocarNoKm")
+            preventivo["trocarNokm"] = getTrocarNoKm(preventivo)
 
-            data = getTrocarNaData(preventivo)
-            preventivo["trocarNaData"] = data.get("trocarNaData")
+            preventivo["trocarNaData"] = getTrocarNaData(preventivo)
 
-            print(preventivo["nome"])
-
-            print("km", int(km.get("risco_km")))
-            print("data", int(data.get("risco_dias")))
-
-            risco = round(float(km.get("risco_km")) * 0.8 + float(data.get("risco_dias")) * 0.2, 3)
-            preventivo["risco"] = risco
-
-            print("risco", risco)
-            print("===============")
+            # risco = round(float(km.get("risco_km")) * 0.8 + float(data.get("risco_dias")) * 0.2, 3)
+            # preventivo["risco"] = risco
 
             closestDate = min(closestDate, preventivo.get("trocarNaData"))
 
@@ -523,15 +513,11 @@ def criarPreventivo(request):
     preventivo = body.get("manutencao")
     carro_kms = int(body.get("carro_kms"))
 
-    km = getTrocarNoKm(preventivo, carro_kms)
-    preventivo["trocarNoKm"] = km.get("trocarNoKm")
+    preventivo["trocarNoKm"] = getTrocarNoKm(preventivo)
 
-    data = getTrocarNaData(preventivo)
-    preventivo["trocarNaData"] = data.get("trocarNaData")
+    preventivo["trocarNaData"] = getTrocarNaData(preventivo)
 
-    preventivo["risco"] = round(float(km.get("risco_km")) * 0.8 + float(data.get("risco_dias")) * 0.2, 3)
-
-    # print(preventivo)
+    # preventivo["risco"] = round(float(km.get("risco_km")) * 0.8 + float(data.get("risco_dias")) * 0.2, 3)
 
     try:
         preventivo_data = crud_Preventivos(method="POST", data=preventivo).data
@@ -556,13 +542,11 @@ def editarPreventivo(request):
     id = int(preventivo.pop("id"))
     carro_id = int(preventivo.pop("carro"))
 
-    km = getTrocarNoKm(preventivo, carro_km)
-    preventivo["trocarNoKm"] = km.get("trocarNoKm")
+    preventivo["trocarNoKm"] = getTrocarNoKm(preventivo)
 
-    data = getTrocarNaData(preventivo)
-    preventivo["trocarNaData"] = data.get("trocarNaData")
+    preventivo["trocarNaData"] = getTrocarNaData(preventivo)
 
-    preventivo["risco"] = round(float(km.get("risco_km")) * 0.8 + float(data.get("risco_dias")) * 0.2, 3)
+    # preventivo["risco"] = round(float(km.get("risco_km")) * 0.8 + float(data.get("risco_dias")) * 0.2, 3)
 
     try:
         preventivo_data = crud_Preventivos(method="PUT", data=preventivo, id=id, car_id=carro_id, user=request.user).data
@@ -601,9 +585,9 @@ def criarCronico(request):
     cronico = body.get("manutencao")
     carro_kms = int(body.get("carro_kms"))
 
-    km = getTrocarNoKm(cronico, carro_kms)
-    cronico["trocarNoKm"] = km.get("trocarNoKm")
-    cronico["risco"] = float(km.get("risco_km"))
+    cronico["trocarNoKm"] = getTrocarNoKm(cronico)
+
+    # cronico["risco"] = float(km.get("risco_km"))
 
     try:
         cronico_data = crud_Cronicos(method="POST", data=cronico).data
@@ -627,9 +611,9 @@ def editarCronico(request):
     id = int(cronico.pop("id"))
     carro_id = int(cronico.pop("carro"))
 
-    km = getTrocarNoKm(cronico, carro_km)
-    cronico["trocarNoKm"] = km.get("trocarNoKm")
-    cronico["risco"] = float(km.get("risco_km"))
+    cronico["trocarNoKm"] = getTrocarNoKm(cronico)
+
+    # cronico["risco"] = float(km.get("risco_km"))
 
     try:
         cronico_data = crud_Cronicos(method="PUT", data=cronico, id=id, car_id=carro_id, user=request.user).data
@@ -656,6 +640,66 @@ def apagarCronico(request):
         return Response({"message": e.message}, status=e.status)
 
     return Response({"message": "Cronico deleted"},
+                    status=200)
+
+
+#! ============ ATUALIZAR PREVENTIVO DATA KM ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def atualizarPreventivoDataKm(request):
+    body = request.data
+    manutencaoData = body.get("manutencaoData")
+    km = int(body.get("km"))
+    data = body.get("data")
+
+    id = manutencaoData.get("id")
+    carro_id = manutencaoData.get("carro")
+
+    manutencaoData["trocadoNoKm"] = km
+    manutencaoData["trocarNoKm"] = getTrocarNoKm(manutencaoData)
+
+    manutencaoData["trocadoNaData"] = data
+    manutencaoData["trocarNaData"] = getTrocarNaData(manutencaoData)
+
+    try:
+        preventivo_data = crud_Preventivos(method="PUT", data=manutencaoData, id=id, car_id=carro_id, user=request.user).data
+        pass
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Preventivo Km e Data updated",
+                     "trocadoNoKm": preventivo_data.get("trocadoNoKm"),
+                     "trocarNoKm": preventivo_data.get("trocarNoKm"),
+                     "trocadoNaData": preventivo_data.get("trocadoNaData"),
+                     "trocarNaData": preventivo_data.get("trocadoNaData")},
+                    status=200)
+
+
+#! ============ ATUALIZAR CRONICO KM ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def atualizarCronicoKm(request):
+    body = request.data
+    manutencaoData = body.get("manutencaoData")
+    km = int(body.get("km"))
+
+    id = manutencaoData.get("id")
+    carro_id = manutencaoData.get("carro")
+
+    manutencaoData["trocadoNoKm"] = km
+    manutencaoData["trocarNoKm"] = getTrocarNoKm(manutencaoData)
+
+    try:
+        cronico_data = crud_Cronicos(method="PUT", data=manutencaoData, id=id, car_id=carro_id, user=request.user).data
+        pass
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Cronico Km updated",
+                     "trocadoNoKm": cronico_data.get("trocadoNoKm"),
+                     "trocarNoKm": cronico_data.get("trocarNoKm")},
                     status=200)
 
 
@@ -705,7 +749,7 @@ def convertIssueToCronic(issue, carro_data):
 
     trocadoNoKm = carro_kms - kmsAtras if kmsAtras < carro_kms else 0
     trocarNoKm = trocadoNoKm + kmsEntretroca
-    risco = round((carro_kms - trocadoNoKm)/kmsEntretroca, 3)
+    # risco = round((carro_kms - trocadoNoKm)/kmsEntretroca, 3)
 
     return {
         "carro": carro_data["id"],
@@ -714,7 +758,7 @@ def convertIssueToCronic(issue, carro_data):
         "kmsEntreTroca": kmsEntretroca,
         "trocadoNoKm": carro_kms,
         "trocarNoKm": trocarNoKm,
-        "risco": risco
+        # "risco": risco
     }
 
 
@@ -744,16 +788,16 @@ def convertIssueToPreventive(issue, carro_data):
         "diasEntreTroca": diasEntreTroca,
         "trocadoNaData": date.today(),
         "trocarNaData": trocarNaData,
-        "risco": 0
+        # "risco": 0
     }
 
 
-def getTrocarNoKm(manutencao, carro_kms):
+def getTrocarNoKm(manutencao):
     trocarNoKm = int(manutencao.get("trocadoNoKm")) + int(manutencao.get("kmsEntreTroca"))
 
-    risco_km = round((carro_kms - int(manutencao.get("trocadoNoKm"))) / int(manutencao.get("kmsEntreTroca")), 3)
+    # risco_km = round((carro_kms - int(manutencao.get("trocadoNoKm"))) / int(manutencao.get("kmsEntreTroca")), 3)
 
-    return {"trocarNoKm": trocarNoKm, "risco_km": risco_km}
+    return trocarNoKm
 
 
 def getTrocarNaData(manutencao):
@@ -762,8 +806,8 @@ def getTrocarNaData(manutencao):
 
     trocarNaData = (trocadoNaData + timedelta(days=diasEntreTroca))  # é criado como uma data
 
-    diasDifferenca = (date.today() - trocadoNaData).days
+    # diasDifferenca = (date.today() - trocadoNaData).days
 
-    risco_dias = round(diasDifferenca / diasEntreTroca, 3)  # data - data, funciona sem .date()
+    # risco_dias = round(diasDifferenca / diasEntreTroca, 3)  # data - data, funciona sem .date()
 
-    return {"trocarNaData": trocarNaData, "risco_dias": risco_dias}
+    return trocarNaData

@@ -60,7 +60,10 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 								onClick={() =>
 									navigate("/novoCorretivo", {
 										state: {
+											carro_id: carroId,
+											carro_kms: carroKms,
 											manutencaoData: manutencao,
+											tipo: "preventivo"
 										},
 									})
 								}

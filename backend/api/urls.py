@@ -41,5 +41,7 @@ urlpatterns = [
     path("criarCronico/", criarCronico),
     path("editarCronico/", editarCronico),
     path("apagarCronico/", apagarCronico),
-
+    
+    path("atualizarPreventivoDataKm/", atualizarPreventivoDataKm),
+    path("atualizarCronicoKm/", atualizarCronicoKm),
 ]
