@@ -143,30 +143,50 @@ export default function NovoCorretivo() {
 
 			<div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
 				<button onClick={() => navigate(-1)}>Voltar</button>
-
 				<button type="button" onClick={guardarManutencao}>
 					Guardar
 				</button>
 			</div>
 
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
-				<input placeholder="Nome" name="nome" value={manutencao.nome} onChange={handleChange} />
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "120px" }}>Nome:</span>
+					<input name="nome" value={manutencao.nome} onChange={handleChange} />
+				</label>
 
-				<select name="tipo" value={manutencao.tipo} onChange={handleChange}>
-					<option value="corretivo">Corretivo</option>
-					<option value="preventivo">Preventivo</option>
-					<option value="cronico">Cronico</option>
-				</select>
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "120px" }}>Tipo:</span>
+					<select name="tipo" value={manutencao.tipo} onChange={handleChange}>
+						<option value="corretivo">Corretivo</option>
+						<option value="preventivo">Preventivo</option>
+						<option value="cronico">Crónico</option>
+					</select>
+				</label>
 
-				<textarea placeholder="Descrição" name="descricao" value={manutencao.descricao} onChange={handleChange} />
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "120px" }}>Descrição:</span>
+					<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} />
+				</label>
 
-				<input type="number" placeholder="Quilometragem" name="quilometragem" value={manutencao.quilometragem} onChange={handleChange} />
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "120px" }}>Quilometragem:</span>
+					<input type="number" name="quilometragem" value={manutencao.quilometragem} onChange={handleChange} />
+				</label>
 
-				<input type="date" name="data" value={manutencao.data} onChange={handleChange} />
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "120px" }}>Data:</span>
+					<input type="date" name="data" value={manutencao.data} onChange={handleChange} />
+				</label>
 
-				<input type="number" placeholder="Custo (€)" name="custo" value={manutencao.custo} onChange={handleChange} />
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "120px" }}>Custo (€):</span>
+					<input type="number" name="custo" value={manutencao.custo} onChange={handleChange} />
+				</label>
 
-				<textarea placeholder="Notas" name="notas" value={notas} onChange={handleChangeNotas} />
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "120px" }}>Notas:</span>
+					<textarea name="notas" value={notas} onChange={handleChangeNotas} />
+				</label>
 			</div>
 		</div>
 	);

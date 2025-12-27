@@ -17,7 +17,7 @@ export default function VerPreventivo() {
 		console.log(viewed_cars);
 		console.log(carro_id);
 		console.log(manutencao_id);
-		
+
 		const car = viewed_cars.find((c) => c.id === Number(carro_id));
 		console.log(car);
 		if (!car) return;
@@ -106,17 +106,35 @@ export default function VerPreventivo() {
 			<h1>Manutenção Preventiva</h1>
 
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
-				<input placeholder="Nome" name="nome" value={manutencao.nome} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Nome:</span>
+					<input name="nome" value={manutencao.nome} onChange={handleChange} disabled={!edit} />
+				</div>
 
-				<textarea placeholder="Descrição" name="descricao" value={manutencao.descricao} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Descrição:</span>
+					<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} disabled={!edit} />
+				</div>
 
-				<input type="number" placeholder="Dias entre troca" name="diasEntreTroca" value={manutencao.diasEntreTroca} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Dias entre troca:</span>
+					<input type="number" name="diasEntreTroca" value={manutencao.diasEntreTroca} onChange={handleChange} disabled={!edit} />
+				</div>
 
-				<input type="date" name="trocadoNaData" value={manutencao.trocadoNaData} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Trocado na data:</span>
+					<input type="date" name="trocadoNaData" value={manutencao.trocadoNaData} onChange={handleChange} disabled={!edit} />
+				</div>
 
-				<input type="number" placeholder="Kms entre troca" name="kmsEntreTroca" value={manutencao.kmsEntreTroca} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Kms entre troca:</span>
+					<input type="number" name="kmsEntreTroca" value={manutencao.kmsEntreTroca} onChange={handleChange} disabled={!edit} />
+				</div>
 
-				<input type="number" placeholder="Trocado no km" name="trocadoNoKm" value={manutencao.trocadoNoKm} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Trocado no km:</span>
+					<input type="number" name="trocadoNoKm" value={manutencao.trocadoNoKm} onChange={handleChange} disabled={!edit} />
+				</div>
 			</div>
 
 			<div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>

@@ -38,9 +38,7 @@ export default function Cronico() {
 			console.log(data.message);
 
 			if (res.ok) {
-
 				console.log(data.cronico_data);
-				
 
 				const AdicionarRisco = (man) => ({
 					...man,
@@ -80,11 +78,25 @@ export default function Cronico() {
 			</div>
 
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
-				<input placeholder="Nome" name="nome" value={manutencao.nome} onChange={handleChange} />
-				<textarea placeholder="Descrição" name="descricao" value={manutencao.descricao} onChange={handleChange} />
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "140px" }}>Nome:</span>
+					<input name="nome" value={manutencao.nome} onChange={handleChange} />
+				</label>
 
-				<input type="number" placeholder="Kms entre troca" name="kmsEntreTroca" value={manutencao.kmsEntreTroca} onChange={handleChange} />
-				<input type="number" placeholder="Trocado no km" name="trocadoNoKm" value={manutencao.trocadoNoKm} onChange={handleChange} />
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "140px" }}>Descrição:</span>
+					<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} />
+				</label>
+
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "140px" }}>Kms entre troca:</span>
+					<input type="number" name="kmsEntreTroca" value={manutencao.kmsEntreTroca} onChange={handleChange} />
+				</label>
+
+				<label style={{ display: "flex", flexDirection: "column" }}>
+					<span style={{ width: "140px" }}>Trocado no km:</span>
+					<input type="number" name="trocadoNoKm" value={manutencao.trocadoNoKm} onChange={handleChange} />
+				</label>
 			</div>
 		</div>
 	);

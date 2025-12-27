@@ -21,18 +21,24 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 			</div>
 
 			{preventivoData.length === 0 ? (
-				<p style={{ opacity: 0.6 }}>No corrective maintenances.</p>
+				<p style={{ opacity: 0.6 }}>No preventive maintenances.</p>
 			) : (
 				preventivoData.map((manutencao) => (
 					<div
 						key={manutencao.id}
 						style={{
+							border: "1px solid #eee",
+							borderRadius: "6px",
+							padding: "10px",
+							marginBottom: "10px",
+							cursor: "pointer",
+							transition: "background 0.2s",
+							position: "relative",
 							borderLeft: `6px solid ${getRiskColor(manutencao.risco)}`,
-							paddingLeft: "10px",
-							borderBottom: "1px solid #eee",
-							paddingBottom: "8px",
-							marginBottom: "8px",
 						}}
+						onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
+						onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
+						onClick={() => navigate(`/todasManutencoes/${carroId}/preventivo/${manutencao.id}`)}
 					>
 						<strong>{manutencao.nome}</strong>
 
@@ -53,20 +59,20 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 
 						{manutencao.notas && <p>Notes: {manutencao.notas}</p>}
 
-						{/* ver preventivo */}
-						<div style={{ display: "flex", gap: "8px" }}>
-							<button onClick={() => navigate(`/todasManutencoes/${carroId}/preventivo/${manutencao.id}`)}>Ver</button>
+						{/* Fazer button bottom right */}
+						<div style={{ position: "absolute", bottom: "10px", right: "10px" }}>
 							<button
-								onClick={() =>
+								onClick={(e) => {
+									e.stopPropagation(); // prevent panel click
 									navigate("/novoCorretivo", {
 										state: {
 											carro_id: carroId,
 											carro_kms: carroKms,
 											manutencaoData: manutencao,
-											tipo: "preventivo"
+											tipo: "preventivo",
 										},
-									})
-								}
+									});
+								}}
 							>
 								Fazer
 							</button>

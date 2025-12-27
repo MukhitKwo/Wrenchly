@@ -25,23 +25,22 @@ export default function ListaCorretivos({ corretivos, carroId, carroKms }) {
 				corretivas.map((manutencao) => (
 					<div
 						key={manutencao.id}
+						onClick={() => navigate(`/todasManutencoes/${carroId}/corretivo/${manutencao.id}`)}
 						style={{
-							borderBottom: "1px solid #eee",
-							paddingBottom: "8px",
-							marginBottom: "8px",
+							border: "1px solid #eee",
+							borderRadius: "6px",
+							padding: "10px",
+							marginBottom: "10px",
+							cursor: "pointer",
+							transition: "background 0.2s",
 						}}
+						onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
+						onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
 					>
 						<strong>{manutencao.nome}</strong>
-
 						<p>No Kms: {manutencao.quilometragem}</p>
 						<p>Date: {manutencao.data}</p>
-
 						{manutencao.notas && <p>Notes: {manutencao.notas}</p>}
-
-						{/* ver cronico */}
-						<div style={{ display: "flex", gap: "8px" }}>
-							<button onClick={() => navigate(`/todasManutencoes/${carroId}/corretivo/${manutencao.id}`)}>Ver</button>
-						</div>
 					</div>
 				))
 			)}

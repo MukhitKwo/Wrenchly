@@ -108,21 +108,39 @@ export default function VerCorretivo() {
 
 			{/* Inputs */}
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
-				<input placeholder="Nome" name="nome" value={manutencao.nome} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Nome:</span>
+					<input name="nome" value={manutencao.nome} onChange={handleChange} disabled={!edit} />
+				</div>
 
-				<textarea placeholder="Descrição" name="descricao" value={manutencao.descricao} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Descrição:</span>
+					<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} disabled={!edit} />
+				</div>
 
-				<select name="tipo" value={manutencao.tipo} onChange={handleChange} disabled={!edit}>
-					<option value="corretiva">Corretiva</option>
-					<option value="preventiva">Preventiva</option>
-					<option value="cronica">Cronica</option>
-				</select>
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Tipo:</span>
+					<select name="tipo" value={manutencao.tipo} onChange={handleChange} disabled={!edit}>
+						<option value="corretiva">Corretiva</option>
+						<option value="preventiva">Preventiva</option>
+						<option value="cronica">Crónica</option>
+					</select>
+				</div>
 
-				<input type="date" name="data" value={manutencao.data} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Data:</span>
+					<input type="date" name="data" value={manutencao.data} onChange={handleChange} disabled={!edit} />
+				</div>
 
-				<input type="number" placeholder="Custo (€)" name="custo" value={manutencao.custo} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Custo (€):</span>
+					<input type="number" name="custo" value={manutencao.custo} onChange={handleChange} disabled={!edit} />
+				</div>
 
-				<input type="number" placeholder="Quilometragem" name="quilometragem" value={manutencao.quilometragem} onChange={handleChange} disabled={!edit} />
+				<div style={{ display: "flex", flexDirection: "column" }}>
+					<span>Quilometragem:</span>
+					<input type="number" name="quilometragem" value={manutencao.quilometragem} onChange={handleChange} disabled={!edit} />
+				</div>
 			</div>
 
 			{/* Edit / Delete buttons at bottom */}

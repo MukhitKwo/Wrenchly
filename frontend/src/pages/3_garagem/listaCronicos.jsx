@@ -14,25 +14,31 @@ export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 				padding: "12px",
 			}}
 		>
-			<h3>Cronicos</h3>
+			<h3>Crónicos</h3>
 
 			<div style={{ marginBottom: "12px" }}>
 				<button onClick={() => navigate("/novoCronico", { state: { carro_id: carroId, carro_kms: carroKms } })}>Adicionar Novo</button>
 			</div>
 
 			{corretivas.length === 0 ? (
-				<p style={{ opacity: 0.6 }}>No corrective maintenances.</p>
+				<p style={{ opacity: 0.6 }}>No chronic maintenances.</p>
 			) : (
 				corretivas.map((manutencao) => (
 					<div
 						key={manutencao.id}
 						style={{
+							border: "1px solid #eee",
+							borderRadius: "6px",
+							padding: "10px",
+							marginBottom: "10px",
+							cursor: "pointer",
+							transition: "background 0.2s",
+							position: "relative",
 							borderLeft: `6px solid ${getRiskColor(manutencao.risco)}`,
-							paddingLeft: "10px",
-							borderBottom: "1px solid #eee",
-							paddingBottom: "8px",
-							marginBottom: "8px",
 						}}
+						onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
+						onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
+						onClick={() => navigate(`/todasManutencoes/${carroId}/cronico/${manutencao.id}`)}
 					>
 						<strong>{manutencao.nome}</strong>
 
@@ -51,11 +57,11 @@ export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 
 						{manutencao.notas && <p>Notes: {manutencao.notas}</p>}
 
-						{/* ver cronico */}
-						<div style={{ display: "flex", gap: "8px" }}>
-							<button onClick={() => navigate(`/todasManutencoes/${carroId}/cronico/${manutencao.id}`)}>Ver</button>
+						{/* Fazer button bottom right */}
+						<div style={{ position: "absolute", bottom: "10px", right: "10px" }}>
 							<button
-								onClick={() =>
+								onClick={(e) => {
+									e.stopPropagation(); // prevent panel click
 									navigate("/novoCorretivo", {
 										state: {
 											carro_id: carroId,
@@ -63,8 +69,8 @@ export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 											manutencaoData: manutencao,
 											tipo: "cronico",
 										},
-									})
-								}
+									});
+								}}
 							>
 								Fazer
 							</button>
