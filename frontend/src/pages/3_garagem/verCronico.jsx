@@ -69,7 +69,8 @@ export default function VerCronico() {
 			});
 
 			const data = await res.json();
-			if (!res.ok) throw new Error(data.message);
+			console.log(data.message);
+			
 
 			const updatedCars = viewed_cars.map((car) =>
 				car.id === Number(carro_id)

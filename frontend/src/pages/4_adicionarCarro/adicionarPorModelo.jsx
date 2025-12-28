@@ -178,7 +178,7 @@ export default function ProcurarCarroPorModelo() {
 			</div>
 
 			<div style={{ marginTop: "20px", textAlign: "center" }}>
-				<button type="button" onClick={adicionarCarro}>
+				<button type="button" onClick={adicionarCarro} style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>
 					Adicionar
 				</button>
 			</div>

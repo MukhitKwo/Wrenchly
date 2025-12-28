@@ -41,6 +41,7 @@ import NovoPreventivo from "./pages/3_garagem/novoPreventivo.jsx";
 import VerCorretivo from "./pages/3_garagem/verCorretivo.jsx";
 import VerCronico from "./pages/3_garagem/verCronico.jsx";
 import VerPreventivo from "./pages/3_garagem/verPreventivo.jsx";
+import EditarCarro from "./pages/3_garagem/editarCarro.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -65,6 +66,7 @@ const router = createBrowserRouter([
 
 			{ path: "garagem", element: <ProtectedRoute><Garagem /></ProtectedRoute> },
 			{ path: "todasManutencoes/:carro_id", element: <ProtectedRoute><TodasManutencoes /></ProtectedRoute> },
+			{ path: "editarCarro/:carro_id", element: <ProtectedRoute><EditarCarro /></ProtectedRoute> },
 
 			{ path: "novoCorretivo", element: <ProtectedRoute><NovoCorretivo /></ProtectedRoute> },
 			{ path: "novoPreventivo", element: <ProtectedRoute><NovoPreventivo /></ProtectedRoute> },

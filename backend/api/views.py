@@ -151,8 +151,6 @@ def loginUser(request):
 
     login(request, user)
 
-    print(carrosPreview_data)
-
     return Response({"message": "User, Garagem and Definiçoes found",
                      "user_data": userData(user),
                      "garagem_data": clearCrudData(res_crud_garagem, delete="user"),
@@ -345,8 +343,6 @@ def salvarCarros(request):
     body = request.data
     savedCars = body.get("savedCars")
 
-    # print(savedCars)
-
     try:
         crud_CarrosGuardados(method="POST", data=savedCars)
     except CRUDException as e:
@@ -419,7 +415,6 @@ def apagarCarroGuardado(request):
 @permission_classes([IsAuthenticated])
 def obterTodasManutencoes(request):
     carro_id = int(request.GET.get("carro_id"))
-    print(carro_id)
 
     try:
         res_crud_carro = crud_Carros(method="GET", id=carro_id, user=request.user)
@@ -500,7 +495,7 @@ def apagarCorretivo(request):
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
-    return Response({"message": "Corretivo updated"},
+    return Response({"message": "Corretivo deleted"},
                     status=200)
 
 
@@ -545,8 +540,6 @@ def editarPreventivo(request):
     preventivo["trocarNoKm"] = getTrocarNoKm(preventivo)
 
     preventivo["trocarNaData"] = getTrocarNaData(preventivo)
-
-    # preventivo["risco"] = round(float(km.get("risco_km")) * 0.8 + float(data.get("risco_dias")) * 0.2, 3)
 
     try:
         preventivo_data = crud_Preventivos(method="PUT", data=preventivo, id=id, car_id=carro_id, user=request.user).data
@@ -594,7 +587,7 @@ def criarCronico(request):
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
-    return Response({"message": "Corretivo created",
+    return Response({"message": "Cronico created",
                      "cronico_data": cronico_data},
                     status=200)
 
@@ -693,13 +686,29 @@ def atualizarCronicoKm(request):
 
     try:
         cronico_data = crud_Cronicos(method="PUT", data=manutencaoData, id=id, car_id=carro_id, user=request.user).data
-        pass
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
     return Response({"message": "Cronico Km updated",
                      "trocadoNoKm": cronico_data.get("trocadoNoKm"),
                      "trocarNoKm": cronico_data.get("trocarNoKm")},
+                    status=200)
+
+
+#! ============ APAGAR CARRO ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def apagarCarro(request):
+    body = request.data
+    carro_id = int(body.get("carro_id"))
+
+    try:
+        crud_Carros(method="DELETE", id=carro_id, user=request.user)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({"message": "Carro deleted"},
                     status=200)
 
 

@@ -44,4 +44,8 @@ urlpatterns = [
     
     path("atualizarPreventivoDataKm/", atualizarPreventivoDataKm),
     path("atualizarCronicoKm/", atualizarCronicoKm),
+    
+    # EDITAR CARROS
+    path("apagarCarro/", apagarCarro),
+    
 ]

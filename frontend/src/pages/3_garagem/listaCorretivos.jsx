@@ -16,7 +16,7 @@ export default function ListaCorretivos({ corretivos, carroId, carroKms }) {
 			<h3>Corretivos</h3>
 
 			<div style={{ marginBottom: "12px" }}>
-				<button onClick={() => navigate("/novoCorretivo", { state: { carro_id: carroId, carro_kms: carroKms } })}>Adicionar Novo</button>
+				<button onClick={() => navigate("/novoCorretivo", { state: { carro_id: carroId, carro_kms: carroKms } })} >Adicionar Novo</button>
 			</div>
 
 			{corretivas.length === 0 ? (

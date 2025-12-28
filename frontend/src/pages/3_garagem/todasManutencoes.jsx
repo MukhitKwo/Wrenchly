@@ -96,10 +96,12 @@ export default function TodasManutencoes() {
 
 			<div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
 				<Link to="/garagem">
-					<button>Voltar</button>
+					<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Voltar</button>
 				</Link>
-				<button>Editar Carro</button>
-				<button>Caraterísticas</button>
+				<Link to={`/editarCarro/${carro_id}`}>
+					<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Editar Carro</button>
+				</Link>
+				<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Caraterísticas</button>
 			</div>
 
 			{/* ONE grid */}

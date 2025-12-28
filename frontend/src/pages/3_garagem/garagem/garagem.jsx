@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useLocalAppState } from "../../../context/appState.local";
+import defaultImage from "../../../components/car_default_image.jpg";
 
 import "./garagem.css";
 
@@ -14,9 +15,9 @@ export default function Garagem() {
 
 			<div style={{ display: "flex", justifyContent: "center", gap: "14px", padding: "20px" }}>
 				<Link to="/novoCarro">
-					<button>Adicionar carro</button>
+					<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Adicionar carro</button>
 				</Link>
-				<button>Notas todos os carros</button>
+				<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Notas todos os carros</button>
 			</div>
 
 			<div className="carros-container" style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
@@ -51,16 +52,22 @@ function diasParaManutencao(data) {
 
 function CarroCard({ carro }) {
 	return (
-		<div className="carro-panel">
-			<h2>{carro.full_name || "Sem nome"}</h2>
-			<p>
-				<strong>Matrícula:</strong> {carro.matricula ?? "N/A"}
-			</p>
-			<p>
-				<strong>Próxima manutenção:</strong> {diasParaManutencao(carro.proxima_manutencao)}
-				{/* <img src={carro.imagem_url} alt="description" style={{ width: 200, height: 200 }} />; */}
-			</p>
-			{carro.imagem_url && <img src={carro.imagem_url} alt={carro.nome} style={{ width: 200, height: 200 }} />}
+		<div
+			className="carro-panel"
+			style={{
+				backgroundImage: `url(${carro.imagem_url || defaultImage})`,
+			}}
+		>
+			<div className="carro-overlay">
+				<div className="carro-header">
+					<h2>{carro.full_name || "Sem nome"}</h2>
+					<span className="carro-matricula">{carro.matricula ?? "N/A"}</span>
+				</div>
+
+				<div className="carro-footer">
+					<strong>Próxima manutenção:</strong> {diasParaManutencao(carro.proxima_manutencao)}
+				</div>
+			</div>
 		</div>
 	);
 }
