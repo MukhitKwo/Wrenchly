@@ -1,14 +1,22 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSessionAppState } from "../../context/appState.session";
+import { useLocalAppState } from "../../context/appState.local";
 
 export default function NovoPreventivo() {
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
+	const { state: getLocalStorage, setState: setLocalStorage } = useLocalAppState();
+
 	const navigate = useNavigate();
 	const { state } = useLocation();
 	const carro_id = state?.carro_id;
 	const carro_kms = state?.carro_kms;
+
 	const viewed_cars = getSessionStorage.carros_vistos;
+	// const carros_preview = getLocalStorage?.carros_preview || [];
+	// const carro = carros_preview.find((car) => car.id === Number(carro_id));
+	// const proxima_manutencao = carro.proxima_manutencao;
+	const proxima_manutencao = getLocalStorage?.carros_preview?.find((c) => c.id === Number(carro_id))?.proxima_manutencao ?? null;
 
 	const today = new Date().toISOString().split("T")[0];
 
@@ -62,20 +70,13 @@ export default function NovoPreventivo() {
 				});
 
 				const novoPreventivoComRisco = AdicionarRisco(data.preventivo_data);
+				const carrosVistosAtualizados = adicionarPreventivo(viewed_cars, Number(carro_id), novoPreventivoComRisco);
+				setSessionStorage((prev) => ({ ...prev, carros_vistos: carrosVistosAtualizados }));
 
-				const updatedCarros = viewed_cars.map((car) =>
-					car.id === Number(carro_id)
-						? {
-							...car,
-							manutencoes: {
-								...car.manutencoes,
-								preventivos: [...car.manutencoes.preventivos, novoPreventivoComRisco],
-							},
-						}
-						: car
-				);
-
-				setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCarros }));
+				if (new Date(data.preventivo_data.trocarNaData) < new Date(proxima_manutencao)) {
+					console.log("New date is closer");
+					atualizarProximaManutencaoData(Number(carro_id), data.preventivo_data.trocarNaData);
+				}
 
 				navigate(-1);
 			}
@@ -126,4 +127,32 @@ export default function NovoPreventivo() {
 			</div>
 		</div>
 	);
+
+	function atualizarProximaManutencaoData(carroId, novaData) {
+		const carros = [...getLocalStorage.carros_preview];
+
+		const car = carros.find((c) => c.id === carroId);
+		if (!car) return;
+
+		car.proxima_manutencao = novaData; // mutation, but isolated
+
+		setLocalStorage({
+			...getLocalStorage,
+			carros_preview: carros,
+		});
+	}
+}
+
+function adicionarPreventivo(viewedCars, carroId, novoPreventivo) {
+	return viewedCars.map((car) => {
+		if (car.id !== Number(carroId)) return car;
+
+		return {
+			...car,
+			manutencoes: {
+				...car.manutencoes,
+				preventivos: [...car.manutencoes.preventivos, novoPreventivo],
+			},
+		};
+	});
 }

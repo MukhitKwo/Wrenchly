@@ -300,9 +300,6 @@ def adicionarPreventivos(request):
 
             preventivo["trocarNaData"] = getTrocarNaData(preventivo)
 
-            # risco = round(float(km.get("risco_km")) * 0.8 + float(data.get("risco_dias")) * 0.2, 3)
-            # preventivo["risco"] = risco
-
             closestDate = min(closestDate, preventivo.get("trocarNaData"))
 
         crud_Preventivos("POST", data=preventivos)
@@ -669,14 +666,22 @@ def atualizarPreventivoDataKm(request):
     km = int(body.get("km"))
     data = body.get("data")
 
-    id = manutencaoData.get("id")
-    carro_id = manutencaoData.get("carro")
+    print(manutencaoData)
 
-    manutencaoData["trocadoNoKm"] = km
-    manutencaoData["trocarNoKm"] = getTrocarNoKm(manutencaoData)
+    try:
 
-    manutencaoData["trocadoNaData"] = data
-    manutencaoData["trocarNaData"] = getTrocarNaData(manutencaoData)
+        id = manutencaoData.get("id")
+        carro_id = manutencaoData.get("carro")
+
+        manutencaoData["trocadoNoKm"] = km
+        manutencaoData["trocarNoKm"] = getTrocarNoKm(manutencaoData)
+
+        manutencaoData["trocadoNaData"] = data
+        print(manutencaoData)
+        manutencaoData["trocarNaData"] = getTrocarNaData(manutencaoData)
+
+    except Exception as e:
+        return Response({"message": "error"}, status=400)
 
     try:
         preventivo_data = crud_Preventivos(method="PUT", data=manutencaoData, id=id, car_id=carro_id, user=request.user).data

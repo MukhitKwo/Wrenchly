@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSessionAppState } from "../../context/appState.session";
+import { useLocalAppState } from "../../context/appState.local";
 
 export default function VerPreventivo() {
-	const navigate = useNavigate();
 	const { state: session, setState: setSession } = useSessionAppState();
+	const { state: getLocalStorage, setState: setLocalStorage } = useLocalAppState();
+
+	const navigate = useNavigate();
 	const { carro_id, manutencao_id } = useParams();
 
 	const viewed_cars = session.carros_vistos || [];
+	const proxima_manutencao = getLocalStorage?.carros_preview?.find((c) => c.id === Number(carro_id))?.proxima_manutencao ?? null;
 
 	const [manutencao, setManutencao] = useState(null);
 	const [edit, setEdit] = useState(false);
@@ -42,21 +46,16 @@ export default function VerPreventivo() {
 			});
 
 			const data = await res.json();
-			if (!res.ok) throw new Error(data.message);
+			console.log(data.message);
 
-			const updatedCars = viewed_cars.map((car) =>
-				car.id === Number(carro_id)
-					? {
-							...car,
-							manutencoes: {
-								...car.manutencoes,
-								preventivos: car.manutencoes.preventivos.map((p) => (p.id === manutencao.id ? data.preventivo_data : p)),
-							},
-					  }
-					: car
-			);
-
+			const updatedCars = atualizarPreventivo(viewed_cars, carro_id, manutencao.id, data.preventivo_data);
 			setSession((prev) => ({ ...prev, carros_vistos: updatedCars }));
+
+			if (new Date(data.preventivo_data.trocarNaData) < new Date(proxima_manutencao)) {
+				console.log("New date is closer");
+				atualizarProximaManutencaoData(Number(carro_id), data.preventivo_data.trocarNaData);
+			}
+
 			setEdit(false);
 		} catch (err) {
 			console.log(err);
@@ -74,21 +73,11 @@ export default function VerPreventivo() {
 			});
 
 			const data = await res.json();
-			if (!res.ok) throw new Error(data.message);
+			console.log(data.message);
 
-			const updatedCars = viewed_cars.map((car) =>
-				car.id === Number(carro_id)
-					? {
-							...car,
-							manutencoes: {
-								...car.manutencoes,
-								preventivos: car.manutencoes.preventivos.filter((p) => p.id !== manutencao.id),
-							},
-					  }
-					: car
-			);
-
+			const updatedCars = removerPreventivo(viewed_cars, carro_id, manutencao.id);
 			setSession((prev) => ({ ...prev, carros_vistos: updatedCars }));
+
 			navigate(-1);
 		} catch (err) {
 			console.log(err);
@@ -143,4 +132,46 @@ export default function VerPreventivo() {
 			</div>
 		</div>
 	);
+
+	function atualizarProximaManutencaoData(carroId, novaData) {
+		const carros = [...getLocalStorage.carros_preview];
+
+		const car = carros.find((c) => c.id === carroId);
+		if (!car) return;
+
+		car.proxima_manutencao = novaData; // mutation, but isolated
+
+		setLocalStorage({
+			...getLocalStorage,
+			carros_preview: carros,
+		});
+	}
+}
+
+function atualizarPreventivo(viewedCars, carroId, manutencaoId, novoPreventivo) {
+	return viewedCars.map((car) => {
+		if (car.id !== Number(carroId)) return car;
+
+		return {
+			...car,
+			manutencoes: {
+				...car.manutencoes,
+				preventivos: car.manutencoes.preventivos.map((p) => (p.id === manutencaoId ? novoPreventivo : p)),
+			},
+		};
+	});
+}
+
+function removerPreventivo(viewedCars, carroId, manutencaoId) {
+	return viewedCars.map((car) => {
+		if (car.id !== Number(carroId)) return car;
+
+		return {
+			...car,
+			manutencoes: {
+				...car.manutencoes,
+				preventivos: car.manutencoes.preventivos.filter((p) => p.id !== manutencaoId),
+			},
+		};
+	});
 }

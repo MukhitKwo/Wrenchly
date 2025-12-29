@@ -4,15 +4,16 @@ import { useSessionAppState } from "../../context/appState.session";
 
 export default function NovoCorretivo() {
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
+	const viewed_cars = getSessionStorage.carros_vistos;
+
 	const navigate = useNavigate();
 	const { state } = useLocation();
 	const carro_id = state?.carro_id;
 	const carro_kms = state?.carro_kms;
-	const viewed_cars = getSessionStorage.carros_vistos;
-	const [notas, setNotas] = useState("");
-
 	const manutencaoData = state?.manutencaoData || {};
 	const tipo = state?.tipo || "corretivo";
+
+	const [notas, setNotas] = useState("");
 
 	const today = new Date();
 	const dateToday = today.toISOString().split("T")[0];
@@ -83,19 +84,12 @@ export default function NovoCorretivo() {
 				console.log(dataUpdate.message);
 
 				if (resUpdate.ok) {
-					updatedPreventivos = viewed_cars
-						.find((car) => car.id === Number(carro_id))
-						.manutencoes.preventivos.map((p) =>
-							p.id === manutencaoData.id
-								? {
-									...p,
-									trocadoNoKm: dataUpdate.trocadoNoKm,
-									trocarNoKm: dataUpdate.trocarNoKm,
-									trocadoNaData: dataUpdate.trocadoNaData,
-									trocarNaData: dataUpdate.trocarNaData,
-								}
-								: p
-						);
+					updatedPreventivos = atualizarPreventivoEmMemoria(viewed_cars, carro_id, manutencaoData.id, {
+						trocadoNoKm: dataUpdate.trocadoNoKm,
+						trocarNoKm: dataUpdate.trocarNoKm,
+						trocadoNaData: dataUpdate.trocadoNaData,
+						trocarNaData: dataUpdate.trocarNaData,
+					});
 				}
 			}
 
@@ -109,44 +103,17 @@ export default function NovoCorretivo() {
 				console.log(dataUpdate.message);
 
 				if (resUpdate.ok) {
-					updatedCronicos = viewed_cars
-						.find((car) => car.id === Number(carro_id))
-						.manutencoes.cronicos.map((c) =>
-							c.id === manutencaoData.id
-								? {
-									...c,
-									trocadoNoKm: dataUpdate.trocadoNoKm,
-									trocarNoKm: dataUpdate.trocarNoKm,
-								}
-								: c
-						);
+					updatedCronicos = atualizarCronicoEmMemoria(viewed_cars, carro_id, manutencaoData.id, {
+						trocadoNoKm: dataUpdate.trocadoNoKm,
+						trocarNoKm: dataUpdate.trocarNoKm,
+					});
 				}
 			}
 
 			if (res.ok) {
 				const novoKm = Number(data.carro_km);
 
-				const recalcularRisco = (arr) =>
-					arr.map((man) => ({
-						...man,
-						risco: man.kmsEntreTroca ? Number(((novoKm - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2)) : null,
-					}));
-
-				const updatedCarros = viewed_cars.map((car) =>
-					car.id === Number(carro_id)
-						? {
-							...car,
-							quilometragem: novoKm,
-							manutencoes: {
-								...car.manutencoes,
-								corretivos: [...car.manutencoes.corretivos, data.corretivo_data],
-								preventivos: updatedPreventivos.length ? recalcularRisco(updatedPreventivos) : recalcularRisco(car.manutencoes.preventivos),
-								cronicos: updatedCronicos.length ? recalcularRisco(updatedCronicos) : recalcularRisco(car.manutencoes.cronicos),
-							},
-						}
-						: car
-				);
-
+				const updatedCarros = atualizarCarroComRisco(viewed_cars, carro_id, novoKm, data.corretivo_data, updatedPreventivos, updatedCronicos);
 				setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCarros }));
 
 				navigate(-1);
@@ -209,4 +176,42 @@ export default function NovoCorretivo() {
 			</div>
 		</div>
 	);
+}
+
+function recalcularRisco(arr, novoKm) {
+	return arr.map((man) => ({
+		...man,
+		risco: man.kmsEntreTroca ? Number(((novoKm - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2)) : null,
+	}));
+}
+
+function atualizarCarroComRisco(viewedCars, carroId, novoKm, corretivo, updatedPreventivos, updatedCronicos) {
+	return viewedCars.map((car) => {
+		if (car.id !== Number(carroId)) return car;
+
+		return {
+			...car,
+			quilometragem: novoKm,
+			manutencoes: {
+				...car.manutencoes,
+				corretivos: [...car.manutencoes.corretivos, corretivo],
+				preventivos: updatedPreventivos.length ? recalcularRisco(updatedPreventivos, novoKm) : recalcularRisco(car.manutencoes.preventivos, novoKm),
+				cronicos: updatedCronicos.length ? recalcularRisco(updatedCronicos, novoKm) : recalcularRisco(car.manutencoes.cronicos, novoKm),
+			},
+		};
+	});
+}
+
+function atualizarPreventivoEmMemoria(viewedCars, carroId, manutencaoId, novosDados) {
+	const car = viewedCars.find((c) => c.id === Number(carroId));
+	if (!car) return [];
+
+	return car.manutencoes.preventivos.map((p) => (p.id === manutencaoId ? { ...p, ...novosDados } : p));
+}
+
+function atualizarCronicoEmMemoria(viewedCars, carroId, manutencaoId, novosDados) {
+	const car = viewedCars.find((c) => c.id === Number(carroId));
+	if (!car) return [];
+
+	return car.manutencoes.cronicos.map((c) => (c.id === manutencaoId ? { ...c, ...novosDados } : c));
 }

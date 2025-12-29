@@ -139,6 +139,6 @@ class Cronicos(models.Model):
 
 class CarrosGuardados(models.Model):
 
-    carro = models.ForeignKey(Carros, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+    garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
     nome = models.CharField("Nome", max_length=100)  # type: ignore
