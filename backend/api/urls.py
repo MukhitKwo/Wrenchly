@@ -47,5 +47,7 @@ urlpatterns = [
     
     # EDITAR CARROS
     path("apagarCarro/", apagarCarro),
+    path("editarCarro/", editarCarro),
+
     
 ]

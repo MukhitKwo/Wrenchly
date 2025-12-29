@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSessionAppState } from "../../context/appState.session";
 
 export default function NovoCorretivo() {
@@ -41,6 +40,26 @@ export default function NovoCorretivo() {
 	};
 
 	const guardarManutencao = async () => {
+		// CONFIRMAÇÃO PARA VALORES EXTREMOS
+		const km = Number(manutencao.quilometragem);
+		const custo = Number(manutencao.custo);
+		const data = new Date(manutencao.data);
+		const hoje = new Date();
+
+		const isExtreme =
+			(km && km > carro_kms + 1000) ||
+			(km && km < carro_kms - 200000) ||
+			(custo && custo > 5000) ||
+			(custo && custo < 0) ||
+			(data > hoje);
+
+		if (isExtreme) {
+			const confirmar = window.confirm(
+				"Os valores inseridos parecem extremos ou incoerentes.\nTem a certeza que deseja continuar?"
+			);
+
+			if (!confirmar) return;
+		}
 		try {
 			const res = await fetch("/api/criarCorretivo/", {
 				method: "POST",
@@ -69,12 +88,12 @@ export default function NovoCorretivo() {
 						.manutencoes.preventivos.map((p) =>
 							p.id === manutencaoData.id
 								? {
-										...p,
-										trocadoNoKm: dataUpdate.trocadoNoKm,
-										trocarNoKm: dataUpdate.trocarNoKm,
-										trocadoNaData: dataUpdate.trocadoNaData,
-										trocarNaData: dataUpdate.trocarNaData,
-								  }
+									...p,
+									trocadoNoKm: dataUpdate.trocadoNoKm,
+									trocarNoKm: dataUpdate.trocarNoKm,
+									trocadoNaData: dataUpdate.trocadoNaData,
+									trocarNaData: dataUpdate.trocarNaData,
+								}
 								: p
 						);
 				}
@@ -95,10 +114,10 @@ export default function NovoCorretivo() {
 						.manutencoes.cronicos.map((c) =>
 							c.id === manutencaoData.id
 								? {
-										...c,
-										trocadoNoKm: dataUpdate.trocadoNoKm,
-										trocarNoKm: dataUpdate.trocarNoKm,
-								  }
+									...c,
+									trocadoNoKm: dataUpdate.trocadoNoKm,
+									trocarNoKm: dataUpdate.trocarNoKm,
+								}
 								: c
 						);
 				}
@@ -116,15 +135,15 @@ export default function NovoCorretivo() {
 				const updatedCarros = viewed_cars.map((car) =>
 					car.id === Number(carro_id)
 						? {
-								...car,
-								quilometragem: novoKm,
-								manutencoes: {
-									...car.manutencoes,
-									corretivos: [...car.manutencoes.corretivos, data.corretivo_data],
-									preventivos: updatedPreventivos.length ? recalcularRisco(updatedPreventivos) : recalcularRisco(car.manutencoes.preventivos),
-									cronicos: updatedCronicos.length ? recalcularRisco(updatedCronicos) : recalcularRisco(car.manutencoes.cronicos),
-								},
-						  }
+							...car,
+							quilometragem: novoKm,
+							manutencoes: {
+								...car.manutencoes,
+								corretivos: [...car.manutencoes.corretivos, data.corretivo_data],
+								preventivos: updatedPreventivos.length ? recalcularRisco(updatedPreventivos) : recalcularRisco(car.manutencoes.preventivos),
+								cronicos: updatedCronicos.length ? recalcularRisco(updatedCronicos) : recalcularRisco(car.manutencoes.cronicos),
+							},
+						}
 						: car
 				);
 

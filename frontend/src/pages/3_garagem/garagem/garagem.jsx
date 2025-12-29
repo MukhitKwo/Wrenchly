@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useLocalAppState } from "../../../context/appState.local";
 import defaultImage from "../../../components/car_default_image.jpg";
+import { useLocalAppState } from "../../../context/appState.local";
 
 import "./garagem.css";
 
@@ -8,6 +9,27 @@ export default function Garagem() {
 	const { state: getLocalStorage } = useLocalAppState();
 	const carros = getLocalStorage.carros_preview;
 	const garagem = getLocalStorage.garagem;
+	const [ordenacaoCarros, setOrdenacaoCarros] = useState("nome");
+
+	const ordenarCarros = (lista) => {
+		if (!Array.isArray(lista)) return [];
+
+		const copia = [...lista];
+
+		if (ordenacaoCarros === "data") {
+			return copia.sort(
+				(a, b) =>
+					new Date(b.dataCriacao || b.id || 0) -
+					new Date(a.dataCriacao || a.id || 0)
+			);
+		}
+
+		// default → nome A-Z
+		return copia.sort((a, b) =>
+			(a.nome || "").localeCompare(b.nome || "")
+		);
+	};
+
 
 	return (
 		<div className="page-box">
@@ -19,13 +41,27 @@ export default function Garagem() {
 				</Link>
 				<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Notas todos os carros</button>
 			</div>
-
+			<div style={{ marginBottom: "16px" }}>
+				<label style={{ marginRight: "10px" }}>Ordenar por:</label>
+				<select
+					value={ordenacaoCarros}
+					onChange={(e) => setOrdenacaoCarros(e.target.value)}
+				>
+					<option value="nome">Nome (A–Z)</option>
+					<option value="data">Mais recente</option>
+				</select>
+			</div>
 			<div className="carros-container" style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
 				{carros.length === 0 ? (
 					<p>Não tens carros na garagem.</p>
 				) : (
-					carros.map((carro) => (
-						<Link key={carro.id} to={`/todasManutencoes/${carro.id}`} className="carro-link">
+					Array.isArray(carros) &&
+					ordenarCarros(carros).map((carro) => (
+						<Link
+							key={carro.id}
+							to={`/todasManutencoes/${carro.id}`}
+							className="carro-link"
+						>
 							<CarroCard carro={carro} />
 						</Link>
 					))

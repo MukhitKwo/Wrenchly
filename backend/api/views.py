@@ -390,6 +390,29 @@ def obterCarroSpecs(request):
         "message": "Specs do carro obtido",
         "carro_data": gemini_carSpecs
     }, status=200)
+#! ============ EDITAR CARRO ============
+@api_view(["PUT"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def editarCarro(request):
+    body = request.data
+    carro_id = int(body.get("carro_id"))
+    caracteristicas = body.get("caracteristicas")
+
+    try:
+        carro_data = crud_Carros(
+            method="PUT",
+            data=caracteristicas,
+            id=carro_id,
+            user=request.user
+        ).data
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({
+        "message": "Carro atualizado",
+        "carro_data": carro_data
+    }, status=200)
 
 
 #! ============ APAGAR CARRO GUARDADO ============

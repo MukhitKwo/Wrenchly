@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSessionAppState } from "../../context/appState.session";
 
 export default function NovoPreventivo() {
@@ -31,6 +31,20 @@ export default function NovoPreventivo() {
 	};
 
 	const guardarManutencao = async () => {
+		const valoresExtremos =
+			manutencao.kmsEntreTroca < 1000 ||
+			manutencao.kmsEntreTroca > 100000 ||
+			manutencao.diasEntreTroca < 7 ||
+			manutencao.diasEntreTroca > 3650;
+
+		if (valoresExtremos) {
+			const confirmar = window.confirm(
+				"Os valores introduzidos parecem fora do normal. Tens a certeza que estão corretos?"
+			);
+
+			if (!confirmar) return;
+		}
+
 		try {
 			const res = await fetch("/api/criarPreventivo/", {
 				method: "POST",
@@ -52,12 +66,12 @@ export default function NovoPreventivo() {
 				const updatedCarros = viewed_cars.map((car) =>
 					car.id === Number(carro_id)
 						? {
-								...car,
-								manutencoes: {
-									...car.manutencoes,
-									preventivos: [...car.manutencoes.preventivos, novoPreventivoComRisco],
-								},
-						  }
+							...car,
+							manutencoes: {
+								...car.manutencoes,
+								preventivos: [...car.manutencoes.preventivos, novoPreventivoComRisco],
+							},
+						}
 						: car
 				);
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSessionAppState } from "../../context/appState.session";
 
 export default function Cronico() {
@@ -27,6 +27,21 @@ export default function Cronico() {
 	};
 
 	const guardarManutencao = async () => {
+		// CONFIRMAÇÃO PARA VALORES EXTREMOS 
+		const kmsEntreTroca = Number(manutencao.kmsEntreTroca);
+		const trocadoNoKm = Number(manutencao.trocadoNoKm);
+
+		const isExtreme =
+			(kmsEntreTroca && (kmsEntreTroca < 500 || kmsEntreTroca > 100000)) ||
+			(trocadoNoKm && trocadoNoKm > carro_kms);
+
+		if (isExtreme) {
+			const confirmar = window.confirm(
+				"Os valores inseridos parecem extremos ou incoerentes.\nTem a certeza que deseja continuar?"
+			);
+
+			if (!confirmar) return;
+		}
 		try {
 			const res = await fetch("/api/criarCronico/", {
 				method: "POST",
@@ -50,12 +65,12 @@ export default function Cronico() {
 				const updatedCarros = viewed_cars.map((car) =>
 					car.id === Number(carro_id)
 						? {
-								...car,
-								manutencoes: {
-									...car.manutencoes,
-									cronicos: [...car.manutencoes.cronicos, novoCronicoComRisco],
-								},
-						  }
+							...car,
+							manutencoes: {
+								...car.manutencoes,
+								cronicos: [...car.manutencoes.cronicos, novoCronicoComRisco],
+							},
+						}
 						: car
 				);
 
