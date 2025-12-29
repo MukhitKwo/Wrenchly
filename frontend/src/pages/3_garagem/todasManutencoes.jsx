@@ -5,7 +5,6 @@ import ListaCorretivos from "./listaCorretivos";
 import ListaCronicos from "./listaCronicos";
 import ListaPreventivos from "./listaPreventivos";
 
-
 export default function TodasManutencoes() {
 	const effectRan = useRef(false);
 	const { carro_id } = useParams();
@@ -13,15 +12,13 @@ export default function TodasManutencoes() {
 	const viewed_cars = getSessionStorage?.carros_vistos || [];
 	const navigate = useNavigate();
 
-
 	const [carro, setCarro] = useState();
 	const [corretivos, setCorretivos] = useState([]);
 	const [preventivos, setPreventivos] = useState([]);
 	const [cronicos, setCronicos] = useState([]);
 	const [carroKms, setCarroKms] = useState();
-	const [ordenacao, setOrdenacao] = useState("risco");// "risco" | "data"
-	const [ordenacaoCorretivos, setOrdenacaoCorretivos] = useState("data");// "data" | "km"
-
+	const [ordenacao, setOrdenacao] = useState("risco"); // "risco" | "data"
+	const [ordenacaoCorretivos, setOrdenacaoCorretivos] = useState("data"); // "data" | "km"
 
 	useEffect(() => {
 		if (effectRan.current) return;
@@ -29,39 +26,30 @@ export default function TodasManutencoes() {
 		effectRan.current = true;
 	});
 
-	const ordenarManutencoes = (lista) => {
-		if (!Array.isArray(lista)) return [];
+	const ordenarManutencoes = (listaManutencoes) => {
+		if (!Array.isArray(listaManutencoes)) return [];
 
-		const copia = [...lista];
+		const copia = [...listaManutencoes];
 
 		if (ordenacao === "data") {
-			return copia.sort(
-				(a, b) =>
-					new Date(b.trocadoNaData || b.data || 0) -
-					new Date(a.trocadoNaData || a.data || 0)
-			);
+			return copia.sort((a, b) => new Date(b.trocadoNaData) - new Date(a.trocadoNaData));
 		}
 
-		// default → risco 
+		// default → risco
 		return copia.sort((a, b) => (b.risco ?? -1) - (a.risco ?? -1));
 	};
+
 	const ordenarCorretivos = (lista) => {
 		if (!Array.isArray(lista)) return [];
 
 		const copia = [...lista];
 
 		if (ordenacaoCorretivos === "km") {
-			return copia.sort(
-				(a, b) => (b.quilometragem ?? 0) - (a.quilometragem ?? 0)
-			);
+			return copia.sort((a, b) => (b.quilometragem ?? 0) - (a.quilometragem ?? 0));
 		}
 
-		// default → data 
-		return copia.sort(
-			(a, b) =>
-				new Date(b.data || 0) -
-				new Date(a.data || 0)
-		);
+		// default → data
+		return copia.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
 	};
 
 	const verManutencoes = async () => {
@@ -153,10 +141,7 @@ export default function TodasManutencoes() {
 			</div>
 			<div style={{ marginBottom: "12px" }}>
 				<label style={{ marginRight: "10px" }}>Ordenar corretivos por:</label>
-				<select
-					value={ordenacaoCorretivos}
-					onChange={(e) => setOrdenacaoCorretivos(e.target.value)}
-				>
+				<select value={ordenacaoCorretivos} onChange={(e) => setOrdenacaoCorretivos(e.target.value)}>
 					<option value="data">Data</option>
 					<option value="km">Quilometragem</option>
 				</select>
@@ -168,8 +153,6 @@ export default function TodasManutencoes() {
 					<option value="data">Data</option>
 				</select>
 			</div>
-
-
 
 			{/* ONE grid */}
 			<div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>

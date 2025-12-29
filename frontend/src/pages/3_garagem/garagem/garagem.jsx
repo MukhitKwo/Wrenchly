@@ -11,25 +11,22 @@ export default function Garagem() {
 	const garagem = getLocalStorage.garagem;
 	const [ordenacaoCarros, setOrdenacaoCarros] = useState("nome");
 
-	const ordenarCarros = (lista) => {
-		if (!Array.isArray(lista)) return [];
+	const ordenarCarros = (listaCarros) => {
+		if (!Array.isArray(listaCarros)) return [];
 
-		const copia = [...lista];
+		const copia = [...listaCarros];
 
-		if (ordenacaoCarros === "data") {
-			return copia.sort(
-				(a, b) =>
-					new Date(b.dataCriacao || b.id || 0) -
-					new Date(a.dataCriacao || a.id || 0)
-			);
+		if (ordenacaoCarros === "criacao") {
+			return copia.sort((a, b) => b.id - a.id);
+		}
+
+		if (ordenacaoCarros === "manutencao") {
+			return copia.sort((a, b) => new Date(a.proxima_manutencao) - new Date(b.proxima_manutencao));
 		}
 
 		// default → nome A-Z
-		return copia.sort((a, b) =>
-			(a.nome || "").localeCompare(b.nome || "")
-		);
+		return copia.sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
 	};
-
 
 	return (
 		<div className="page-box">
@@ -43,12 +40,10 @@ export default function Garagem() {
 			</div>
 			<div style={{ marginBottom: "16px" }}>
 				<label style={{ marginRight: "10px" }}>Ordenar por:</label>
-				<select
-					value={ordenacaoCarros}
-					onChange={(e) => setOrdenacaoCarros(e.target.value)}
-				>
+				<select value={ordenacaoCarros} onChange={(e) => setOrdenacaoCarros(e.target.value)}>
 					<option value="nome">Nome (A–Z)</option>
-					<option value="data">Mais recente</option>
+					<option value="criacao">Criação</option>
+					<option value="manutencao">Manutenção</option>
 				</select>
 			</div>
 			<div className="carros-container" style={{ display: "flex", flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
@@ -57,11 +52,7 @@ export default function Garagem() {
 				) : (
 					Array.isArray(carros) &&
 					ordenarCarros(carros).map((carro) => (
-						<Link
-							key={carro.id}
-							to={`/todasManutencoes/${carro.id}`}
-							className="carro-link"
-						>
+						<Link key={carro.id} to={`/todasManutencoes/${carro.id}`} className="carro-link">
 							<CarroCard carro={carro} />
 						</Link>
 					))

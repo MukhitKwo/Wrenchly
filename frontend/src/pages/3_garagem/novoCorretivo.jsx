@@ -47,17 +47,10 @@ export default function NovoCorretivo() {
 		const data = new Date(manutencao.data);
 		const hoje = new Date();
 
-		const isExtreme =
-			(km && km > carro_kms + 1000) ||
-			(km && km < carro_kms - 200000) ||
-			(custo && custo > 5000) ||
-			(custo && custo < 0) ||
-			(data > hoje);
+		const isExtreme = (km && km > carro_kms + 1000) || (km && km < carro_kms - 200000) || (custo && custo > 5000) || (custo && custo < 0) || data > hoje;
 
 		if (isExtreme) {
-			const confirmar = window.confirm(
-				"Os valores inseridos parecem extremos ou incoerentes.\nTem a certeza que deseja continuar?"
-			);
+			const confirmar = window.confirm("Os valores inseridos parecem extremos ou incoerentes.\nTem a certeza que deseja continuar?");
 
 			if (!confirmar) return;
 		}
@@ -90,6 +83,8 @@ export default function NovoCorretivo() {
 						trocadoNaData: dataUpdate.trocadoNaData,
 						trocarNaData: dataUpdate.trocarNaData,
 					});
+
+					console.log(proximaManutencao(updatedPreventivos));
 				}
 			}
 
@@ -214,4 +209,14 @@ function atualizarCronicoEmMemoria(viewedCars, carroId, manutencaoId, novosDados
 	if (!car) return [];
 
 	return car.manutencoes.cronicos.map((c) => (c.id === manutencaoId ? { ...c, ...novosDados } : c));
+}
+
+function proximaManutencao(preventivos) {
+	const datasValidas = preventivos
+		.map((p) => p.trocarNaData) // get all dates
+		.filter((d) => d) // remove null/undefined
+		.map((d) => new Date(d)); // convert to Date objects
+
+	const closestDate = new Date(Math.min(...datasValidas));
+	return closestDate.toISOString().split("T")[0];
 }

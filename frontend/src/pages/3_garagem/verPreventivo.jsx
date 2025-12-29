@@ -48,7 +48,7 @@ export default function VerPreventivo() {
 			const data = await res.json();
 			console.log(data.message);
 
-			const updatedCars = atualizarPreventivo(viewed_cars, carro_id, manutencao.id, data.preventivo_data);
+			const updatedCars = atualizarPreventivo(viewed_cars, carro_id, manutencao.id, data.preventivo_data, carro_km);
 			setSession((prev) => ({ ...prev, carros_vistos: updatedCars }));
 
 			if (new Date(data.preventivo_data.trocarNaData) < new Date(proxima_manutencao)) {
@@ -148,7 +148,7 @@ export default function VerPreventivo() {
 	}
 }
 
-function atualizarPreventivo(viewedCars, carroId, manutencaoId, novoPreventivo) {
+function atualizarPreventivo(viewedCars, carroId, manutencaoId, novoPreventivo, carro_km) {
 	return viewedCars.map((car) => {
 		if (car.id !== Number(carroId)) return car;
 
@@ -156,7 +156,18 @@ function atualizarPreventivo(viewedCars, carroId, manutencaoId, novoPreventivo) 
 			...car,
 			manutencoes: {
 				...car.manutencoes,
-				preventivos: car.manutencoes.preventivos.map((p) => (p.id === manutencaoId ? novoPreventivo : p)),
+				preventivos: car.manutencoes.preventivos.map((p) => {
+					if (p.id !== manutencaoId) return p;
+
+					// Calculate risco
+					const risco =
+						novoPreventivo.kmsEntreTroca != null ? Number(((carro_km - novoPreventivo.trocadoNoKm) / novoPreventivo.kmsEntreTroca).toFixed(2)) : null;
+
+					return {
+						...novoPreventivo,
+						risco,
+					};
+				}),
 			},
 		};
 	});
