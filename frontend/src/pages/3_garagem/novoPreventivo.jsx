@@ -39,20 +39,6 @@ export default function NovoPreventivo() {
 	};
 
 	const guardarManutencao = async () => {
-		const valoresExtremos =
-			manutencao.kmsEntreTroca < 1000 ||
-			manutencao.kmsEntreTroca > 100000 ||
-			manutencao.diasEntreTroca < 7 ||
-			manutencao.diasEntreTroca > 3650;
-
-		if (valoresExtremos) {
-			const confirmar = window.confirm(
-				"Os valores introduzidos parecem fora do normal. Tens a certeza que estão corretos?"
-			);
-
-			if (!confirmar) return;
-		}
-
 		try {
 			const res = await fetch("/api/criarPreventivo/", {
 				method: "POST",

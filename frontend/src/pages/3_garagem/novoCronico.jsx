@@ -27,21 +27,6 @@ export default function Cronico() {
 	};
 
 	const guardarManutencao = async () => {
-		// CONFIRMAÇÃO PARA VALORES EXTREMOS 
-		const kmsEntreTroca = Number(manutencao.kmsEntreTroca);
-		const trocadoNoKm = Number(manutencao.trocadoNoKm);
-
-		const isExtreme =
-			(kmsEntreTroca && (kmsEntreTroca < 500 || kmsEntreTroca > 100000)) ||
-			(trocadoNoKm && trocadoNoKm > carro_kms);
-
-		if (isExtreme) {
-			const confirmar = window.confirm(
-				"Os valores inseridos parecem extremos ou incoerentes.\nTem a certeza que deseja continuar?"
-			);
-
-			if (!confirmar) return;
-		}
 		try {
 			const res = await fetch("/api/criarCronico/", {
 				method: "POST",
