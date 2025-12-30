@@ -1,17 +1,21 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSessionAppState } from "../../context/appState.session";
+import { useLocalAppState } from "../../context/appState.local";
 
 export default function NovoCorretivo() {
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
-	const viewed_cars = getSessionStorage.carros_vistos;
+	const { state: getLocalStorage, setState: setLocalStorage } = useLocalAppState();
 
 	const navigate = useNavigate();
 	const { state } = useLocation();
 	const carro_id = state?.carro_id;
 	const carro_kms = state?.carro_kms;
+
 	const manutencaoData = state?.manutencaoData || {};
 	const tipo = state?.tipo || "corretivo";
+
+	const viewed_cars = getSessionStorage.carros_vistos;
 
 	const [notas, setNotas] = useState("");
 
@@ -41,19 +45,6 @@ export default function NovoCorretivo() {
 	};
 
 	const guardarManutencao = async () => {
-		// CONFIRMAÇÃO PARA VALORES EXTREMOS
-		const km = Number(manutencao.quilometragem);
-		const custo = Number(manutencao.custo);
-		const data = new Date(manutencao.data);
-		const hoje = new Date();
-
-		const isExtreme = (km && km > carro_kms + 1000) || (km && km < carro_kms - 200000) || (custo && custo > 5000) || (custo && custo < 0) || data > hoje;
-
-		if (isExtreme) {
-			const confirmar = window.confirm("Os valores inseridos parecem extremos ou incoerentes.\nTem a certeza que deseja continuar?");
-
-			if (!confirmar) return;
-		}
 		try {
 			const res = await fetch("/api/criarCorretivo/", {
 				method: "POST",
@@ -77,14 +68,32 @@ export default function NovoCorretivo() {
 				console.log(dataUpdate.message);
 
 				if (resUpdate.ok) {
-					updatedPreventivos = atualizarPreventivoEmMemoria(viewed_cars, carro_id, manutencaoData.id, {
+					updatedPreventivos = atualizarPreventivoNoSession(viewed_cars, carro_id, manutencaoData.id, {
 						trocadoNoKm: dataUpdate.trocadoNoKm,
 						trocarNoKm: dataUpdate.trocarNoKm,
 						trocadoNaData: dataUpdate.trocadoNaData,
 						trocarNaData: dataUpdate.trocarNaData,
 					});
 
-					console.log(proximaManutencao(updatedPreventivos));
+					const proximaData = proximaManutencao(updatedPreventivos);
+
+					setLocalStorage((prev) => {
+						const updatedCarrosPreview = prev.carros_preview.map((car) => {
+							if (car.id === Number(carro_id)) {
+								const updatedCar = {
+									...car,
+									proxima_manutencao: proximaData,
+								};
+								return updatedCar;
+							}
+							return car;
+						});
+
+						return {
+							...prev,
+							carros_preview: updatedCarrosPreview,
+						};
+					});
 				}
 			}
 
@@ -110,6 +119,11 @@ export default function NovoCorretivo() {
 
 				const updatedCarros = atualizarCarroComRisco(viewed_cars, carro_id, novoKm, data.corretivo_data, updatedPreventivos, updatedCronicos);
 				setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCarros }));
+
+				// if (updatedPreventivos.length > 0) {
+				// 	console.log("update data");
+				// 	syncProximaManutencao();
+				// }
 
 				navigate(-1);
 			}
@@ -171,6 +185,49 @@ export default function NovoCorretivo() {
 			</div>
 		</div>
 	);
+
+	//==============
+
+	function syncProximaManutencao() {
+		const carrosVistos = getSessionStorage.carros_vistos ?? [];
+		const carrosPreview = getLocalStorage.carros_preview ?? [];
+		const today = new Date();
+
+		const updatedPreview = carrosPreview.map((previewCar) => {
+			const carroVisto = carrosVistos.find((carro) => carro.id === previewCar.id);
+
+			console.log(carroVisto);
+
+			if (!carroVisto) return previewCar;
+
+			const preventivos = carroVisto.manutencoes?.preventivos ?? [];
+
+			const proximaData = getProximaDataPreventiva(preventivos, today);
+
+			// console.log(proximaData);
+
+			return {
+				...previewCar,
+				proxima_manutencao: proximaData,
+			};
+		});
+
+		setLocalStorage({
+			...getLocalStorage,
+			carros_preview: updatedPreview,
+		});
+	}
+
+	function getProximaDataPreventiva(preventivos, today) {
+		const datasFuturas = preventivos
+			.map((p) => new Date(p.trocarNaData))
+			.filter((d) => !isNaN(d) && d >= today)
+			.sort((a, b) => a - b);
+
+		if (!datasFuturas.length) return null;
+
+		return datasFuturas[0].toISOString().split("T")[0];
+	}
 }
 
 function recalcularRisco(arr, novoKm) {
@@ -197,7 +254,7 @@ function atualizarCarroComRisco(viewedCars, carroId, novoKm, corretivo, updatedP
 	});
 }
 
-function atualizarPreventivoEmMemoria(viewedCars, carroId, manutencaoId, novosDados) {
+function atualizarPreventivoNoSession(viewedCars, carroId, manutencaoId, novosDados) {
 	const car = viewedCars.find((c) => c.id === Number(carroId));
 	if (!car) return [];
 

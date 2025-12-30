@@ -71,11 +71,11 @@ export default function ProcurarCarroPorModelo() {
 			}
 
 			if (res.ok) {
-				
 				navigate("/atualizarPreventivos", {
 					state: {
 						carro: data.carro_data,
 						carroKms: data.carro_kms,
+						cronicos: data.allCronicos,
 						preventivos: data.allPreventivos,
 					},
 				});

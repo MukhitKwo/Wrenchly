@@ -1,3 +1,4 @@
+from datetime import date, timedelta, datetime
 from os import error
 from django.http import JsonResponse
 from django.contrib.auth.models import User
@@ -14,12 +15,12 @@ from rest_framework.decorators import (
     permission_classes,
     authentication_classes,
 )
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from .models import *  # apagar dps
-from .serializers import *  # apagar dps
+from .models import *
+from .serializers import *
 
-from .gemini import generateCarCronicIssues, findCarsBySpecs, getSpecsOfCar, GeminiException
-from .preventivos import getCarPreventivesIssues
+from .gemini import generateCarCronicIssues, findCarsBySpecs, getSpecsOfCar, generateCarPreventiveIssues, GeminiException
 from .email import send_email
 from .crud import (
     crud_CarrosPreview,
@@ -34,10 +35,9 @@ from .crud import (
     crud_CarrosGuardados,
     CRUDException
 )
-
-from datetime import date, timedelta, datetime
-
 from .imagens import StorageException, uploadImageToDB
+
+useDummyData = True
 
 
 #! ============ CSRF EXEMPT FOR SESSION AUTHENTICATED APIs ============
@@ -223,22 +223,32 @@ def adicionarCarro(request):
             res_crud_carros = crud_Carros(method="POST", data=caracteristicas)
             car_data = res_crud_carros.data
             carro_km = int(car_data.get("quilometragem"))
+            full_name = getCarroFullName(car_data)
 
-            cronicos_fromGemini = generateCarCronicIssues(getCarroFullName(car_data), dummyData=True)
-            allCronicos = []
-            for cronico in cronicos_fromGemini.data:
-                cronicData = convertIssueToCronic(cronico, car_data)
-                allCronicos.append(cronicData)
+            # deve tornar as respostas gemini mais rapido poruqe é feito em pararelo
 
-            crud_Cronicos(method="POST", data=allCronicos)
+            with ThreadPoolExecutor() as executor:
+                futures = {
+                    executor.submit(generateCarCronicIssues, full_name, dummyData=useDummyData): "cronicos",
+                    executor.submit(generateCarPreventiveIssues, full_name, dummyData=useDummyData): "preventivos",
+                }
 
-            preventivos_fromFile = getCarPreventivesIssues(car_data.get("combustivel"))
-            allPreventivos = []
-            for preventivo in preventivos_fromFile:
-                preventiveData = convertIssueToPreventive(preventivo, car_data)
-                allPreventivos.append(preventiveData)
+                results = {}
+                for future in as_completed(futures):
+                    key = futures[future]
+                    results[key] = future.result()
 
-            # crud_Preventivos(method="POST", data=allCronicos)
+            # --- Process cronicos ---
+            allCronicos = [
+                convertIssueToCronic(c, car_data)
+                for c in results["cronicos"].data
+            ]
+
+            # --- Process preventivos ---
+            allPreventivos = [
+                convertIssueToPreventive(p, car_data)
+                for p in results["preventivos"].data
+            ]
 
             carro_data = {
                 "id": car_data.get("id"),
@@ -257,6 +267,7 @@ def adicionarCarro(request):
     return Response({"message": "Carro and Cronicos created, Preventivos defined",
                      "carro_data": carro_data,
                      "carro_kms": carro_km,
+                     "allCronicos": allCronicos,
                      "allPreventivos": allPreventivos},
                     status=200)
 
@@ -288,7 +299,7 @@ def adicionarCarroImagem(request):
 def adicionarPreventivos(request):
     body = request.data
     preventivos = body.get("preventivos")
-    carro_kms = body.get("carro_kms")
+    cronicos = body.get("cronicos")
 
     try:
 
@@ -303,6 +314,8 @@ def adicionarPreventivos(request):
             closestDate = min(closestDate, preventivo.get("trocarNaData"))
 
         crud_Preventivos("POST", data=preventivos)
+
+        crud_Cronicos("POST", data=cronicos)
 
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
@@ -321,7 +334,7 @@ def procurarCarros(request):
     specs = body.get("specs")
 
     try:
-        res_gemini = findCarsBySpecs(specs, dummyData=True)
+        res_gemini = findCarsBySpecs(specs, dummyData=useDummyData)
         candidateCars = res_gemini.data
 
     except GeminiException as e:
@@ -374,7 +387,7 @@ def obterCarroSpecs(request):
     car_name = request.data.get("nome")
 
     try:
-        gemini_carSpecs = getSpecsOfCar(car_name, dummyData=True).data
+        gemini_carSpecs = getSpecsOfCar(car_name, dummyData=useDummyData).data
         gemini_carSpecs["quilometragem"] = ""
         gemini_carSpecs["matricula"] = ""
         gemini_carSpecs["imagem_url"] = ""
@@ -388,6 +401,8 @@ def obterCarroSpecs(request):
         "carro_data": gemini_carSpecs
     }, status=200)
 #! ============ EDITAR CARRO ============
+
+
 @api_view(["PUT"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -693,7 +708,7 @@ def atualizarPreventivoDataKm(request):
                      "trocadoNoKm": preventivo_data.get("trocadoNoKm"),
                      "trocarNoKm": preventivo_data.get("trocarNoKm"),
                      "trocadoNaData": preventivo_data.get("trocadoNaData"),
-                     "trocarNaData": preventivo_data.get("trocadoNaData")},
+                     "trocarNaData": preventivo_data.get("trocarNaData")},
                     status=200)
 
 

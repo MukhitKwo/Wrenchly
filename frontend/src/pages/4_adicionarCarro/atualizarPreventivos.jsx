@@ -2,14 +2,16 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 export default function AtualizarPreventivos() {
+	const { setState: setLocalStorage } = useLocalAppState();
+
 	const { state } = useLocation();
 	const navigate = useNavigate();
-
-	const { setState: setLocalStorage } = useLocalAppState();
-	const allPreventivos_data = state?.preventivos;
-	const [preventivos, setPreventivos] = useState(allPreventivos_data || []);
 	const carro_data = state?.carro;
 	const carro_kms = state?.carroKms;
+	const allCronicos_data = state?.allCronicos;
+	const allPreventivos_data = state?.preventivos;
+
+	const [preventivos, setPreventivos] = useState(allPreventivos_data || []);
 
 	const handleChange = (index, field, value) => {
 		const updated = [...preventivos];
@@ -24,7 +26,7 @@ export default function AtualizarPreventivos() {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ preventivos, carro_kms }),
+				body: JSON.stringify({ cronicos: allCronicos_data, preventivos, carro_kms }),
 			});
 
 			const data = await res.json("");
@@ -59,7 +61,7 @@ export default function AtualizarPreventivos() {
 							borderRadius: "6px",
 						}}
 					>
-						<h3>{prev.descricao}</h3>
+						<h3>{prev.nome}</h3>
 
 						<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
 							<label>
