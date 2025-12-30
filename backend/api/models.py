@@ -21,22 +21,12 @@ class Definicoes(models.Model):
 
 class Garagens(models.Model):
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
 
     nome = models.CharField("Nome", max_length=50, blank=True, null=True)  # type: ignore
 
     def __str__(self):
         return f"{self.nome or f'Garagem do {self.user.username}'}"
-
-
-class Notas(models.Model):
-
-    garagem = models.ForeignKey(Garagens, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
-
-    nota = models.TextField("Nota")  # type: ignore
-
-    def __str__(self):
-        return f"{self.garagem.id} - {self.nota}"
 
 
 class Carros(models.Model):
@@ -65,10 +55,31 @@ class Carros(models.Model):
 
     matricula = models.CharField('Matricula', max_length=8, blank=True, null=True)  # type: ignore
 
-    imagem_url = models.URLField("Foto URL", blank=True, null=True)  # type: ignore
+    # imagem_url = models.URLField("Foto URL", blank=True, null=True)  # type: ignore
 
     def __str__(self):
         return f"{self.marca} {self.modelo} {self.ano}"
+
+
+class CarrosImagens(models.Model):
+    carro = models.OneToOneField(Carros, on_delete=models.CASCADE, related_name="imagem")  # type: ignore #! chave estrangeira
+
+    nome = models.TextField("Nome")  # type: ignore
+
+    uuid = models.TextField("UUID")  # type: ignore
+
+    def __str__(self):
+        return f"{self.carro.id} - {self.nome}"
+
+
+class Notas(models.Model):
+
+    carro = models.ForeignKey(Carros, on_delete=models.CASCADE)  # type: ignore #! chave estrangeira
+
+    nota = models.TextField("Nota")  # type: ignore
+
+    def __str__(self):
+        return f"{self.carro.id} - {self.nota}"
 
 
 class Corretivos(models.Model):

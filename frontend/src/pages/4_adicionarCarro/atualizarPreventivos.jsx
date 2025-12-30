@@ -8,7 +8,7 @@ export default function AtualizarPreventivos() {
 	const navigate = useNavigate();
 	const carro_data = state?.carro;
 	const carro_kms = state?.carroKms;
-	const allCronicos_data = state?.allCronicos;
+	const allCronicos_data = state?.cronicos;
 	const allPreventivos_data = state?.preventivos;
 
 	const [preventivos, setPreventivos] = useState(allPreventivos_data || []);

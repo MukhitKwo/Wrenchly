@@ -17,8 +17,6 @@ export default function NovoCorretivo() {
 
 	const viewed_cars = getSessionStorage.carros_vistos;
 
-	const [notas, setNotas] = useState("");
-
 	const today = new Date();
 	const dateToday = today.toISOString().split("T")[0];
 
@@ -30,6 +28,7 @@ export default function NovoCorretivo() {
 		quilometragem: "",
 		custo: "",
 		data: dateToday,
+		nota: ""
 	});
 
 	const handleChange = (e) => {
@@ -38,10 +37,6 @@ export default function NovoCorretivo() {
 			...prev,
 			[name]: value,
 		}));
-	};
-
-	const handleChangeNotas = (e) => {
-		setNotas(e.target.value);
 	};
 
 	const guardarManutencao = async () => {
@@ -120,11 +115,6 @@ export default function NovoCorretivo() {
 				const updatedCarros = atualizarCarroComRisco(viewed_cars, carro_id, novoKm, data.corretivo_data, updatedPreventivos, updatedCronicos);
 				setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCarros }));
 
-				// if (updatedPreventivos.length > 0) {
-				// 	console.log("update data");
-				// 	syncProximaManutencao();
-				// }
-
 				navigate(-1);
 			}
 		} catch (error) {
@@ -180,7 +170,7 @@ export default function NovoCorretivo() {
 
 				<label style={{ display: "flex", flexDirection: "column" }}>
 					<span style={{ width: "120px" }}>Notas:</span>
-					<textarea name="notas" value={notas} onChange={handleChangeNotas} />
+					<textarea name="nota" value={manutencao.nota} onChange={handleChange} />
 				</label>
 			</div>
 		</div>

@@ -116,7 +116,7 @@ def crud_Garagens(method, data=None, id=None, user=None):
 
 
 def crud_Notas(method, data=None, id=None, user=None):
-    filtros = {} if method == "POST" else {"garagem__user": user}
+    filtros = {} if method == "POST" else {"carro__garagem__user": user}
     res_crud = crud(method, data, Notas, NotaSerializer, id, **filtros)
     if not res_crud.success:
         raise CRUDException(res_crud.message, status=res_crud.status)
@@ -134,6 +134,14 @@ def crud_Carros(method, data=None, id=None, user=None):
 def crud_CarrosPreview(method, data=None, id=None, user=None):
     filtros = {} if method == "POST" else {"garagem__user": user}
     res_crud = crud(method, data, Carros, CarrosPreviewSerializer, id, **filtros)
+    if not res_crud.success:
+        raise CRUDException(res_crud.message, status=res_crud.status)
+    return res_crud
+
+
+def crud_CarrosImagens(method, data=None, id=None, user=None, car_id=None):
+    filtros = {} if method == "POST" else {"carro__garagem__user": user, "carro": car_id}
+    res_crud = crud(method, data, CarrosImagens, CarrosImagensSerializer, id, **filtros)
     if not res_crud.success:
         raise CRUDException(res_crud.message, status=res_crud.status)
     return res_crud

@@ -1,4 +1,5 @@
 from datetime import date, timedelta, datetime
+from math import log
 from os import error
 from django.http import JsonResponse
 from django.contrib.auth.models import User
@@ -23,19 +24,19 @@ from .serializers import *
 from .gemini import generateCarCronicIssues, findCarsBySpecs, getSpecsOfCar, generateCarPreventiveIssues, GeminiException
 from .email import send_email
 from .crud import (
-    crud_CarrosPreview,
     crud_Definicoes,
     crud_Garagens,
     crud_Notas,
     crud_Carros,
     crud_CarrosPreview,
+    crud_CarrosImagens,
     crud_Corretivos,
     crud_Cronicos,
     crud_Preventivos,
     crud_CarrosGuardados,
     CRUDException
 )
-from .imagens import StorageException, uploadImageToDB
+from .storage import StorageException, uploadImageToDB
 
 useDummyData = True
 
@@ -127,21 +128,23 @@ def loginUser(request):
         return Response({"message": "User not found"}, status=401)
 
     try:
+
         res_crud_garagem = crud_Garagens(method="GET", user=user)
 
         res_crud_definicoes = crud_Definicoes(method="GET", user=user)
 
         res_crud_notas = crud_Notas(method="GET", user=user)
 
-        # TODO convert to function
         closest_date = Preventivos.objects.filter(
             carro=OuterRef("pk")
         ).order_by("trocarNaData").values("trocarNaData")[:1]
 
-        carros = Carros.objects.annotate(
-            proxima_manutencao=Subquery(closest_date)
-        ).filter(
-            garagem__user=user
+        # Fetch all cars for this user with annotation and related image
+        carros = (
+            Carros.objects
+            .annotate(proxima_manutencao=Subquery(closest_date))
+            .select_related("imagem")  # matches related_name
+            .filter(garagem__user=user)
         )
 
         carrosPreview_data = CarrosPreviewSerializer(carros, many=True).data
@@ -198,7 +201,6 @@ def logoutUser(request):
 def apagarUser(request):
 
     try:
-        # TODO also delete image of car (if exists)
         user = User.objects.get(id=request.user.id)
         user.delete()
     except User.DoesNotExist:
@@ -264,7 +266,7 @@ def adicionarCarro(request):
     except Exception as e:
         return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
-    return Response({"message": "Carro and Cronicos created, Preventivos defined",
+    return Response({"message": "Carro created, Cronicos and Preventivos defined",
                      "carro_data": carro_data,
                      "carro_kms": carro_km,
                      "allCronicos": allCronicos,
@@ -281,15 +283,19 @@ def adicionarCarroImagem(request):
     uploaded_file = request.FILES.get("image")
 
     try:
-        url = uploadImageToDB(uploaded_file)
-        crud_Carros(method="PUT", data={"imagem_url": url}, id=carro_id, user=request.user)
+        # crud_Carros(method="PUT", data={"imagem_url": imageData.url}, id=carro_id, user=request.user)
+
+        imageData = uploadImageToDB(uploaded_file)
+        carroImagemData = {"carro": carro_id, "nome": imageData.original, "uuid": imageData.uuid}
+        crud_CarrosImagens(method="POST", data=carroImagemData)
+
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
     except StorageException as e:
         return Response({"message": e.message}, status=400)
 
     return Response({"message": "Image added to car",
-                     "imagem_url": url}, status=201)
+                     "imagem_url": imageData.url}, status=201)
 
 
 #! ============ ADICIONAR PREVENTIVO ATUALIZADO AO CARRO ============
@@ -318,9 +324,9 @@ def adicionarPreventivos(request):
         crud_Cronicos("POST", data=cronicos)
 
     except CRUDException as e:
-        return Response({"message": e.message}, status=e.status)
+        return Response({"message": f"ola {e.message}"}, status=e.status)
 
-    return Response({"message": "Preventivo added to car",
+    return Response({"message": "Preventivo and Cronico added to car",
                      "proxima_manutencao": closestDate},
                     status=200)
 
@@ -477,13 +483,19 @@ def criarCorretivo(request):
     corretivo = body.get("manutencao")
     carro_kms = int(body.get("carro_kms"))
 
+    nota = corretivo.get("nota")
+
     try:
         corretivo_data = crud_Corretivos(method="POST", data=corretivo).data
+        car_id = int(corretivo.get("carro"))
         if int(corretivo.get("quilometragem")) > carro_kms:
-            car_id = int(corretivo.get("carro"))
             new_kms = int(corretivo.get("quilometragem"))
             updated_carro_data = crud_Carros(method="PUT", data={"quilometragem": new_kms}, id=car_id, user=request.user).data
             carro_kms = updated_carro_data.get("quilometragem")
+
+        if nota:
+            nota_data = {"carro": car_id, "nota": nota}
+            crud_Notas("POST", data=nota_data)
 
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
@@ -747,6 +759,7 @@ def apagarCarro(request):
     carro_id = int(body.get("carro_id"))
 
     try:
+        # TODO also delete image of car (if exists)
         crud_Carros(method="DELETE", id=carro_id, user=request.user)
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
