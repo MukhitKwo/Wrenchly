@@ -9,15 +9,15 @@ export default function Garagem() {
 	const { state: getLocalStorage } = useLocalAppState();
 	const carros = getLocalStorage.carros_preview;
 	const garagem = getLocalStorage.garagem;
-	const [ordenacaoCarros, setOrdenacaoCarros] = useState("nome");
+	const [ordenacaoCarros, setOrdenacaoCarros] = useState("criacao");
 
 	const ordenarCarros = (listaCarros) => {
 		if (!Array.isArray(listaCarros)) return [];
 
 		const copia = [...listaCarros];
 
-		if (ordenacaoCarros === "criacao") {
-			return copia.sort((a, b) => b.id - a.id);
+		if (ordenacaoCarros === "nome") {
+			return copia.sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
 		}
 
 		if (ordenacaoCarros === "manutencao") {
@@ -25,7 +25,8 @@ export default function Garagem() {
 		}
 
 		// default → nome A-Z
-		return copia.sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
+
+		return copia.sort((a, b) => b.id - a.id);
 	};
 
 	return (
@@ -41,8 +42,8 @@ export default function Garagem() {
 			<div style={{ marginBottom: "16px" }}>
 				<label style={{ marginRight: "10px" }}>Ordenar por:</label>
 				<select value={ordenacaoCarros} onChange={(e) => setOrdenacaoCarros(e.target.value)}>
-					<option value="nome">Nome (A–Z)</option>
 					<option value="criacao">Criação</option>
+					<option value="nome">Nome (A–Z)</option>
 					<option value="manutencao">Manutenção</option>
 				</select>
 			</div>
