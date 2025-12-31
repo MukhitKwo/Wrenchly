@@ -1,11 +1,9 @@
 from datetime import date, timedelta, datetime
-from math import log
-from os import error
+import random
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.db import transaction
-from django.db import DatabaseError
 from django.db.models import OuterRef, Subquery
 from httpx import get
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -17,12 +15,13 @@ from rest_framework.decorators import (
     authentication_classes,
 )
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import hashlib
 
 from .models import *
 from .serializers import *
 
 from .gemini import generateCarCronicIssues, findCarsBySpecs, getSpecsOfCar, generateCarPreventiveIssues, GeminiException
-from .email import send_email
+from .email import EmailException, send_email
 from .crud import (
     crud_Definicoes,
     crud_Garagens,
@@ -129,28 +128,32 @@ def loginUser(request):
 
     try:
 
-        res_crud_garagem = crud_Garagens(method="GET", user=user)
+        with transaction.atomic():
 
-        res_crud_definicoes = crud_Definicoes(method="GET", user=user)
+            res_crud_garagem = crud_Garagens(method="GET", user=user)
 
-        res_crud_notas = crud_Notas(method="GET", user=user)
+            res_crud_definicoes = crud_Definicoes(method="GET", user=user)
 
-        closest_date = Preventivos.objects.filter(
-            carro=OuterRef("pk")
-        ).order_by("trocarNaData").values("trocarNaData")[:1]
+            res_crud_notas = crud_Notas(method="GET", user=user)
 
-        # Fetch all cars for this user with annotation and related image
-        carros = (
-            Carros.objects
-            .annotate(proxima_manutencao=Subquery(closest_date))
-            .select_related("imagem")  # matches related_name
-            .filter(garagem__user=user)
-        )
+            closest_date = Preventivos.objects.filter(
+                carro=OuterRef("pk")
+            ).order_by("trocarNaData").values("trocarNaData")[:1]
 
-        carrosPreview_data = CarrosPreviewSerializer(carros, many=True).data
+            # Fetch all cars for this user with annotation and related image
+            carros = (
+                Carros.objects
+                .annotate(proxima_manutencao=Subquery(closest_date))
+                .select_related("imagem")  # matches related_name
+                .filter(garagem__user=user)
+            )
+
+            carrosPreview_data = CarrosPreviewSerializer(carros, many=True).data
 
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
+    except Exception as e:
+        return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
     login(request, user)
 
@@ -179,6 +182,49 @@ def atualizarDefinicoes(request, id):
 
     return Response({"message": "Settings updated",
                      "definicoes_data": clearCrudData(res_crud_definicoes, delete="user")},
+                    status=200)
+
+
+#! ================== PEDIR CODIGO SECRETO PARA ATUALIZAR PASSWORD ==================
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def pedirCodigoSecreto(request):
+
+    try:
+        email = request.user.email
+        secretCode = str(random.randint(100000, 999999))
+        send_email(to_email=email, subject="Password reset", body=secretCode)
+        hashedCode = hashlib.sha256(secretCode.encode()).hexdigest()
+    except EmailException as e:
+        return Response({"message": e.message}, status=400)
+
+    return Response({"message": f"Secret Code send to email {email}",
+                     "hashed_code": hashedCode},
+                    status=200)
+
+
+#! ==================  ATUALIZAR PASSWORD ==================
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def atualizarPassword(request):
+
+    body = request.data
+    password = body.get("password")
+    codigoHashed = body.get("codigoHashed")
+    codigoInput = body.get("codigoInput")
+
+    hashed = hashlib.sha256(codigoInput.encode()).hexdigest()
+    if hashed != codigoHashed:
+        return Response({"message": "Code not the same"}, status=400)
+
+    user = User.objects.get(id=request.user.id)  # or request.user
+    user.set_password(password)
+    user.save()
+    login(request, user)
+
+    return Response({"message": "Password updated"},
                     status=200)
 
 
@@ -308,23 +354,26 @@ def adicionarPreventivos(request):
     cronicos = body.get("cronicos")
 
     try:
+        with transaction.atomic():
 
-        closestDate = datetime.strptime("2999-12-21", "%Y-%m-%d").date()
+            closestDate = datetime.strptime("2999-12-21", "%Y-%m-%d").date()
 
-        for preventivo in preventivos.copy():
+            for preventivo in preventivos.copy():
 
-            preventivo["trocarNokm"] = getTrocarNoKm(preventivo)
+                preventivo["trocarNokm"] = getTrocarNoKm(preventivo)
 
-            preventivo["trocarNaData"] = getTrocarNaData(preventivo)
+                preventivo["trocarNaData"] = getTrocarNaData(preventivo)
 
-            closestDate = min(closestDate, preventivo.get("trocarNaData"))
+                closestDate = min(closestDate, preventivo.get("trocarNaData"))
 
-        crud_Preventivos("POST", data=preventivos)
+            crud_Preventivos("POST", data=preventivos)
 
-        crud_Cronicos("POST", data=cronicos)
+            crud_Cronicos("POST", data=cronicos)
 
     except CRUDException as e:
         return Response({"message": f"ola {e.message}"}, status=e.status)
+    except Exception as e:
+        return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
     return Response({"message": "Preventivo and Cronico added to car",
                      "proxima_manutencao": closestDate},
@@ -398,7 +447,6 @@ def obterCarroSpecs(request):
         gemini_carSpecs["matricula"] = ""
         gemini_carSpecs["imagem_url"] = ""
         # gemini_carSpecs["garagem"] = ""
-        print(gemini_carSpecs)
     except GeminiException as e:
         return Response({"message": e.message}, status=e.status)
 
@@ -418,12 +466,7 @@ def editarCarro(request):
     caracteristicas = body.get("caracteristicas")
 
     try:
-        carro_data = crud_Carros(
-            method="PUT",
-            data=caracteristicas,
-            id=carro_id,
-            user=request.user
-        ).data
+        carro_data = crud_Carros(method="PUT", data=caracteristicas, id=carro_id, user=request.user).data
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 
@@ -458,12 +501,15 @@ def obterTodasManutencoes(request):
     carro_id = int(request.GET.get("carro_id"))
 
     try:
-        res_crud_carro = crud_Carros(method="GET", id=carro_id, user=request.user)
-        res_crud_corretivos = crud_Corretivos(method="GET", user=request.user, car_id=carro_id)
-        res_crud_preventivos = crud_Preventivos(method="GET", user=request.user, car_id=carro_id)
-        res_crud_cronicos = crud_Cronicos(method="GET", user=request.user, car_id=carro_id)
+        with transaction.atomic():
+            res_crud_carro = crud_Carros(method="GET", id=carro_id, user=request.user)
+            res_crud_corretivos = crud_Corretivos(method="GET", user=request.user, car_id=carro_id)
+            res_crud_preventivos = crud_Preventivos(method="GET", user=request.user, car_id=carro_id)
+            res_crud_cronicos = crud_Cronicos(method="GET", user=request.user, car_id=carro_id)
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
+    except Exception as e:
+        return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
     return Response({
         "message": "Manutencoes found",
@@ -538,7 +584,6 @@ def apagarCorretivo(request):
 
     try:
         crud_Corretivos(method="DELETE", id=id, car_id=carro_id, user=request.user)
-        pass
     except CRUDException as e:
         return Response({"message": e.message}, status=e.status)
 

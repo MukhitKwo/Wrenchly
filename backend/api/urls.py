@@ -14,6 +14,8 @@ urlpatterns = [
 
     # DEFINIÇÔES
     path("atualizarDefinicoes/<int:id>", atualizarDefinicoes),
+    path("pedirCodigoSecreto/", pedirCodigoSecreto),
+    path("atualizarPassword/", atualizarPassword),
 
     # ADICIONAR CARRO
     path("adicionarCarro/", adicionarCarro),

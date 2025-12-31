@@ -22,16 +22,28 @@ def send_email(to_email, subject='Wrenchly Notification', body='This is a simple
             to=[to_email] if isinstance(to_email, str) else to_email,
         )
         email.send(fail_silently=False)
-        print("Email sent successfully!")
+        return EmailResponse(success=True, message="Email sent successfully!")
 
     except ImproperlyConfigured as e:
-        print(f"Configuration error: {e}")
+        raise EmailException(f"Configuration error: {e}")
 
     except smtplib.SMTPAuthenticationError as e:
-        print(f"Authentication failed: {e}")
+        raise EmailException(f"Authentication failed: {e}")
 
     except smtplib.SMTPException as e:
-        print(f"SMTP error: {e}")
+        raise EmailException(f"SMTP error: {e}")
 
     except Exception as e:
-        print(f"Unexpected error: {e}")
+        raise EmailException(f"Unexpected error: {e}")
+
+
+class EmailResponse:
+    def __init__(self, success=True, message=None):
+        self.success = success
+        self.message = message
+
+
+class EmailException(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)

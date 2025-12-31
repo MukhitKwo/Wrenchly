@@ -7,6 +7,7 @@ export default function Definicoes() {
 	// obter definiçoes do localStorage
 	const { state: getLocalStorage, setState: setLocalStorage, clear: clearLocalStorage } = useLocalAppState();
 	const { clear: clearSessionStorage } = useSessionAppState();
+
 	const navigate = useNavigate();
 
 	// TODO fix temporario (temporary my ass LMAO)
@@ -78,6 +79,64 @@ export default function Definicoes() {
 		}
 	};
 
+	const [codigoHashed, setCodigoHashed] = useState();
+
+	const pedirCodigoSecreto = async (password1, password2) => {
+		if (!password1 || !password2) {
+			alert("Por favor, preencha ambos os campos");
+			return;
+		}
+
+		if (password1 !== password2) {
+			alert("As palavras-passe não correspondem");
+			return;
+		}
+
+		if (window.confirm("Tens a certeza que queres mudar a tua palavra-passe?.")) {
+			try {
+				const res = await fetch(`/api/pedirCodigoSecreto/`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({}),
+				});
+
+				const data = await res.json();
+				console.log(data.message);
+
+				if (res.ok) {
+					setCodigoHashed(data.hashed_code);
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	};
+
+	const atualizarpassword = async (password, codigoInput) => {
+		if (!codigoInput) {
+			alert("Preencha o campo");
+			return;
+		}
+
+		if (window.confirm("Tens a certeza que queres mudar a tua palavra-passe?.")) {
+			try {
+				const res = await fetch(`/api/atualizarPassword/`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ password, codigoInput, codigoHashed }),
+				});
+
+				const data = await res.json();
+				console.log(data.message);
+
+				if (res.ok) {
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	};
+
 	const apagarUser = async () => {
 		if (window.confirm("Tens a certeza que queres apagar da tua conta?.")) {
 			try {
@@ -108,7 +167,7 @@ export default function Definicoes() {
 
 			<div>
 				{/* onchange chama o handleChnage(), e o handleChange() usa o value="" */}
-				<select name="tema" value={definicoes.theme} onChange={handleChange}>
+				<select name="tema" value={definicoes.tema} onChange={handleChange}>
 					<option value="claro">Claro</option>
 					<option value="escuro">Escuro</option>
 				</select>
@@ -117,20 +176,63 @@ export default function Definicoes() {
 			<div>
 				<label>
 					{/* onchange chama o handleChnage(), e o handleChange() usa o checked="" (porque não existe value="") */}
-					<input type="checkbox" name="notificacoes" checked={definicoes.notifications} onChange={handleChange} />
+					<input type="checkbox" name="notificacoes" checked={definicoes.notificacoes} onChange={handleChange} />
 					Permitir notificações
 				</label>
 			</div>
 
 			<div>
 				{/* onchange chama o handleChnage(), e o handleChange() usa o value="" */}
-				<select name="linguagem" value={definicoes.language} onChange={handleChange}>
+				<select name="linguagem" value={definicoes.linguagem} onChange={handleChange}>
 					<option value="pt">Português</option>
 					<option value="en">English</option>
 				</select>
 			</div>
 
 			<button onClick={atualizarDefinicoes}>Salvar</button>
+
+			<div>
+				<br />
+				<label>
+					Nova palavra-passe
+					<br />
+					<input type="password" id="password1" />
+				</label>
+				<br />
+				<label>
+					Confirmar palavra-passe
+					<br />
+					<input type="password" id="password2" />
+				</label>
+				<br />
+				<button
+					onClick={() => {
+						const password1 = document.getElementById("password1").value;
+						const password2 = document.getElementById("password2").value;
+						pedirCodigoSecreto(password1, password2);
+					}}
+				>
+					Alterar Palavra-passe
+				</button>
+
+				<br />
+				<label>
+					Inserir codigo
+					<br />
+					<input type="text" id="codigoInput" />
+				</label>
+				<br />
+				<button
+					onClick={() => {
+						const password1 = document.getElementById("password1").value;
+						const codigoInput = document.getElementById("codigoInput").value;
+						atualizarpassword(password1, codigoInput);
+					}}
+				>
+					Alterar Palavra-passe
+				</button>
+			</div>
+
 			<br />
 			<button onClick={apagarUser}>Apagar Conta</button>
 			<button onClick={logoutUser}>Sair da Conta</button>
