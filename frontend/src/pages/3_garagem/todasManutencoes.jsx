@@ -1,15 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner";
 import { useSessionAppState } from "../../context/appState.session";
+import usePageLoader from "../../hooks/usePageLoader";
 import ListaCorretivos from "./listaCorretivos";
 import ListaCronicos from "./listaCronicos";
 import ListaPreventivos from "./listaPreventivos";
 
 export default function TodasManutencoes() {
-	const effectRan = useRef(false);
 	const { carro_id } = useParams();
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
-	const viewed_cars = getSessionStorage?.carros_vistos || [];
+	const viewed_cars = useMemo(
+		() => getSessionStorage?.carros_vistos || [],
+		[getSessionStorage]
+	);
+	const { loading, runWithLoading } = usePageLoader(true);
 	const navigate = useNavigate();
 
 	const [carro, setCarro] = useState();
@@ -18,12 +23,6 @@ export default function TodasManutencoes() {
 	const [cronicos, setCronicos] = useState([]);
 	const [carroKms, setCarroKms] = useState();
 	const [ordenacao, setOrdenacao] = useState("km");
-
-	useEffect(() => {
-		if (effectRan.current) return;
-		verManutencoes();
-		effectRan.current = true;
-	});
 
 	const ordenarManutencoes = (listaManutencoes) => {
 		if (!Array.isArray(listaManutencoes)) return [];
@@ -41,7 +40,7 @@ export default function TodasManutencoes() {
 		return copia.sort((a, b) => a.trocarNoKm - b.trocarNoKm);
 	};
 
-	const verManutencoes = async () => {
+	const verManutencoes = useCallback(async () => {
 		if (viewed_cars.length > 0) {
 			const car_data = viewed_cars.find((car) => car.id === Number(carro_id));
 
@@ -53,20 +52,11 @@ export default function TodasManutencoes() {
 				setCronicos(car_data.manutencoes.cronicos);
 				return;
 			}
-		} else if (viewed_cars.length === 0) {
-			setSessionStorage((prev) => ({
-				...prev,
-				carros_vistos: [], // append instead of overwrite
-			}));
 		}
 
 		try {
-			console.log(carro_id);
-
 			const res = await fetch(`/api/obterTodasManutencoes/?carro_id=${carro_id}`);
-
 			const data = await res.json();
-			console.log(data.message);
 
 			if (res.ok) {
 				const carroKms = data.carro_data.quilometragem;
@@ -74,7 +64,7 @@ export default function TodasManutencoes() {
 				const AdicionarRisco = (manutencao) =>
 					manutencao.map((man) => ({
 						...man,
-						risco: Number(((carroKms - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2)), // TODO risco com data e km (75/25?)
+						risco: Number(((carroKms - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2)),
 					}));
 
 				const preventivoComRisco = AdicionarRisco(data.preventivos_data);
@@ -82,7 +72,6 @@ export default function TodasManutencoes() {
 
 				setCarro(data.carro_data);
 				setCarroKms(carroKms);
-
 				setCorretivos(data.corretivos_data);
 				setPreventivos(preventivoComRisco);
 				setCronicos(cronicoComRisco);
@@ -90,7 +79,7 @@ export default function TodasManutencoes() {
 				setSessionStorage((prev) => ({
 					...prev,
 					carros_vistos: [
-						...prev.carros_vistos,
+						...(prev.carros_vistos || []),
 						{
 							...data.carro_data,
 							manutencoes: {
@@ -105,7 +94,16 @@ export default function TodasManutencoes() {
 		} catch (err) {
 			console.log(err);
 		}
-	};
+	}, [carro_id, viewed_cars, setSessionStorage]);
+
+	useEffect(() => {
+		runWithLoading(() => verManutencoes());
+	}, [runWithLoading, verManutencoes]);
+
+
+	if (loading) {
+		return <LoadingSpinner text="A carregar manutenções..." />;
+	}
 	if (!carro) {
 		return (
 			<div style={{ padding: "20px" }}>

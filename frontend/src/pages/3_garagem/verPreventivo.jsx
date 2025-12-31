@@ -1,16 +1,21 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSessionAppState } from "../../context/appState.session";
 import { useLocalAppState } from "../../context/appState.local";
+import { useSessionAppState } from "../../context/appState.session";
 
 export default function VerPreventivo() {
-	const { state: session, setState: setSession } = useSessionAppState();
+	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();;
 	const { state: getLocalStorage, setState: setLocalStorage } = useLocalAppState();
 
 	const navigate = useNavigate();
 	const { carro_id, manutencao_id } = useParams();
 
-	const viewed_cars = session.carros_vistos || [];
+	const viewed_cars = useMemo(
+		() => getSessionStorage?.carros_vistos || [],
+		[getSessionStorage?.carros_vistos]
+	);
+
+
 	const proxima_manutencao = getLocalStorage?.carros_preview?.find((c) => c.id === Number(carro_id))?.proxima_manutencao ?? null;
 
 	const [manutencao, setManutencao] = useState(null);
@@ -49,7 +54,7 @@ export default function VerPreventivo() {
 			console.log(data.message);
 
 			const updatedCars = atualizarPreventivo(viewed_cars, carro_id, manutencao.id, data.preventivo_data, carro_km);
-			setSession((prev) => ({ ...prev, carros_vistos: updatedCars }));
+			setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCars }));
 
 			if (new Date(data.preventivo_data.trocarNaData) < new Date(proxima_manutencao)) {
 				console.log("New date is closer");
@@ -76,7 +81,7 @@ export default function VerPreventivo() {
 			console.log(data.message);
 
 			const updatedCars = removerPreventivo(viewed_cars, carro_id, manutencao.id);
-			setSession((prev) => ({ ...prev, carros_vistos: updatedCars }));
+			setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCars }));
 
 			navigate(-1);
 		} catch (err) {
