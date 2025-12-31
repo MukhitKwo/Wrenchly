@@ -194,7 +194,13 @@ def pedirCodigoSecreto(request):
     try:
         email = request.user.email
         secretCode = str(random.randint(100000, 999999))
-        send_email(to_email=email, subject="Password reset", body=secretCode)
+
+        secretCodeText = f"""
+            <p>O seu código secreto para atualizar a palavra-passe da sua conta, não partilhe com ninguém:</p>
+            <p><b style="font-size:20px;">{secretCode}</b></p>
+            """
+
+        send_email(to_email=email, subject="Password reset", body=secretCodeText)
         hashedCode = hashlib.sha256(secretCode.encode()).hexdigest()
     except EmailException as e:
         return Response({"message": e.message}, status=400)

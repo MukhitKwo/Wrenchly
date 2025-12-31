@@ -21,6 +21,9 @@ def send_email(to_email, subject='Wrenchly Notification', body='This is a simple
             from_email=settings.EMAIL_HOST_USER,
             to=[to_email] if isinstance(to_email, str) else to_email,
         )
+
+        email.content_subtype = "html"
+
         email.send(fail_silently=False)
         return EmailResponse(success=True, message="Email sent successfully!")
 
