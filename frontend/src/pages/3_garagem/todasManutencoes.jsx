@@ -10,10 +10,7 @@ import ListaPreventivos from "./listaPreventivos";
 export default function TodasManutencoes() {
 	const { carro_id } = useParams();
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
-	const viewed_cars = useMemo(
-		() => getSessionStorage?.carros_vistos || [],
-		[getSessionStorage]
-	);
+	const viewed_cars = useMemo(() => getSessionStorage?.carros_vistos || [], [getSessionStorage]);
 	const { loading, runWithLoading } = usePageLoader(true);
 	const navigate = useNavigate();
 
@@ -47,6 +44,7 @@ export default function TodasManutencoes() {
 			if (car_data != null) {
 				setCarroKms(car_data.quilometragem);
 				setCarro(car_data);
+
 				setCorretivos(car_data.manutencoes.corretivos);
 				setPreventivos(car_data.manutencoes.preventivos);
 				setCronicos(car_data.manutencoes.cronicos);
@@ -76,20 +74,27 @@ export default function TodasManutencoes() {
 				setPreventivos(preventivoComRisco);
 				setCronicos(cronicoComRisco);
 
-				setSessionStorage((prev) => ({
-					...prev,
-					carros_vistos: [
-						...(prev.carros_vistos || []),
-						{
-							...data.carro_data,
-							manutencoes: {
-								corretivos: data.corretivos_data,
-								preventivos: preventivoComRisco,
-								cronicos: cronicoComRisco,
+				setSessionStorage((prev) => {
+					const carros = prev.carros_vistos || [];
+
+					const exists = carros.some((c) => c.id === data.carro_data.id);
+					if (exists) return prev;
+
+					return {
+						...prev,
+						carros_vistos: [
+							...carros,
+							{
+								...data.carro_data,
+								manutencoes: {
+									corretivos: data.corretivos_data,
+									preventivos: preventivoComRisco,
+									cronicos: cronicoComRisco,
+								},
 							},
-						},
-					],
-				}));
+						],
+					};
+				});
 			}
 		} catch (err) {
 			console.log(err);
@@ -100,10 +105,10 @@ export default function TodasManutencoes() {
 		runWithLoading(() => verManutencoes());
 	}, [runWithLoading, verManutencoes]);
 
-
 	if (loading) {
 		return <LoadingSpinner text="A carregar manutenções..." />;
 	}
+	
 	if (!carro) {
 		return (
 			<div style={{ padding: "20px" }}>
