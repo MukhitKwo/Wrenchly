@@ -9,12 +9,4 @@ class ApiConfig(AppConfig):
     name = 'api'
 
     def ready(self):
-        engine = settings.DATABASES['default']['ENGINE']
-        engine_name = engine.split('.')[-1]
-        engine_name = f"\033[1m{engine_name}\033[0m"
-        try:
-            connection.ensure_connection()
-            print(f"[OK] Database {engine_name} connected successfully.")
-        except OperationalError:
-            print(f"[FAIL] Database {engine_name} connection failed.")
-            sys.exit(1)
+        import api.signals  # THIS MUST ALWAYS RUNs
