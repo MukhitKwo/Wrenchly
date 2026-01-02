@@ -5,25 +5,28 @@ import LoadingSpinner from "./LoadingSpinner";
 
 export default function ProtectedRoute({ children }) {
   const { state } = useLocalAppState();
-  const location = useLocation(); // deteta mudança de rota
+  const location = useLocation();
 
   const [loading, setLoading] = useState(true);
   const [autenticado, setAutenticado] = useState(false);
 
   useEffect(() => {
-    // Sempre que muda a rota, mostra spinner
+    // Sempre que muda de rota, inicia o loading
     setLoading(true);
 
-    const timer = setTimeout(() => {
-      if (state?.user) setAutenticado(true);
+    // Verifica imediatamente se o user existe
+    if (state?.user) {
+      setAutenticado(true);
+      setLoading(false); // spinner desaparece automaticamente
+    } else {
+      // Se não houver user, ainda bloqueia, mas spinner desaparece imediatamente
+      setAutenticado(false);
       setLoading(false);
-    }, 600);
+    }
+  }, [state, location.pathname]);
 
-    return () => clearTimeout(timer);
-  }, [state, location.pathname]); // o spinner reinicia quando muda de página
-
-  if (loading) return <LoadingSpinner />;           // Spinner em todas as páginas
-  if (!autenticado) return <Navigate to="/login" replace />; // Bloqueio se não autenticado
+  if (loading) return <LoadingSpinner />;           // spinner aparece enquanto loading = true
+  if (!autenticado) return <Navigate to="/login" replace />; // bloqueio de acesso
 
   return children;
 }
