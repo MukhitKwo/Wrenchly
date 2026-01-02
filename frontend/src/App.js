@@ -1,7 +1,8 @@
 // src/App.js
 
 import { Outlet } from "react-router-dom";
-import Navbar from './components/navbar'; // Importar o componente do menu flutuante
+import Navbar from './components/navbar';
+import ProtectedRoute from './components/ProtectedRoute'; // Importa o ProtectedRoute
 
 function App() {
   return (
@@ -9,9 +10,12 @@ function App() {
       {/* Menu Flutuante (Sticky) */}
       <Navbar />
 
-      {/* A tag <main> conterá o conteúdo dinâmico (páginas) renderizado pela Router */}
+      {/* Conteúdo principal */}
       <main className="main-content">
-        <Outlet />
+        {/* Spinner + proteção automática em todas as páginas */}
+        <ProtectedRoute>
+          <Outlet />
+        </ProtectedRoute>
       </main>
 
       {/* Rodapé da Aplicação (Opcional) */}
@@ -25,7 +29,7 @@ function App() {
           Wrenchly © 2025
         </p>
       </footer>
-    </div >
+    </div>
   );
 }
 
