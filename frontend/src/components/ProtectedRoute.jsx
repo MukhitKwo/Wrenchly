@@ -1,36 +1,32 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useLocalAppState } from "../context/appState.local.jsx";
 import LoadingSpinner from "./LoadingSpinner";
 
 export default function ProtectedRoute({ children }) {
-	const { state } = useLocalAppState();
-	const [loading, setLoading] = useState(true);
-	const [autenticado, setAutenticado] = useState(false);
+  const { state } = useLocalAppState();
+  const location = useLocation();
 
-	useEffect(() => {
-		// Simula validação de sessão (API no futuro)
-		const timer = setTimeout(() => {
-			if (state?.user) { // verificar com cookie do django
-				setAutenticado(true);
-			}
-			setLoading(false);
-		}, 600);
+  const [loading, setLoading] = useState(true);
+  const [autenticado, setAutenticado] = useState(false);
 
-		return () => clearTimeout(timer);
-	}, [state]);
+  useEffect(() => {
+    // Sempre que muda de rota, inicia o loading
+    setLoading(true);
 
-	// Spinner global
-	if (loading) {
-		return <LoadingSpinner/>;
-	}
+    // Verifica imediatamente se o user existe
+    if (state?.user) {
+      setAutenticado(true);
+      setLoading(false); // spinner desaparece automaticamente
+    } else {
+      // Se não houver user, ainda bloqueia, mas spinner desaparece imediatamente
+      setAutenticado(false);
+      setLoading(false);
+    }
+  }, [state, location.pathname]);
 
-	//  Bloqueio de acesso
-	if (!autenticado) {
-		return <Navigate to="/login" replace />;
-	}
+  if (loading) return <LoadingSpinner />;           // spinner aparece enquanto loading = true
+  if (!autenticado) return <Navigate to="/login" replace />; // bloqueio de acesso
 
-	// Acesso permitido
-	return children;
+  return children;
 }
-
