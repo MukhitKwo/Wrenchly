@@ -35,13 +35,13 @@ import Garagem from "./pages/3_garagem/garagem/garagem.jsx";
 import TodasManutencoes from "./pages/3_garagem/todasManutencoes.jsx";
 
 // Detalhes / criação
+import EditarCarro from "./pages/3_garagem/editarCarro.jsx";
 import NovoCorretivo from "./pages/3_garagem/novoCorretivo.jsx";
 import NovoCronico from "./pages/3_garagem/novoCronico.jsx";
 import NovoPreventivo from "./pages/3_garagem/novoPreventivo.jsx";
 import VerCorretivo from "./pages/3_garagem/verCorretivo.jsx";
 import VerCronico from "./pages/3_garagem/verCronico.jsx";
 import VerPreventivo from "./pages/3_garagem/verPreventivo.jsx";
-import EditarCarro from "./pages/3_garagem/editarCarro.jsx";
 
 const router = createBrowserRouter([
 	{
@@ -54,30 +54,33 @@ const router = createBrowserRouter([
 			{ path: "login", element: <Login /> },
 			{ path: "registo", element: <Registo /> },
 
-			{ path: "perfil", element: <ProtectedRoute><Perfil /></ProtectedRoute> },
-			{ path: "definicoes", element: <ProtectedRoute><Definicoes /></ProtectedRoute> },
+			{element: <ProtectedRoute />, 
+			children: [
+				{ path: "perfil", element: <Perfil /> },
+				{ path: "definicoes", element:<Definicoes /> },
 
-			{ path: "novoCarro", element: <ProtectedRoute><NovoCarro /></ProtectedRoute> },
-			{ path: "adicionarPorModelo", element: <ProtectedRoute><AdicionarCarroPorModelo /></ProtectedRoute> },
-			{ path: "procurarPorEspecificacoes", element: <ProtectedRoute><ProcurarPorEspecificacoes /></ProtectedRoute> },
-			{ path: "atualizarPreventivos", element: <ProtectedRoute><AtualizarPreventivos /></ProtectedRoute> },
-			{ path: "listaCarrosRecomendados", element: <ProtectedRoute><ListaCarrosRecomendados /></ProtectedRoute> },
-			{ path: "listaCarrosSalvos", element: <ProtectedRoute><MostrarCarrosGuardados /></ProtectedRoute> },
+				{ path: "novoCarro", element: <NovoCarro /> },
+				{ path: "adicionarPorModelo", element: <AdicionarCarroPorModelo />},
+				{ path: "procurarPorEspecificacoes", element: <ProcurarPorEspecificacoes /> },
+				{ path: "atualizarPreventivos", element: <AtualizarPreventivos /> },
+				{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
+				{ path: "listaCarrosSalvos", element:<MostrarCarrosGuardados /> },
 
-			{ path: "garagem", element: <ProtectedRoute><Garagem /></ProtectedRoute> },
-			{ path: "todasManutencoes/:carro_id", element: <ProtectedRoute><TodasManutencoes /></ProtectedRoute> },
-			{ path: "editarCarro/:carro_id", element: <ProtectedRoute><EditarCarro /></ProtectedRoute> },
+				{ path: "garagem", element: <Garagem /> },
+				{ path: "todasManutencoes/:carro_id", element: <TodasManutencoes /> },
+				{ path: "editarCarro/:carro_id", element: <EditarCarro /> },
 
-			{ path: "novoCorretivo", element: <ProtectedRoute><NovoCorretivo /></ProtectedRoute> },
-			{ path: "novoPreventivo", element: <ProtectedRoute><NovoPreventivo /></ProtectedRoute> },
-			{ path: "novoCronico", element: <ProtectedRoute><NovoCronico /></ProtectedRoute> },
+				{ path: "novoCorretivo", element: <NovoCorretivo /> },
+				{ path: "novoPreventivo", element: <NovoPreventivo /> },
+				{ path: "novoCronico", element: <NovoCronico /> },
 
-			{ path: "todasManutencoes/:carro_id/corretivo/:manutencao_id", element: <ProtectedRoute><VerCorretivo /></ProtectedRoute> },
-			{ path: "todasManutencoes/:carro_id/preventivo/:manutencao_id", element: <ProtectedRoute><VerPreventivo /></ProtectedRoute> },
-			{ path: "todasManutencoes/:carro_id/cronico/:manutencao_id", element: <ProtectedRoute><VerCronico /></ProtectedRoute> },
+				{ path: "todasManutencoes/:carro_id/corretivo/:manutencao_id", element: <VerCorretivo /> },
+				{ path: "todasManutencoes/:carro_id/preventivo/:manutencao_id", element: <VerPreventivo />},
+				{ path: "todasManutencoes/:carro_id/cronico/:manutencao_id", element:<VerCronico /> },
 		],
 	},
-]);
+]
+	}]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

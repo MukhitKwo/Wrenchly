@@ -1,32 +1,15 @@
-import { useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { useLocalAppState } from "../context/appState.local.jsx";
-import LoadingSpinner from "./LoadingSpinner";
+import { Navigate, Outlet } from "react-router-dom";
+import { useLocalAppState } from "../context/appState.local";
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute() {
   const { state } = useLocalAppState();
-  const location = useLocation();
 
-  const [loading, setLoading] = useState(true);
-  const [autenticado, setAutenticado] = useState(false);
+  // Se NÃO estiver autenticado → login
+  if (!state?.user) {
+    return <Navigate to="/login" replace />;
+  }
 
-  useEffect(() => {
-    // Sempre que muda de rota, inicia o loading
-    setLoading(true);
-
-    // Verifica imediatamente se o user existe
-    if (state?.user) {
-      setAutenticado(true);
-      setLoading(false); // spinner desaparece automaticamente
-    } else {
-      // Se não houver user, ainda bloqueia, mas spinner desaparece imediatamente
-      setAutenticado(false);
-      setLoading(false);
-    }
-  }, [state, location.pathname]);
-
-  if (loading) return <LoadingSpinner />;           // spinner aparece enquanto loading = true
-  if (!autenticado) return <Navigate to="/login" replace />; // bloqueio de acesso
-
-  return children;
+  // Se estiver autenticado → renderiza a rota
+  return <Outlet />;
 }
+

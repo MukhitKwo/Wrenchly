@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
 
@@ -8,7 +7,6 @@ export default function Definicoes() {
 	const { state: getLocalStorage, setState: setLocalStorage, clear: clearLocalStorage } = useLocalAppState();
 	const { clear: clearSessionStorage } = useSessionAppState();
 
-	const navigate = useNavigate();
 
 	// TODO fix temporario (temporary my ass LMAO)
 	const definicoes_data = getLocalStorage?.definicoes || {
@@ -71,7 +69,7 @@ export default function Definicoes() {
 				if (res.ok) {
 					clearLocalStorage();
 					clearSessionStorage();
-					navigate("/login");
+					window.location.href = "/login";
 				}
 			} catch (error) {
 				console.error(error);
@@ -153,7 +151,7 @@ export default function Definicoes() {
 				if (res.ok) {
 					clearLocalStorage();
 					clearSessionStorage();
-					navigate("/registo");
+					window.location.href = "/registo";
 				}
 			} catch (error) {
 				console.error(error);
