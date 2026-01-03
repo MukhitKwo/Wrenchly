@@ -555,6 +555,94 @@ def criarCorretivo(request):
                      "corretivo_data": corretivo_data,
                      "carro_km": carro_kms},
                     status=200)
+#! ============ LISTAR TODAS AS NOTAS ============
+@api_view(["GET"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def listarNotas(request):
+    try:
+        res_crud_notas = crud_Notas(method="GET", user=request.user)
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({
+        "message": "Notas encontradas",
+        "notas_data": res_crud_notas.data
+    }, status=200)
+
+
+#! ============ CRIAR NOTA MANUAL ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def criarNotaManual(request):
+    body = request.data
+    carro_id = body.get("carro_id")
+    texto = body.get("texto")
+
+    if not carro_id or not texto:
+        return Response({"message": "Dados em falta"}, status=400)
+
+    try:
+        nota_data = {
+            "carro": int(carro_id),
+            "nota": texto
+        }
+        nota = crud_Notas("POST", data=nota_data).data
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({
+        "message": "Nota criada",
+        "nota_data": nota
+    }, status=201)
+
+    
+#! ============ EDITAR NOTA ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def editarNota(request):
+    body = request.data
+    nota_id = int(body.get("id"))
+    texto = body.get("texto")
+
+    try:
+        nota_data = crud_Notas(
+            method="PUT",
+            data={"nota": texto},
+            id=nota_id,
+            user=request.user
+        ).data
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({
+        "message": "Nota atualizada",
+        "nota_data": nota_data
+    }, status=200)
+
+
+#! ============ APAGAR NOTA ============
+@api_view(["POST"])
+@authentication_classes([CsrfExemptSessionAuthentication])
+@permission_classes([IsAuthenticated])
+def apagarNota(request):
+    nota_id = int(request.data.get("id"))
+
+    try:
+        crud_Notas(
+            method="DELETE",
+            id=nota_id,
+            user=request.user
+        )
+    except CRUDException as e:
+        return Response({"message": e.message}, status=e.status)
+
+    return Response({
+        "message": "Nota apagada"
+    }, status=200)
+
 
 
 #! ============ EDITAR CORRETIVO ============
@@ -594,6 +682,7 @@ def apagarCorretivo(request):
 
     return Response({"message": "Corretivo deleted"},
                     status=200)
+
 
 
 #! ============ CRIAR PREVENTIVO ============
@@ -926,3 +1015,4 @@ def getTrocarNaData(manutencao):
     # risco_dias = round(diasDifferenca / diasEntreTroca, 3)  # data - data, funciona sem .date()
 
     return trocarNaData
+

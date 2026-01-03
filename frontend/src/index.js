@@ -36,12 +36,14 @@ import TodasManutencoes from "./pages/3_garagem/todasManutencoes.jsx";
 
 // Detalhes / criação
 import EditarCarro from "./pages/3_garagem/editarCarro.jsx";
+import NotasTodas from "./pages/3_garagem/notasTodas.jsx";
 import NovoCorretivo from "./pages/3_garagem/novoCorretivo.jsx";
 import NovoCronico from "./pages/3_garagem/novoCronico.jsx";
 import NovoPreventivo from "./pages/3_garagem/novoPreventivo.jsx";
 import VerCorretivo from "./pages/3_garagem/verCorretivo.jsx";
 import VerCronico from "./pages/3_garagem/verCronico.jsx";
 import VerPreventivo from "./pages/3_garagem/verPreventivo.jsx";
+
 
 const router = createBrowserRouter([
 	{
@@ -69,6 +71,9 @@ const router = createBrowserRouter([
 				{ path: "garagem", element: <Garagem /> },
 				{ path: "todasManutencoes/:carro_id", element: <TodasManutencoes /> },
 				{ path: "editarCarro/:carro_id", element: <EditarCarro /> },
+				{ path: "notas", element:<NotasTodas /> },
+
+
 
 				{ path: "novoCorretivo", element: <NovoCorretivo /> },
 				{ path: "novoPreventivo", element: <NovoPreventivo /> },

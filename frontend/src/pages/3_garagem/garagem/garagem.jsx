@@ -37,7 +37,12 @@ export default function Garagem() {
 				<Link to="/novoCarro">
 					<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Adicionar carro</button>
 				</Link>
-				<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Notas todos os carros</button>
+				<Link to="/notas">
+					<button style={{ padding: "10px 20px", borderRadius: "8px" }}>
+						Notas todos os carros
+					</button>
+				</Link>
+
 			</div>
 			<div style={{ marginBottom: "16px" }}>
 				<label style={{ marginRight: "10px" }}>Ordenar por:</label>

@@ -1,7 +1,7 @@
+from django import views
 from django.urls import path
 from .views import *
 from .views import dev_log
-
 urlpatterns = [
 
     path("dev-log/", dev_log),
@@ -50,6 +50,10 @@ urlpatterns = [
     # EDITAR CARROS
     path("apagarCarro/", apagarCarro),
     path("editarCarro/", editarCarro),
-
     
+    #NOTAS
+    path("notas/", listarNotas),
+    path("apagarNota/", apagarNota),
+    path("editarNota/", editarNota),
+    path("criarNota/", criarNotaManual),
 ]
