@@ -62,6 +62,7 @@ class Carros(models.Model):
 
 
 class CarrosImagens(models.Model):
+    
     carro = models.OneToOneField(Carros, on_delete=models.CASCADE, related_name="imagem")  # type: ignore #! chave estrangeira
 
     nome = models.TextField("Nome")  # type: ignore

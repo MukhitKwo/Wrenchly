@@ -27,7 +27,6 @@ from .crud import (
     crud_Garagens,
     crud_Notas,
     crud_Carros,
-    crud_CarrosPreview,
     crud_CarrosImagens,
     crud_Corretivos,
     crud_Cronicos,
