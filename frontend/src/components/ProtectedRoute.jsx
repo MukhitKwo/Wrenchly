@@ -1,36 +1,15 @@
-import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import { useLocalAppState } from "../context/appState.local.jsx";
-import LoadingSpinner from "./LoadingSpinner";
+import { Navigate, Outlet } from "react-router-dom";
+import { useLocalAppState } from "../context/appState.local";
 
-export default function ProtectedRoute({ children }) {
-	const { state } = useLocalAppState();
-	const [loading, setLoading] = useState(true);
-	const [autenticado, setAutenticado] = useState(false);
+export default function ProtectedRoute() {
+  const { state } = useLocalAppState();
 
-	useEffect(() => {
-		// Simula validação de sessão (API no futuro)
-		const timer = setTimeout(() => {
-			if (state?.user) { // verificar com cookie do django
-				setAutenticado(true);
-			}
-			setLoading(false);
-		}, 600);
+  // Se NÃO estiver autenticado → login
+  if (!state?.user) {
+    return <Navigate to="/login" replace />;
+  }
 
-		return () => clearTimeout(timer);
-	}, [state]);
-
-	// Spinner global
-	if (loading) {
-		return <LoadingSpinner/>;
-	}
-
-	//  Bloqueio de acesso
-	if (!autenticado) {
-		return <Navigate to="/login" replace />;
-	}
-
-	// Acesso permitido
-	return children;
+  // Se estiver autenticado → renderiza a rota
+  return <Outlet />;
 }
 
