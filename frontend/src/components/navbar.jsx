@@ -1,11 +1,11 @@
 // src/components/navbar.jsx
 
-import React from "react";
 import { Link } from "react-router-dom"; // 👈 Essencial para a navegação sem recarregar
+import { useLocalAppState } from "../context/appState.local";
 import "./navbar.css";
-
 // 1. O nome do componente deve começar com letra maiúscula (navbar)
 function Navbar() {
+	const { state } = useLocalAppState();
 	return (
 		<nav className="navbar">
 			<div className="navbar-container">
@@ -20,13 +20,19 @@ function Navbar() {
 
 					<Link to="/contatos">Contatos</Link>
 					<Link to="/garagem">Garagem</Link>
+					<Link to="/notas">Notas</Link>
 
 					{/* <Link to="/sobre">Sobre Nós</Link> */}
 
 					{/* <Link to="/perfil">Perfil</Link> */}
-          
+
 					<Link to="/definicoes">Definições</Link>
-					<Link to="/login">Sign In</Link>
+					{state?.user ? (
+						<span>{state.user.username}</span>
+					) : (
+						<Link to="/login">Sign In</Link>
+					)}
+
 				</div>
 			</div>
 		</nav>
