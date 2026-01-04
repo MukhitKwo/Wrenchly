@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocalAppState } from "../../context/appState.local";
-
 
 export default function NotasTodas() {
     const { state, setState } = useLocalAppState();
@@ -8,47 +7,70 @@ export default function NotasTodas() {
     const notas = state?.notas || [];
     const carros = state?.carros_preview || [];
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [notaEmEdicao, setNotaEmEdicao] = useState(null);
     const [textoEdicao, setTextoEdicao] = useState("");
-
     const [mostrarForm, setMostrarForm] = useState(false);
     const [textoNota, setTextoNota] = useState("");
     const [carroSelecionado, setCarroSelecionado] = useState("");
 
-    const carregarNotas = useCallback(async () => {
-        try {
-            setLoading(true);
+    // 🔒 FLAG NÃO REATIVA → NÃO CAUSA LOOP
+    const notasCarregadasRef = useRef(false);
 
-            const res = await fetch("/api/notas/", {
-                method: "GET",
-                credentials: "include",
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                setState((prev) => ({
-                    ...prev,
-                    notas: data.notas_data,
-                }));
-            }
-        } catch (err) {
-            console.error("Erro ao carregar notas:", err);
-        } finally {
-            setLoading(false);
-        }
-    }, [setState]);
-
-
+    /* =========================
+       FETCH NOTAS (1x POR SESSÃO)
+    ========================== */
     useEffect(() => {
-        carregarNotas();
-    }, [carregarNotas]);
+        // ✅ Já carregadas nesta sessão
+        if (notasCarregadasRef.current) return;
 
+        // ✅ Já existem no localSession
+        if (state?.notas?.length) {
+            notasCarregadasRef.current = true;
+            return;
+        }
+
+        const carregarNotas = async () => {
+            try {
+                setLoading(true);
+
+                const res = await fetch("/api/notas/", {
+                    method: "GET",
+                    credentials: "include",
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    setState((prev) => ({
+                        ...prev,
+                        notas: data.notas_data,
+                    }));
+
+                    // 🔐 MARCA COMO CARREGADAS
+                    notasCarregadasRef.current = true;
+                }
+            } catch (err) {
+                console.error("Erro ao carregar notas:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        carregarNotas();
+    }, [setState, state?.notas?.length]);
+
+    /* =========================
+       HELPERS
+    ========================== */
     const getNomeCarro = (carroId) => {
         const carro = carros.find((c) => c.id === Number(carroId));
         return carro ? carro.full_name : `Carro #${carroId}`;
     };
+
+    /* =========================
+       CRUD NOTAS (LOCAL FIRST)
+    ========================== */
     const criarNota = async () => {
         if (!textoNota || !carroSelecionado) return;
 
@@ -63,7 +85,13 @@ export default function NotasTodas() {
         });
 
         if (res.ok) {
-            await carregarNotas();
+            const data = await res.json();
+
+            setState((prev) => ({
+                ...prev,
+                notas: [...prev.notas, data.nota_data],
+            }));
+
             setTextoNota("");
             setCarroSelecionado("");
             setMostrarForm(false);
@@ -82,7 +110,13 @@ export default function NotasTodas() {
         });
 
         if (res.ok) {
-            await carregarNotas();
+            setState((prev) => ({
+                ...prev,
+                notas: prev.notas.map((n) =>
+                    n.id === id ? { ...n, nota: textoEdicao } : n
+                ),
+            }));
+
             setNotaEmEdicao(null);
         }
     };
@@ -98,9 +132,16 @@ export default function NotasTodas() {
         });
 
         if (res.ok) {
-            await carregarNotas();
+            setState((prev) => ({
+                ...prev,
+                notas: prev.notas.filter((n) => n.id !== id),
+            }));
         }
     };
+
+    /* =========================
+       RENDER
+    ========================== */
     if (loading) {
         return <p>A carregar notas...</p>;
     }
@@ -142,14 +183,7 @@ export default function NotasTodas() {
 
             <div style={{ display: "grid", gap: 15, marginTop: 20 }}>
                 {notas.map((nota) => (
-                    <div
-                        key={nota.id}
-                        style={{
-                            border: "1px solid #ddd",
-                            padding: 15,
-                            borderRadius: 8,
-                        }}
-                    >
+                    <div key={nota.id} style={{ border: "1px solid #ddd", padding: 15, borderRadius: 8 }}>
                         <strong>{getNomeCarro(nota.carro)}</strong>
 
                         {notaEmEdicao === nota.id ? (
