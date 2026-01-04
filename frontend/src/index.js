@@ -3,6 +3,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import LoadingSpinner from "./components/LoadingSpinner.jsx";
 
 import App from "./App";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -93,7 +94,8 @@ root.render(
 	<React.StrictMode>
 		<LocalAppStateProvider>
 			<SessionAppStateProvider>
-				<RouterProvider router={router} />
+				<RouterProvider router={router}
+				fallback={<LoadingSpinner />} />
 			</SessionAppStateProvider>
 		</LocalAppStateProvider>
 	</React.StrictMode>

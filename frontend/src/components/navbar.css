@@ -2,32 +2,44 @@
 
 .navbar {
   /* 1. POSICIONAMENTO CRUCIAL PARA SER FLUTUANTE (STICKY) */
-  position: sticky; 
-  top: 0; /* Fixa-o no topo da janela */
-  z-index: 1000; /* Garante que fique por cima de outro conteúdo enquanto faz scroll */
-  
+  position: sticky;
+  top: 0;
+  /* Fixa-o no topo da janela */
+  z-index: 1000;
+  /* Garante que fique por cima de outro conteúdo enquanto faz scroll */
+
   /* 2. ESTILOS VISUAIS */
-  background-color: #333; /* Cor de fundo escura */
-  color: white; /* Cor do texto */
-  padding: 15px 0; /* Espaçamento interno vertical */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra subtil para destacar */
-  width: 100%; /* Ocupa toda a largura */
+  background-color: #333;
+  /* Cor de fundo escura */
+  color: white;
+  /* Cor do texto */
+  padding: 15px 0;
+  /* Espaçamento interno vertical */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  /* Sombra subtil para destacar */
+  width: 100%;
+  /* Ocupa toda a largura */
 }
 
 /* Container para alinhar o conteúdo no centro da página */
 .navbar-container {
-  margin: 0 auto; /* Centra o container */
-  display: flex; /* Permite o layout em linha (Logo + Links) */
-  justify-content: space-between; /* Espaço entre o logo e os links */
-  align-items: center; 
-  padding: 0 3%; /* Espaçamento lateral */
+  margin: 0 auto;
+  /* Centra o container */
+  display: flex;
+  /* Permite o layout em linha (Logo + Links) */
+  justify-content: space-between;
+  /* Espaço entre o logo e os links */
+  align-items: center;
+  padding: 0 3%;
+  /* Espaçamento lateral */
 }
 
 /* Estilo do Logotipo (Wrenchly) */
 .navbar-logo {
   color: white;
   text-decoration: none;
-  font-size: 1.6em; /* Tamanho maior */
+  font-size: 1.6em;
+  /* Tamanho maior */
   font-weight: bold;
 }
 
@@ -35,7 +47,8 @@
 .navbar-links a {
   color: white;
   text-decoration: none;
-  margin-left: 25px; /* Espaçamento entre os links */
+  margin-left: 25px;
+  /* Espaçamento entre os links */
   padding: 8px 12px;
   border-radius: 4px;
   transition: background-color 0.3s;
@@ -45,4 +58,27 @@
 .navbar-links a:hover {
   background-color: #555;
   color: #fff;
+}
+
+.navbar-user {
+  margin-left: 25px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-logout {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 1em;
+  line-height: normal;
+  font-family: inherit;
+}
+
+.navbar-logout:hover {
+  background-color: #555;
 }

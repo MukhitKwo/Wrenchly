@@ -1,43 +1,77 @@
 // src/components/navbar.jsx
 
-import { Link } from "react-router-dom"; // 👈 Essencial para a navegação sem recarregar
+import { Link, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../context/appState.local";
 import "./navbar.css";
-// 1. O nome do componente deve começar com letra maiúscula (navbar)
+
 function Navbar() {
-	const { state } = useLocalAppState();
+	const { state, setState } = useLocalAppState();
+	const navigate = useNavigate();
+
+	const handleLogout = async () => {
+		const confirmLogout = window.confirm(
+			"Tens a certeza que queres sair da tua conta?"
+		);
+		if (!confirmLogout) return;
+
+		await fetch("/api/logoutUser/", {
+			method: "POST",
+			credentials: "include",
+		});
+
+		// 🔹 Limpa estado global
+		setState({
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+		});
+
+		// 🔹 Redirect automático
+		navigate("/login");
+	};
+
+	const isAuthenticated = !!state?.user;
+
 	return (
 		<nav className="navbar">
 			<div className="navbar-container">
-				{/* Logotipo/Marca: Usa Link para voltar à página inicial */}
 				<Link to="/" className="navbar-logo">
 					Wrenchly
 				</Link>
 
 				<div className="navbar-links">
-					{/* 2. Todos os botões usam <Link> e a prop 'to' com os caminhos do seu Router */}
-					{/* <Link to="/">Início</Link> */}
-
+					{/* Público */}
 					<Link to="/contatos">Contatos</Link>
-					<Link to="/garagem">Garagem</Link>
-					<Link to="/notas">Notas</Link>
 
-					{/* <Link to="/sobre">Sobre Nós</Link> */}
+					{/* 🔒 Apenas se estiver autenticado */}
+					{isAuthenticated && (
+						<>
+							<Link to="/garagem">Garagem</Link>
+							<Link to="/notas">Notas</Link>
+							<Link to="/definicoes">Definições</Link>
+						</>
+					)}
 
-					{/* <Link to="/perfil">Perfil</Link> */}
-
-					<Link to="/definicoes">Definições</Link>
-					{state?.user ? (
-						<span>{state.user.username}</span>
+					{/* Auth */}
+					{isAuthenticated ? (
+						<span className="navbar-user">
+							<span>{state.user.username}</span>
+							<button
+								className="navbar-logout"
+								onClick={handleLogout}
+							>
+								Logout
+							</button>
+						</span>
 					) : (
 						<Link to="/login">Sign In</Link>
 					)}
-
 				</div>
 			</div>
 		</nav>
 	);
 }
 
-// 3. Exporta o componente com o nome corrigido
 export default Navbar;
