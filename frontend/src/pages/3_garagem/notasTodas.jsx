@@ -14,17 +14,13 @@ export default function NotasTodas() {
     const [textoNota, setTextoNota] = useState("");
     const [carroSelecionado, setCarroSelecionado] = useState("");
 
-    // 🔒 FLAG NÃO REATIVA → NÃO CAUSA LOOP
     const notasCarregadasRef = useRef(false);
 
-    /* =========================
-       FETCH NOTAS (1x POR SESSÃO)
-    ========================== */
     useEffect(() => {
-        // ✅ Já carregadas nesta sessão
+
         if (notasCarregadasRef.current) return;
 
-        // ✅ Já existem no localSession
+
         if (state?.notas?.length) {
             notasCarregadasRef.current = true;
             return;
@@ -47,7 +43,7 @@ export default function NotasTodas() {
                         notas: data.notas_data,
                     }));
 
-                    // 🔐 MARCA COMO CARREGADAS
+
                     notasCarregadasRef.current = true;
                 }
             } catch (err) {
@@ -60,17 +56,13 @@ export default function NotasTodas() {
         carregarNotas();
     }, [setState, state?.notas?.length]);
 
-    /* =========================
-       HELPERS
-    ========================== */
+
     const getNomeCarro = (carroId) => {
         const carro = carros.find((c) => c.id === Number(carroId));
         return carro ? carro.full_name : `Carro #${carroId}`;
     };
 
-    /* =========================
-       CRUD NOTAS (LOCAL FIRST)
-    ========================== */
+
     const criarNota = async () => {
         if (!textoNota || !carroSelecionado) return;
 
@@ -139,9 +131,7 @@ export default function NotasTodas() {
         }
     };
 
-    /* =========================
-       RENDER
-    ========================== */
+
     if (loading) {
         return <p>A carregar notas...</p>;
     }
