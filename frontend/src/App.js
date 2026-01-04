@@ -1,10 +1,12 @@
 import { Outlet } from "react-router-dom";
+import Feedback from "./components/Feedback.jsx";
 import Navbar from "./components/navbar";
 
 function App() {
   return (
     <div className="app-container">
       <Navbar />
+      <Feedback />
       <main className="main-content">
         <Outlet />
       </main>

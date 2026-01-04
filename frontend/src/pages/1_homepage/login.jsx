@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
-import { useSessionAppState } from "../../context/appState.session";
 
 export default function Login() {
 	// const [email, setEmail] = React.useState("");
@@ -9,15 +8,21 @@ export default function Login() {
 	const [password, setPassword] = React.useState("");
 	const navigate = useNavigate(); // hook to navigate programmatically
 	const { setState: setLocalStorage } = useLocalAppState();
-	const { setState: setSessionStorage } = useSessionAppState();
 
 	const loginUser = async () => {
 		// console.log({ email, username, password });
 
 		if (!username || !password) {
-			alert("Please fill in all fields");
+			setLocalStorage((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Preenche todos os campos",
+				},
+			}));
 			return;
 		}
+
 
 		try {
 			const res = await fetch("/api/loginUser/", {
@@ -29,7 +34,17 @@ export default function Login() {
 			});
 
 			const data = await res.json();
-			console.log(data.message);
+			if (!res.ok) {
+				setLocalStorage((prev) => ({
+					...prev,
+					feedback: {
+						type: "error",
+						message: "Utilizador ou password incorretos",
+					},
+				}));
+				return;
+			}
+
 
 			if (res.ok) {
 				setLocalStorage({
@@ -38,13 +53,24 @@ export default function Login() {
 					definicoes: data.definicoes_data,
 					carros_preview: data.carrosPreview_data,
 					notas: data.notas_data,
+					feedback: {
+						type: "success",
+						message: "Login efetuado com sucesso",
+					},
 				});
 
-				navigate("/garagem"); // redirect to home page
+				navigate("/garagem");
 			}
 		} catch (err) {
-			console.error(err);
+			setLocalStorage((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Erro de ligação ao servidor",
+				},
+			}));
 		}
+
 	};
 
 	return (

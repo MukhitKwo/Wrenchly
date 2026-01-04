@@ -13,9 +13,16 @@ export default function Registo() {
 		// console.log({ email, username, password });
 
 		if (!username || !password || !email) {
-			alert("Please fill in all fields");
+			setLocalStorage((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Preenche todos os campos",
+				},
+			}));
 			return;
 		}
+
 
 		try {
 			const res = await fetch("/api/registerUser/", {
@@ -27,7 +34,17 @@ export default function Registo() {
 			});
 
 			const data = await res.json();
-			console.log(data.message);
+			if (!res.ok) {
+				setLocalStorage((prev) => ({
+					...prev,
+					feedback: {
+						type: "error",
+						message: "Erro ao criar conta",
+					},
+				}));
+				return;
+			}
+
 
 			if (res.ok) {
 				setLocalStorage((prev) => ({
@@ -37,12 +54,23 @@ export default function Registo() {
 					definicoes: data.definicoes_data,
 					carros_preview: data.carroPreview_data,
 					notas: data.notas_data,
+					feedback: {
+						type: "success",
+						message: "Conta criada com sucesso 🎉",
+					},
 				}));
 
-				navigate("/garagem"); // redirect to home page
+				navigate("/garagem");
 			}
+
 		} catch (err) {
-			console.error(err);
+			setLocalStorage((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Erro de ligação ao servidor",
+				},
+			}));
 		}
 	};
 
