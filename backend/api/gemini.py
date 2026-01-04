@@ -49,7 +49,7 @@ def call_gemini(prompt, schema, temp):
 def generateCarCronicIssues(car_model: str, dummyData=False):
 
     if not isinstance(car_model, str):
-        return GeminiResponse(success=False, message="Car not a string")
+        return GeminiException(message="Car not a string")
 
     if dummyData:
         return GeminiResponse(success=True, message="This is dummy data!", data=getDummyData(1))
@@ -82,7 +82,7 @@ def generateCarCronicIssues(car_model: str, dummyData=False):
 
 def generateCarPreventiveIssues(car_model: str, dummyData=False):
     if not isinstance(car_model, str):
-        return GeminiResponse(success=False, message="Car not a string")
+        return GeminiException(message="Car not a string")
 
     if dummyData:
         return GeminiResponse(success=True, message="This is dummy data!", data=getDummyData(4))
@@ -125,7 +125,7 @@ def findCarsBySpecs(specs: dict, dummyData=False):
 
     prompt = (
         f"Lista Python de 12 veiculos que correspondem a estas especificações: {specs}. "
-        "Incluir o nome completo e ano do carro, "
+        "Incluir o nome completo e ano do veiculo, "
         "Não incluir texto adicional, não usar blocos de código (```), sem quebras de linha, "
         "exemplo: ['Audi A4 2005', 'Toyota Corolla 1998', ...]. "
     )
@@ -144,7 +144,7 @@ def findCarsBySpecs(specs: dict, dummyData=False):
 def getSpecsOfCar(car_model: str, dummyData=False):
 
     if not isinstance(car_model, str):
-        return GeminiResponse(success=False, message="Car not a string")
+        return GeminiException(message="Car not a string")
 
     if dummyData:
         return GeminiResponse(success=True, message="This is dummy data!", data=getDummyData(3))

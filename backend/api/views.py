@@ -1,5 +1,3 @@
-from datetime import date, timedelta, datetime
-import random
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -15,13 +13,14 @@ from rest_framework.decorators import (
     authentication_classes,
 )
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import date, timedelta, datetime
 import hashlib
 
 from .models import *
 from .serializers import *
 
 from .gemini import generateCarCronicIssues, findCarsBySpecs, getSpecsOfCar, generateCarPreventiveIssues, GeminiException
-from .email import EmailException, send_email
+from .email import EmailException, sendSecretCodeEmail
 from .crud import (
     crud_Definicoes,
     crud_Garagens,
@@ -192,15 +191,7 @@ def pedirCodigoSecreto(request):
 
     try:
         email = request.user.email
-        secretCode = str(random.randint(100000, 999999))
-
-        secretCodeText = f"""
-            <p>O seu código secreto para atualizar a palavra-passe da sua conta, não partilhe com ninguém:</p>
-            <p><b style="font-size:20px;">{secretCode}</b></p>
-            """
-
-        send_email(to_email=email, subject="Password reset", body=secretCodeText)
-        hashedCode = hashlib.sha256(secretCode.encode()).hexdigest()
+        hashedCode = sendSecretCodeEmail(email)
     except EmailException as e:
         return Response({"message": e.message}, status=400)
 
