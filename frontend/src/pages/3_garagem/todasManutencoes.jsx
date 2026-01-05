@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
 import usePageLoader from "../../hooks/usePageLoader";
 import ListaCorretivos from "./listaCorretivos";
@@ -10,7 +11,14 @@ import ListaPreventivos from "./listaPreventivos";
 export default function TodasManutencoes() {
 	const { carro_id } = useParams();
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
+	const { setState: setLocalStorage } = useLocalAppState();
 	const viewed_cars = useMemo(() => getSessionStorage?.carros_vistos || [], [getSessionStorage]);
+	const showFeedback = useCallback((type, message) => {
+		setLocalStorage((prev) => ({
+			...prev,
+			feedback: { type, message },
+		}));
+	}, [setLocalStorage]);
 	const { loading, runWithLoading } = usePageLoader(true);
 	const navigate = useNavigate();
 
@@ -97,9 +105,10 @@ export default function TodasManutencoes() {
 				});
 			}
 		} catch (err) {
-			console.log(err);
+			console.error(err);
+			showFeedback("error", "Erro ao carregar manutenções.");
 		}
-	}, [carro_id, viewed_cars, setSessionStorage]);
+	}, [carro_id, viewed_cars, setSessionStorage, showFeedback]);
 
 	useEffect(() => {
 		runWithLoading(() => verManutencoes());

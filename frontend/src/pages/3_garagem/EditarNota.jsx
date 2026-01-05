@@ -9,28 +9,60 @@ export default function EditarNota() {
 
     const nota = state.notas.find((n) => n.id === Number(id));
     const [texto, setTexto] = useState(nota?.texto || "");
+    const [loading, setLoading] = useState(false);
+
+    if (!nota) return <p>Nota não encontrada</p>;
 
     const guardar = async () => {
-        const res = await fetch("/api/editarNota/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ nota_id: nota.id, texto }),
-        });
+        if (!texto.trim()) {
+            setState((prev) => ({
+                ...prev,
+                feedback: {
+                    type: "error",
+                    message: "A nota não pode estar vazia.",
+                },
+            }));
+            return;
+        }
 
-        if (res.ok) {
+        setLoading(true);
+
+        try {
+            const res = await fetch("/api/editarNota/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ nota_id: nota.id, texto }),
+            });
+
+            if (!res.ok) {
+                throw new Error();
+            }
+
             setState((prev) => ({
                 ...prev,
                 notas: prev.notas.map((n) =>
                     n.id === nota.id ? { ...n, texto } : n
                 ),
+                feedback: {
+                    type: "success",
+                    message: "Nota atualizada com sucesso.",
+                },
             }));
 
             navigate("/notas");
+        } catch (err) {
+            setState((prev) => ({
+                ...prev,
+                feedback: {
+                    type: "error",
+                    message: "Erro ao atualizar a nota.",
+                },
+            }));
+        } finally {
+            setLoading(false);
         }
     };
-
-    if (!nota) return <p>Nota não encontrada</p>;
 
     return (
         <div className="page-box">
@@ -40,9 +72,12 @@ export default function EditarNota() {
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
                 rows={5}
+                disabled={loading}
             />
 
-            <button onClick={guardar}>Guardar</button>
+            <button onClick={guardar} disabled={loading}>
+                {loading ? "A guardar..." : "Guardar"}
+            </button>
         </div>
     );
 }

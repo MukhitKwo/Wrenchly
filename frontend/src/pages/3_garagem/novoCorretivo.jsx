@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useSessionAppState } from "../../context/appState.session";
 import { useLocalAppState } from "../../context/appState.local";
+import { useSessionAppState } from "../../context/appState.session";
 
 export default function NovoCorretivo() {
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
-	const { state: getLocalStorage, setState: setLocalStorage } = useLocalAppState();
+	const { setState: setLocalStorage } = useLocalAppState();
 
 	const navigate = useNavigate();
 	const { state } = useLocation();
@@ -31,6 +31,13 @@ export default function NovoCorretivo() {
 		nota: ""
 	});
 
+	const showFeedback = (type, message) => {
+		setLocalStorage((prev) => ({
+			...prev,
+			feedback: { type, message },
+		}));
+	};
+
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setManutencao((prev) => ({
@@ -40,6 +47,11 @@ export default function NovoCorretivo() {
 	};
 
 	const guardarManutencao = async () => {
+		if (!manutencao.nome || !manutencao.quilometragem || !manutencao.data) {
+			showFeedback("error", "Preenche os campos obrigatórios.");
+			return;
+		}
+
 		try {
 			const res = await fetch("/api/criarCorretivo/", {
 				method: "POST",
@@ -48,7 +60,11 @@ export default function NovoCorretivo() {
 			});
 
 			const data = await res.json();
-			console.log(data.message);
+
+			if (!res.ok) {
+				showFeedback("error", data.message || "Erro ao guardar manutenção.");
+				return;
+			}
 
 			let updatedPreventivos = [];
 			let updatedCronicos = [];
@@ -57,38 +73,37 @@ export default function NovoCorretivo() {
 				const resUpdate = await fetch("/api/atualizarPreventivoDataKm/", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ manutencaoData, km: manutencao.quilometragem, data: manutencao.data }),
+					body: JSON.stringify({
+						manutencaoData,
+						km: manutencao.quilometragem,
+						data: manutencao.data,
+					}),
 				});
 				const dataUpdate = await resUpdate.json();
-				console.log(dataUpdate.message);
 
 				if (resUpdate.ok) {
-					updatedPreventivos = atualizarPreventivoNoSession(viewed_cars, carro_id, manutencaoData.id, {
-						trocadoNoKm: dataUpdate.trocadoNoKm,
-						trocarNoKm: dataUpdate.trocarNoKm,
-						trocadoNaData: dataUpdate.trocadoNaData,
-						trocarNaData: dataUpdate.trocarNaData,
-					});
+					updatedPreventivos = atualizarPreventivoNoSession(
+						viewed_cars,
+						carro_id,
+						manutencaoData.id,
+						{
+							trocadoNoKm: dataUpdate.trocadoNoKm,
+							trocarNoKm: dataUpdate.trocarNoKm,
+							trocadoNaData: dataUpdate.trocadoNaData,
+							trocarNaData: dataUpdate.trocarNaData,
+						}
+					);
 
 					const proximaData = proximaManutencao(updatedPreventivos);
 
-					setLocalStorage((prev) => {
-						const updatedCarrosPreview = prev.carros_preview.map((car) => {
-							if (car.id === Number(carro_id)) {
-								const updatedCar = {
-									...car,
-									proxima_manutencao: proximaData,
-								};
-								return updatedCar;
-							}
-							return car;
-						});
-
-						return {
-							...prev,
-							carros_preview: updatedCarrosPreview,
-						};
-					});
+					setLocalStorage((prev) => ({
+						...prev,
+						carros_preview: prev.carros_preview.map((car) =>
+							car.id === Number(carro_id)
+								? { ...car, proxima_manutencao: proximaData }
+								: car
+						),
+					}));
 				}
 			}
 
@@ -96,29 +111,47 @@ export default function NovoCorretivo() {
 				const resUpdate = await fetch("/api/atualizarCronicoKm/", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ manutencaoData, km: manutencao.quilometragem }),
+					body: JSON.stringify({
+						manutencaoData,
+						km: manutencao.quilometragem,
+					}),
 				});
 				const dataUpdate = await resUpdate.json();
-				console.log(dataUpdate.message);
 
 				if (resUpdate.ok) {
-					updatedCronicos = atualizarCronicoEmMemoria(viewed_cars, carro_id, manutencaoData.id, {
-						trocadoNoKm: dataUpdate.trocadoNoKm,
-						trocarNoKm: dataUpdate.trocarNoKm,
-					});
+					updatedCronicos = atualizarCronicoEmMemoria(
+						viewed_cars,
+						carro_id,
+						manutencaoData.id,
+						{
+							trocadoNoKm: dataUpdate.trocadoNoKm,
+							trocarNoKm: dataUpdate.trocarNoKm,
+						}
+					);
 				}
 			}
 
-			if (res.ok) {
-				const novoKm = Number(data.carro_km);
+			const novoKm = Number(data.carro_km);
 
-				const updatedCarros = atualizarCarroComRisco(viewed_cars, carro_id, novoKm, data.corretivo_data, updatedPreventivos, updatedCronicos);
-				setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCarros }));
+			const updatedCarros = atualizarCarroComRisco(
+				viewed_cars,
+				carro_id,
+				novoKm,
+				data.corretivo_data,
+				updatedPreventivos,
+				updatedCronicos
+			);
 
-				navigate(-1);
-			}
+			setSessionStorage((prev) => ({
+				...prev,
+				carros_vistos: updatedCarros,
+			}));
+
+			showFeedback("success", "Manutenção registada com sucesso.");
+			navigate(-1);
 		} catch (error) {
-			console.log(error);
+			console.error(error);
+			showFeedback("error", "Erro inesperado ao guardar manutenção.");
 		}
 	};
 
@@ -134,13 +167,13 @@ export default function NovoCorretivo() {
 			</div>
 
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
-				<label style={{ display: "flex", flexDirection: "column" }}>
-					<span style={{ width: "120px" }}>Nome:</span>
+				<label>
+					Nome:
 					<input name="nome" value={manutencao.nome} onChange={handleChange} />
 				</label>
 
-				<label style={{ display: "flex", flexDirection: "column" }}>
-					<span style={{ width: "120px" }}>Tipo:</span>
+				<label>
+					Tipo:
 					<select name="tipo" value={manutencao.tipo} onChange={handleChange}>
 						<option value="corretivo">Corretivo</option>
 						<option value="preventivo">Preventivo</option>
@@ -148,82 +181,41 @@ export default function NovoCorretivo() {
 					</select>
 				</label>
 
-				<label style={{ display: "flex", flexDirection: "column" }}>
-					<span style={{ width: "120px" }}>Descrição:</span>
+				<label>
+					Descrição:
 					<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} />
 				</label>
 
-				<label style={{ display: "flex", flexDirection: "column" }}>
-					<span style={{ width: "120px" }}>Quilometragem:</span>
+				<label>
+					Quilometragem:
 					<input type="number" name="quilometragem" value={manutencao.quilometragem} onChange={handleChange} />
 				</label>
 
-				<label style={{ display: "flex", flexDirection: "column" }}>
-					<span style={{ width: "120px" }}>Data:</span>
+				<label>
+					Data:
 					<input type="date" name="data" value={manutencao.data} onChange={handleChange} />
 				</label>
 
-				<label style={{ display: "flex", flexDirection: "column" }}>
-					<span style={{ width: "120px" }}>Custo (€):</span>
+				<label>
+					Custo (€):
 					<input type="number" name="custo" value={manutencao.custo} onChange={handleChange} />
 				</label>
 
-				<label style={{ display: "flex", flexDirection: "column" }}>
-					<span style={{ width: "120px" }}>Notas:</span>
+				<label>
+					Notas:
 					<textarea name="nota" value={manutencao.nota} onChange={handleChange} />
 				</label>
 			</div>
 		</div>
 	);
-
-	//==============
-
-	function syncProximaManutencao() {
-		const carrosVistos = getSessionStorage.carros_vistos ?? [];
-		const carrosPreview = getLocalStorage.carros_preview ?? [];
-		const today = new Date();
-
-		const updatedPreview = carrosPreview.map((previewCar) => {
-			const carroVisto = carrosVistos.find((carro) => carro.id === previewCar.id);
-
-			console.log(carroVisto);
-
-			if (!carroVisto) return previewCar;
-
-			const preventivos = carroVisto.manutencoes?.preventivos ?? [];
-
-			const proximaData = getProximaDataPreventiva(preventivos, today);
-
-			// console.log(proximaData);
-
-			return {
-				...previewCar,
-				proxima_manutencao: proximaData,
-			};
-		});
-
-		setLocalStorage({
-			...getLocalStorage,
-			carros_preview: updatedPreview,
-		});
-	}
-
-	function getProximaDataPreventiva(preventivos, today) {
-		const datasFuturas = preventivos
-			.map((p) => new Date(p.trocarNaData))
-			.filter((d) => !isNaN(d) && d >= today)
-			.sort((a, b) => a - b);
-
-		if (!datasFuturas.length) return null;
-
-		return datasFuturas[0].toISOString().split("T")[0];
-	}
 }
 
 function recalcularRisco(arr, novoKm) {
 	return arr.map((man) => ({
 		...man,
-		risco: man.kmsEntreTroca ? Number(((novoKm - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2)) : null,
+		risco: man.kmsEntreTroca
+			? Number(((novoKm - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2))
+			: null,
 	}));
 }
 
@@ -237,8 +229,12 @@ function atualizarCarroComRisco(viewedCars, carroId, novoKm, corretivo, updatedP
 			manutencoes: {
 				...car.manutencoes,
 				corretivos: [...car.manutencoes.corretivos, corretivo],
-				preventivos: updatedPreventivos.length ? recalcularRisco(updatedPreventivos, novoKm) : recalcularRisco(car.manutencoes.preventivos, novoKm),
-				cronicos: updatedCronicos.length ? recalcularRisco(updatedCronicos, novoKm) : recalcularRisco(car.manutencoes.cronicos, novoKm),
+				preventivos: updatedPreventivos.length
+					? recalcularRisco(updatedPreventivos, novoKm)
+					: recalcularRisco(car.manutencoes.preventivos, novoKm),
+				cronicos: updatedCronicos.length
+					? recalcularRisco(updatedCronicos, novoKm)
+					: recalcularRisco(car.manutencoes.cronicos, novoKm),
 			},
 		};
 	});
@@ -247,22 +243,24 @@ function atualizarCarroComRisco(viewedCars, carroId, novoKm, corretivo, updatedP
 function atualizarPreventivoNoSession(viewedCars, carroId, manutencaoId, novosDados) {
 	const car = viewedCars.find((c) => c.id === Number(carroId));
 	if (!car) return [];
-
-	return car.manutencoes.preventivos.map((p) => (p.id === manutencaoId ? { ...p, ...novosDados } : p));
+	return car.manutencoes.preventivos.map((p) =>
+		p.id === manutencaoId ? { ...p, ...novosDados } : p
+	);
 }
 
 function atualizarCronicoEmMemoria(viewedCars, carroId, manutencaoId, novosDados) {
 	const car = viewedCars.find((c) => c.id === Number(carroId));
 	if (!car) return [];
-
-	return car.manutencoes.cronicos.map((c) => (c.id === manutencaoId ? { ...c, ...novosDados } : c));
+	return car.manutencoes.cronicos.map((c) =>
+		c.id === manutencaoId ? { ...c, ...novosDados } : c
+	);
 }
 
 function proximaManutencao(preventivos) {
 	const datasValidas = preventivos
-		.map((p) => p.trocarNaData) // get all dates
-		.filter((d) => d) // remove null/undefined
-		.map((d) => new Date(d)); // convert to Date objects
+		.map((p) => p.trocarNaData)
+		.filter(Boolean)
+		.map((d) => new Date(d));
 
 	const closestDate = new Date(Math.min(...datasValidas));
 	return closestDate.toISOString().split("T")[0];

@@ -1,17 +1,29 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
 
 export default function VerCronico() {
 	const navigate = useNavigate();
 	const { state: session, setState: setSession } = useSessionAppState();
+	const { setState: setLocalStorage } = useLocalAppState();
 	const { carro_id, manutencao_id } = useParams();
 
-	const viewed_cars = session.carros_vistos || [];
+	const viewed_cars = useMemo(
+		() => session.carros_vistos || [],
+		[session.carros_vistos]
+	);
 
 	const [manutencao, setManutencao] = useState(null);
 	const [edit, setEdit] = useState(false);
 	const [carro_km, setCarro_km] = useState(null);
+
+	const showFeedback = (type, message) => {
+		setLocalStorage((prev) => ({
+			...prev,
+			feedback: { type, message },
+		}));
+	};
 
 	useEffect(() => {
 		const car = viewed_cars.find((c) => c.id === Number(carro_id));
@@ -19,7 +31,9 @@ export default function VerCronico() {
 
 		setCarro_km(car.quilometragem);
 
-		const maintenance = car.manutencoes?.cronicos?.find((m) => m.id === Number(manutencao_id));
+		const maintenance = car.manutencoes?.cronicos?.find(
+			(m) => m.id === Number(manutencao_id)
+		);
 		if (maintenance) setManutencao(maintenance);
 	}, [carro_id, manutencao_id, viewed_cars]);
 
@@ -37,24 +51,31 @@ export default function VerCronico() {
 			});
 
 			const data = await res.json();
-			if (!res.ok) throw new Error(data.message);
+			if (!res.ok) {
+				showFeedback("error", data.message || "Erro ao guardar alterações.");
+				return;
+			}
 
 			const updatedCars = viewed_cars.map((car) =>
 				car.id === Number(carro_id)
 					? {
-							...car,
-							manutencoes: {
-								...car.manutencoes,
-								cronicos: car.manutencoes.cronicos.map((c) => (c.id === manutencao.id ? data.cronico_data : c)),
-							},
-					  }
+						...car,
+						manutencoes: {
+							...car.manutencoes,
+							cronicos: car.manutencoes.cronicos.map((c) =>
+								c.id === manutencao.id ? data.cronico_data : c
+							),
+						},
+					}
 					: car
 			);
 
 			setSession((prev) => ({ ...prev, carros_vistos: updatedCars }));
 			setEdit(false);
+			showFeedback("success", "Manutenção crónica atualizada.");
 		} catch (err) {
-			console.log(err);
+			console.error(err);
+			showFeedback("error", "Erro inesperado ao guardar.");
 		}
 	};
 
@@ -65,29 +86,38 @@ export default function VerCronico() {
 			const res = await fetch("/api/apagarCronico/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ id: manutencao.id, carro_id: manutencao.carro }),
+				body: JSON.stringify({
+					id: manutencao.id,
+					carro_id: manutencao.carro,
+				}),
 			});
 
 			const data = await res.json();
-			console.log(data.message);
-			
+			if (!res.ok) {
+				showFeedback("error", data.message || "Erro ao apagar manutenção.");
+				return;
+			}
 
 			const updatedCars = viewed_cars.map((car) =>
 				car.id === Number(carro_id)
 					? {
-							...car,
-							manutencoes: {
-								...car.manutencoes,
-								cronicos: car.manutencoes.cronicos.filter((c) => c.id !== manutencao.id),
-							},
-					  }
+						...car,
+						manutencoes: {
+							...car.manutencoes,
+							cronicos: car.manutencoes.cronicos.filter(
+								(c) => c.id !== manutencao.id
+							),
+						},
+					}
 					: car
 			);
 
 			setSession((prev) => ({ ...prev, carros_vistos: updatedCars }));
+			showFeedback("success", "Manutenção crónica apagada.");
 			navigate(-1);
 		} catch (err) {
-			console.log(err);
+			console.error(err);
+			showFeedback("error", "Erro inesperado ao apagar.");
 		}
 	};
 
@@ -102,30 +132,44 @@ export default function VerCronico() {
 			<h1>Manutenção Crónica</h1>
 
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<span>Nome:</span>
+				<label>
+					Nome:
 					<input name="nome" value={manutencao.nome} onChange={handleChange} disabled={!edit} />
-				</div>
+				</label>
 
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<span>Descrição:</span>
+				<label>
+					Descrição:
 					<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} disabled={!edit} />
-				</div>
+				</label>
 
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<span>Kms entre ocorrências:</span>
-					<input type="number" name="kmsEntreTroca" value={manutencao.kmsEntreTroca} onChange={handleChange} disabled={!edit} />
-				</div>
+				<label>
+					Kms entre ocorrências:
+					<input
+						type="number"
+						name="kmsEntreTroca"
+						value={manutencao.kmsEntreTroca}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
+				</label>
 
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<span>Último km registado:</span>
-					<input type="number" name="trocadoNoKm" value={manutencao.trocadoNoKm} onChange={handleChange} disabled={!edit} />
-				</div>
+				<label>
+					Último km registado:
+					<input
+						type="number"
+						name="trocadoNoKm"
+						value={manutencao.trocadoNoKm}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
+				</label>
 			</div>
 
 			<div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
 				<button onClick={apagarCronico}>Apagar</button>
-				<button onClick={edit ? guardarEdicao : () => setEdit(true)}>{edit ? "Guardar" : "Editar"}</button>
+				<button onClick={edit ? guardarEdicao : () => setEdit(true)}>
+					{edit ? "Guardar" : "Editar"}
+				</button>
 			</div>
 		</div>
 	);

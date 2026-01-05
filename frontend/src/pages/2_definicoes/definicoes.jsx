@@ -1,14 +1,26 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
 
 export default function Definicoes() {
-	// obter definiçoes do localStorage
-	const { state: getLocalStorage, setState: setLocalStorage, clear: clearLocalStorage } = useLocalAppState();
+	const navigate = useNavigate();
+
+	const {
+		state: getLocalStorage,
+		setState: setLocalStorage,
+		clear: clearLocalStorage,
+	} = useLocalAppState();
+
 	const { clear: clearSessionStorage } = useSessionAppState();
 
+	const showFeedback = (type, message) => {
+		setLocalStorage((prev) => ({
+			...prev,
+			feedback: { type, message },
+		}));
+	};
 
-	// TODO fix temporario (temporary my ass LMAO)
 	const definicoes_data = getLocalStorage?.definicoes || {
 		tema: "claro",
 		notificacoes: false,
@@ -21,6 +33,8 @@ export default function Definicoes() {
 		linguagem: definicoes_data.linguagem,
 	});
 
+	const [codigoHashed, setCodigoHashed] = useState(null);
+
 	const handleChange = (e) => {
 		const { name, type, value, checked } = e.target;
 		setDefinicoes((prev) => ({
@@ -29,209 +43,228 @@ export default function Definicoes() {
 		}));
 	};
 
+	/* ================== DEFINIÇÕES ================== */
+
 	const atualizarDefinicoes = async () => {
 		try {
-			const res = await fetch(`/api/atualizarDefinicoes/${definicoes_data.id}`, {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ definicoes }),
-			});
+			const res = await fetch(
+				`/api/atualizarDefinicoes/${definicoes_data.id}`,
+				{
+					method: "PUT",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ definicoes }),
+				}
+			);
 
 			const data = await res.json();
-			console.log(data.message);
 
-			if (res.ok) {
-				setLocalStorage((prev) => ({
-					...prev,
-					definicoes: data.definicoes_data,
-				}));
+			if (!res.ok) {
+				showFeedback("error", data.message || "Erro ao guardar definições.");
+				return;
 			}
+
+			setLocalStorage((prev) => ({
+				...prev,
+				definicoes: data.definicoes_data,
+			}));
+
+			showFeedback("success", "Definições atualizadas com sucesso.");
 		} catch (error) {
 			console.error(error);
+			showFeedback("error", "Erro inesperado ao guardar definições.");
 		}
 	};
+
+	/* ================== LOGOUT ================== */
 
 	const logoutUser = async () => {
-		if (window.confirm("Tens a certeza que queres sair da tua conta?.")) {
-			try {
-				const res = await fetch(`/api/logoutUser/`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
+		if (!window.confirm("Tens a certeza que queres sair da tua conta?")) return;
 
-				const data = await res.json();
-				console.log(data.message);
+		try {
+			const res = await fetch("/api/logoutUser/", {
+				method: "POST",
+				credentials: "include",
+			});
 
-				if (res.ok) {
-					clearLocalStorage();
-					clearSessionStorage();
-					window.location.href = "/login";
-				}
-			} catch (error) {
-				console.error(error);
+			if (!res.ok) {
+				showFeedback("error", "Erro ao terminar sessão.");
+				return;
 			}
+
+			clearLocalStorage();
+			clearSessionStorage();
+
+			showFeedback("success", "Sessão terminada com sucesso.");
+			navigate("/login", { replace: true });
+		} catch (error) {
+			console.error(error);
+			showFeedback("error", "Erro inesperado ao terminar sessão.");
 		}
 	};
 
-	const [codigoHashed, setCodigoHashed] = useState();
+	/* ================== PASSWORD ================== */
 
 	const pedirCodigoSecreto = async (password1, password2) => {
 		if (!password1 || !password2) {
-			alert("Por favor, preencha ambos os campos");
+			showFeedback("error", "Preenche ambos os campos de palavra-passe.");
 			return;
 		}
 
 		if (password1 !== password2) {
-			alert("As palavras-passe não correspondem");
+			showFeedback("error", "As palavras-passe não correspondem.");
 			return;
 		}
 
-		if (window.confirm("Tens a certeza que queres mudar a tua palavra-passe?.")) {
-			try {
-				const res = await fetch(`/api/pedirCodigoSecreto/`, {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({}),
-				});
+		if (!window.confirm("Tens a certeza que queres mudar a palavra-passe?"))
+			return;
 
-				const data = await res.json();
-				console.log(data.message);
+		try {
+			const res = await fetch("/api/pedirCodigoSecreto/", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({}),
+			});
 
-				if (res.ok) {
-					setCodigoHashed(data.hashed_code);
-				}
-			} catch (error) {
-				console.error(error);
+			const data = await res.json();
+
+			if (!res.ok) {
+				showFeedback("error", data.message || "Erro ao pedir código.");
+				return;
 			}
+
+			setCodigoHashed(data.hashed_code);
+			showFeedback("success", "Código de confirmação enviado.");
+		} catch (error) {
+			console.error(error);
+			showFeedback("error", "Erro inesperado ao pedir código.");
 		}
 	};
 
-	const atualizarpassword = async (password, codigoInput) => {
+	const atualizarPassword = async (password, codigoInput) => {
 		if (!codigoInput) {
-			alert("Preencha o campo");
+			showFeedback("error", "Preenche o código de confirmação.");
 			return;
 		}
 
-		if (window.confirm("Tens a certeza que queres mudar a tua palavra-passe?.")) {
-			try {
-				const res = await fetch(`/api/atualizarPassword/`, {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ password, codigoInput, codigoHashed }),
-				});
+		if (!window.confirm("Tens a certeza que queres mudar a palavra-passe?"))
+			return;
 
-				const data = await res.json();
-				console.log(data.message);
+		try {
+			const res = await fetch("/api/atualizarPassword/", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ password, codigoInput, codigoHashed }),
+			});
 
-				if (res.ok) {
-				}
-			} catch (error) {
-				console.error(error);
+			const data = await res.json();
+
+			if (!res.ok) {
+				showFeedback("error", data.message || "Erro ao atualizar palavra-passe.");
+				return;
 			}
+
+			showFeedback("success", "Palavra-passe alterada com sucesso.");
+		} catch (error) {
+			console.error(error);
+			showFeedback("error", "Erro inesperado ao atualizar palavra-passe.");
 		}
 	};
+
+	/* ================== APAGAR CONTA ================== */
 
 	const apagarUser = async () => {
-		if (window.confirm("Tens a certeza que queres apagar da tua conta?.")) {
-			try {
-				const res = await fetch(`/api/apagarUser/`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
+		if (!window.confirm("Tens a certeza que queres apagar a tua conta?"))
+			return;
 
-				const data = await res.json();
-				console.log(data.message);
+		try {
+			const res = await fetch("/api/apagarUser/", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+			});
 
-				if (res.ok) {
-					clearLocalStorage();
-					clearSessionStorage();
-					window.location.href = "/registo";
-				}
-			} catch (error) {
-				console.error(error);
+			if (!res.ok) {
+				showFeedback("error", "Erro ao apagar conta.");
+				return;
 			}
+
+			clearLocalStorage();
+			clearSessionStorage();
+
+			showFeedback("success", "Conta apagada com sucesso.");
+			navigate("/registo", { replace: true });
+		} catch (error) {
+			console.error(error);
+			showFeedback("error", "Erro inesperado ao apagar conta.");
 		}
 	};
+
+	/* ================== UI ================== */
 
 	return (
 		<div>
 			<h1>Definições</h1>
 
-			<div>
-				{/* onchange chama o handleChnage(), e o handleChange() usa o value="" */}
-				<select name="tema" value={definicoes.tema} onChange={handleChange}>
-					<option value="claro">Claro</option>
-					<option value="escuro">Escuro</option>
-				</select>
-			</div>
+			<select name="tema" value={definicoes.tema} onChange={handleChange}>
+				<option value="claro">Claro</option>
+				<option value="escuro">Escuro</option>
+			</select>
 
-			<div>
-				<label>
-					{/* onchange chama o handleChnage(), e o handleChange() usa o checked="" (porque não existe value="") */}
-					<input type="checkbox" name="notificacoes" checked={definicoes.notificacoes} onChange={handleChange} />
-					Permitir notificações
-				</label>
-			</div>
+			<label>
+				<input
+					type="checkbox"
+					name="notificacoes"
+					checked={definicoes.notificacoes}
+					onChange={handleChange}
+				/>
+				Permitir notificações
+			</label>
 
-			<div>
-				{/* onchange chama o handleChnage(), e o handleChange() usa o value="" */}
-				<select name="linguagem" value={definicoes.linguagem} onChange={handleChange}>
-					<option value="pt">Português</option>
-					<option value="en">English</option>
-				</select>
-			</div>
+			<select
+				name="linguagem"
+				value={definicoes.linguagem}
+				onChange={handleChange}
+			>
+				<option value="pt">Português</option>
+				<option value="en">English</option>
+			</select>
 
 			<button onClick={atualizarDefinicoes}>Salvar</button>
 
-			<div>
-				<br />
-				<label>
-					Nova palavra-passe
-					<br />
-					<input type="password" id="password1" />
-				</label>
-				<br />
-				<label>
-					Confirmar palavra-passe
-					<br />
-					<input type="password" id="password2" />
-				</label>
-				<br />
-				<button
-					onClick={() => {
-						const password1 = document.getElementById("password1").value;
-						const password2 = document.getElementById("password2").value;
-						pedirCodigoSecreto(password1, password2);
-					}}
-				>
-					Alterar Palavra-passe
-				</button>
+			<hr />
 
-				<br />
-				<label>
-					Inserir codigo
-					<br />
-					<input type="text" id="codigoInput" />
-				</label>
-				<br />
-				<button
-					onClick={() => {
-						const password1 = document.getElementById("password1").value;
-						const codigoInput = document.getElementById("codigoInput").value;
-						atualizarpassword(password1, codigoInput);
-					}}
-				>
-					Alterar Palavra-passe
-				</button>
-			</div>
+			<input type="password" id="password1" placeholder="Nova palavra-passe" />
+			<input
+				type="password"
+				id="password2"
+				placeholder="Confirmar palavra-passe"
+			/>
 
-			<br />
+			<button
+				onClick={() =>
+					pedirCodigoSecreto(
+						document.getElementById("password1").value,
+						document.getElementById("password2").value
+					)
+				}
+			>
+				Pedir código
+			</button>
+
+			<input type="text" id="codigoInput" placeholder="Código" />
+
+			<button
+				onClick={() =>
+					atualizarPassword(
+						document.getElementById("password1").value,
+						document.getElementById("codigoInput").value
+					)
+				}
+			>
+				Alterar palavra-passe
+			</button>
+
+			<hr />
+
 			<button onClick={apagarUser}>Apagar Conta</button>
 			<button onClick={logoutUser}>Sair da Conta</button>
 		</div>

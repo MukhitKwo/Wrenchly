@@ -23,71 +23,108 @@ export default function EditarCarro() {
 		cilindrada: carro?.cilindrada || "",
 	});
 
-	const guardarAlteracoes = async () => {
-		const res = await fetch("/api/editarCarro/", {
-			method: "PUT",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				carro_id,
-				caracteristicas: form,
-			}),
-		});
+	const [loading, setLoading] = useState(false);
 
-		if (res.ok) {
-			// Atualizar carros_vistos (session)
-			const carrosAtualizados = getSessionStorage.carros_vistos.map((c) => (c.id === Number(carro_id) ? { ...c, ...form } : c));
+	const guardarAlteracoes = async () => {
+		setLoading(true);
+		try {
+			const res = await fetch("/api/editarCarro/", {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					carro_id,
+					caracteristicas: form,
+				}),
+			});
+
+			if (!res.ok) {
+				throw new Error();
+			}
+
+			// atualizar session
+			const carrosAtualizados = getSessionStorage.carros_vistos.map((c) =>
+				c.id === Number(carro_id) ? { ...c, ...form } : c
+			);
 
 			setSessionStorage((prev) => ({
 				...prev,
 				carros_vistos: carrosAtualizados,
 			}));
 
-			// Atualizar carros_preview (local)
+			// atualizar local
 			const carrosPreviewAtualizados = getLocalStorage.carros_preview.map((car) =>
 				car.id === Number(carro_id)
 					? {
-							...car,
-							full_name: `${form.marca} ${form.modelo} ${form.ano}`,
-							matricula: form.matricula,
-					  }
+						...car,
+						full_name: `${form.marca} ${form.modelo} ${form.ano}`,
+						matricula: form.matricula,
+					}
 					: car
 			);
 
 			setLocalStorage((prev) => ({
 				...prev,
 				carros_preview: carrosPreviewAtualizados,
+				feedback: {
+					type: "success",
+					message: "Carro atualizado com sucesso.",
+				},
 			}));
 
-			// Voltar à garagem
 			navigate("/garagem", { replace: true });
+		} catch (err) {
+			setLocalStorage((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Erro ao guardar alterações.",
+				},
+			}));
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	const handleDeleteCar = async () => {
 		if (!window.confirm("Tem a certeza que quer apagar este carro?")) return;
 
+		setLoading(true);
 		try {
-			await fetch("/api/apagarCarro/", {
+			const res = await fetch("/api/apagarCarro/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ carro_id: Number(carro_id) }),
 			});
 
-			// remover da session (manutenções)
+			if (!res.ok) {
+				throw new Error();
+			}
+
 			setSessionStorage((prev) => ({
 				...prev,
 				carros_vistos: prev.carros_vistos.filter((car) => car.id !== Number(carro_id)),
 			}));
 
-			// remover do local (cards da garagem)
 			setLocalStorage((prev) => ({
 				...prev,
 				carros_preview: prev.carros_preview.filter((car) => car.id !== Number(carro_id)),
+				feedback: {
+					type: "success",
+					message: "Carro eliminado com sucesso.",
+				},
 			}));
 
 			navigate("/garagem");
 		} catch (err) {
-			console.error("Erro ao apagar carro:", err);
+			setLocalStorage((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Erro ao eliminar o carro.",
+				},
+			}));
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -104,51 +141,24 @@ export default function EditarCarro() {
 			<h1>Editar Carro</h1>
 
 			<div style={{ display: "grid", gap: "10px" }}>
-				<label>
-					Marca
-					<input name="marca" value={form.marca} onChange={handleChange} placeholder="Marca" />
-				</label>
-
-				<label>
-					Modelo
-					<input name="modelo" value={form.modelo} onChange={handleChange} placeholder="Modelo" />
-				</label>
-
-				<label>
-					Ano
-					<input type="number" name="ano" value={form.ano} onChange={handleChange} placeholder="Ano" />
-				</label>
-				<label>
-					Combustível
-					<input name="combustivel" value={form.combustivel} onChange={handleChange} placeholder="Combustível" />
-				</label>
-				<label>
-					Cilindrada
-					<input type="number" name="cilindrada" value={form.cilindrada} onChange={handleChange} placeholder="Cilindrada" />
-				</label>
-				<label>
-					Cavalos
-					<input name="cavalos" value={form.cavalos} onChange={handleChange} placeholder="Cavalos" />
-				</label>
-				<label>
-					Transmissão
-					<input name="transmissao" value={form.transmissao} onChange={handleChange} placeholder="Transmissão" />
-				</label>
-				<label>
-					Quilometragem
-					<input type="number" name="quilometragem" value={form.quilometragem} onChange={handleChange} placeholder="Quilometragem" />
-				</label>
-				<label>
-					Matrícula
-					<input name="matricula" value={form.matricula} onChange={handleChange} placeholder="Matrícula" />
-				</label>
+				<label>Marca<input name="marca" value={form.marca} onChange={handleChange} /></label>
+				<label>Modelo<input name="modelo" value={form.modelo} onChange={handleChange} /></label>
+				<label>Ano<input type="number" name="ano" value={form.ano} onChange={handleChange} /></label>
+				<label>Combustível<input name="combustivel" value={form.combustivel} onChange={handleChange} /></label>
+				<label>Cilindrada<input type="number" name="cilindrada" value={form.cilindrada} onChange={handleChange} /></label>
+				<label>Cavalos<input name="cavalos" value={form.cavalos} onChange={handleChange} /></label>
+				<label>Transmissão<input name="transmissao" value={form.transmissao} onChange={handleChange} /></label>
+				<label>Quilometragem<input type="number" name="quilometragem" value={form.quilometragem} onChange={handleChange} /></label>
+				<label>Matrícula<input name="matricula" value={form.matricula} onChange={handleChange} /></label>
 			</div>
 
 			<div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-				<button onClick={() => navigate(-1)}>Voltar</button>
-				<button onClick={guardarAlteracoes}>Guardar Alterações</button>
-				<button onClick={handleDeleteCar} style={{ background: "#d9534f", color: "white" }}>
-					Eliminar Carro
+				<button onClick={() => navigate(-1)} disabled={loading}>Voltar</button>
+				<button onClick={guardarAlteracoes} disabled={loading}>
+					{loading ? "A guardar..." : "Guardar Alterações"}
+				</button>
+				<button onClick={handleDeleteCar} disabled={loading} style={{ background: "#d9534f", color: "white" }}>
+					{loading ? "A eliminar..." : "Eliminar Carro"}
 				</button>
 			</div>
 		</div>

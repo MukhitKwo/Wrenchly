@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocalAppState } from "../../context/appState.local";
 
 export default function NotasTodas() {
@@ -16,10 +16,16 @@ export default function NotasTodas() {
 
     const notasCarregadasRef = useRef(false);
 
+    // helper simples de feedback
+    const showFeedback = useCallback((type, message) => {
+        setState((prev) => ({
+            ...prev,
+            feedback: { type, message },
+        }));
+    }, [setState]);
+
     useEffect(() => {
-
         if (notasCarregadasRef.current) return;
-
 
         if (state?.notas?.length) {
             notasCarregadasRef.current = true;
@@ -37,46 +43,49 @@ export default function NotasTodas() {
 
                 const data = await res.json();
 
-                if (res.ok) {
-                    setState((prev) => ({
-                        ...prev,
-                        notas: data.notas_data,
-                    }));
+                if (!res.ok) throw new Error();
 
+                setState((prev) => ({
+                    ...prev,
+                    notas: data.notas_data,
+                }));
 
-                    notasCarregadasRef.current = true;
-                }
+                notasCarregadasRef.current = true;
             } catch (err) {
                 console.error("Erro ao carregar notas:", err);
+                showFeedback("error", "Erro ao carregar notas.");
             } finally {
                 setLoading(false);
             }
         };
 
         carregarNotas();
-    }, [setState, state?.notas?.length]);
-
+    }, [setState, state?.notas?.length, showFeedback]);
 
     const getNomeCarro = (carroId) => {
         const carro = carros.find((c) => c.id === Number(carroId));
         return carro ? carro.full_name : `Carro #${carroId}`;
     };
 
-
     const criarNota = async () => {
-        if (!textoNota || !carroSelecionado) return;
+        if (!textoNota || !carroSelecionado) {
+            showFeedback("error", "Preenche o texto e seleciona um carro.");
+            return;
+        }
 
-        const res = await fetch("/api/criarNota/", {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                carro_id: carroSelecionado,
-                texto: textoNota,
-            }),
-        });
+        try {
+            const res = await fetch("/api/criarNota/", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    carro_id: carroSelecionado,
+                    texto: textoNota,
+                }),
+            });
 
-        if (res.ok) {
+            if (!res.ok) throw new Error();
+
             const data = await res.json();
 
             setState((prev) => ({
@@ -87,21 +96,27 @@ export default function NotasTodas() {
             setTextoNota("");
             setCarroSelecionado("");
             setMostrarForm(false);
+
+            showFeedback("success", "Nota criada com sucesso.");
+        } catch {
+            showFeedback("error", "Erro ao criar a nota.");
         }
     };
 
     const guardarNota = async (id) => {
-        const res = await fetch("/api/editarNota/", {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id,
-                texto: textoEdicao,
-            }),
-        });
+        try {
+            const res = await fetch("/api/editarNota/", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id,
+                    texto: textoEdicao,
+                }),
+            });
 
-        if (res.ok) {
+            if (!res.ok) throw new Error();
+
             setState((prev) => ({
                 ...prev,
                 notas: prev.notas.map((n) =>
@@ -110,27 +125,35 @@ export default function NotasTodas() {
             }));
 
             setNotaEmEdicao(null);
+            showFeedback("success", "Nota atualizada.");
+        } catch {
+            showFeedback("error", "Erro ao atualizar a nota.");
         }
     };
 
     const apagarNota = async (id) => {
         if (!window.confirm("Apagar esta nota?")) return;
 
-        const res = await fetch("/api/apagarNota/", {
-            method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id }),
-        });
+        try {
+            const res = await fetch("/api/apagarNota/", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id }),
+            });
 
-        if (res.ok) {
+            if (!res.ok) throw new Error();
+
             setState((prev) => ({
                 ...prev,
                 notas: prev.notas.filter((n) => n.id !== id),
             }));
+
+            showFeedback("success", "Nota apagada.");
+        } catch {
+            showFeedback("error", "Erro ao apagar a nota.");
         }
     };
-
 
     if (loading) {
         return <p>A carregar notas...</p>;

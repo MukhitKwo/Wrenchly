@@ -4,7 +4,7 @@ import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
 
 export default function VerPreventivo() {
-	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();;
+	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
 	const { state: getLocalStorage, setState: setLocalStorage } = useLocalAppState();
 
 	const navigate = useNavigate();
@@ -15,25 +15,30 @@ export default function VerPreventivo() {
 		[getSessionStorage?.carros_vistos]
 	);
 
-
-	const proxima_manutencao = getLocalStorage?.carros_preview?.find((c) => c.id === Number(carro_id))?.proxima_manutencao ?? null;
+	const proxima_manutencao =
+		getLocalStorage?.carros_preview?.find((c) => c.id === Number(carro_id))
+			?.proxima_manutencao ?? null;
 
 	const [manutencao, setManutencao] = useState(null);
 	const [edit, setEdit] = useState(false);
 	const [carro_km, setCarro_km] = useState(null);
 
-	useEffect(() => {
-		console.log(viewed_cars);
-		console.log(carro_id);
-		console.log(manutencao_id);
+	const showFeedback = (type, message) => {
+		setLocalStorage((prev) => ({
+			...prev,
+			feedback: { type, message },
+		}));
+	};
 
+	useEffect(() => {
 		const car = viewed_cars.find((c) => c.id === Number(carro_id));
-		console.log(car);
 		if (!car) return;
 
 		setCarro_km(car.quilometragem);
 
-		const maintenance = car.manutencoes?.preventivos?.find((m) => m.id === Number(manutencao_id));
+		const maintenance = car.manutencoes?.preventivos?.find(
+			(m) => m.id === Number(manutencao_id)
+		);
 		if (maintenance) setManutencao(maintenance);
 	}, [carro_id, manutencao_id, viewed_cars]);
 
@@ -51,19 +56,37 @@ export default function VerPreventivo() {
 			});
 
 			const data = await res.json();
-			console.log(data.message);
 
-			const updatedCars = atualizarPreventivo(viewed_cars, carro_id, manutencao.id, data.preventivo_data, carro_km);
+			if (!res.ok) {
+				showFeedback("error", data.message || "Erro ao guardar alterações.");
+				return;
+			}
+
+			const updatedCars = atualizarPreventivo(
+				viewed_cars,
+				carro_id,
+				manutencao.id,
+				data.preventivo_data,
+				carro_km
+			);
+
 			setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCars }));
 
-			if (new Date(data.preventivo_data.trocarNaData) < new Date(proxima_manutencao)) {
-				console.log("New date is closer");
-				atualizarProximaManutencaoData(Number(carro_id), data.preventivo_data.trocarNaData);
+			if (
+				proxima_manutencao &&
+				new Date(data.preventivo_data.trocarNaData) < new Date(proxima_manutencao)
+			) {
+				atualizarProximaManutencaoData(
+					Number(carro_id),
+					data.preventivo_data.trocarNaData
+				);
 			}
 
 			setEdit(false);
+			showFeedback("success", "Manutenção preventiva atualizada.");
 		} catch (err) {
-			console.log(err);
+			console.error(err);
+			showFeedback("error", "Erro inesperado ao guardar.");
 		}
 	};
 
@@ -74,18 +97,31 @@ export default function VerPreventivo() {
 			const res = await fetch("/api/apagarPreventivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ id: manutencao.id, carro_id: manutencao.carro }),
+				body: JSON.stringify({
+					id: manutencao.id,
+					carro_id: manutencao.carro,
+				}),
 			});
 
 			const data = await res.json();
-			console.log(data.message);
 
-			const updatedCars = removerPreventivo(viewed_cars, carro_id, manutencao.id);
+			if (!res.ok) {
+				showFeedback("error", data.message || "Erro ao apagar manutenção.");
+				return;
+			}
+
+			const updatedCars = removerPreventivo(
+				viewed_cars,
+				carro_id,
+				manutencao.id
+			);
+
 			setSessionStorage((prev) => ({ ...prev, carros_vistos: updatedCars }));
-
+			showFeedback("success", "Manutenção preventiva apagada.");
 			navigate(-1);
 		} catch (err) {
-			console.log(err);
+			console.error(err);
+			showFeedback("error", "Erro inesperado ao apagar.");
 		}
 	};
 
@@ -100,51 +136,76 @@ export default function VerPreventivo() {
 			<h1>Manutenção Preventiva</h1>
 
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<span>Nome:</span>
+				<label>
+					Nome:
 					<input name="nome" value={manutencao.nome} onChange={handleChange} disabled={!edit} />
-				</div>
+				</label>
 
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<span>Descrição:</span>
+				<label>
+					Descrição:
 					<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} disabled={!edit} />
-				</div>
+				</label>
 
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<span>Dias entre troca:</span>
-					<input type="number" name="diasEntreTroca" value={manutencao.diasEntreTroca} onChange={handleChange} disabled={!edit} />
-				</div>
+				<label>
+					Dias entre troca:
+					<input
+						type="number"
+						name="diasEntreTroca"
+						value={manutencao.diasEntreTroca}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
+				</label>
 
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<span>Trocado na data:</span>
-					<input type="date" name="trocadoNaData" value={manutencao.trocadoNaData} onChange={handleChange} disabled={!edit} />
-				</div>
+				<label>
+					Trocado na data:
+					<input
+						type="date"
+						name="trocadoNaData"
+						value={manutencao.trocadoNaData}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
+				</label>
 
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<span>Kms entre troca:</span>
-					<input type="number" name="kmsEntreTroca" value={manutencao.kmsEntreTroca} onChange={handleChange} disabled={!edit} />
-				</div>
+				<label>
+					Kms entre troca:
+					<input
+						type="number"
+						name="kmsEntreTroca"
+						value={manutencao.kmsEntreTroca}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
+				</label>
 
-				<div style={{ display: "flex", flexDirection: "column" }}>
-					<span>Trocado no km:</span>
-					<input type="number" name="trocadoNoKm" value={manutencao.trocadoNoKm} onChange={handleChange} disabled={!edit} />
-				</div>
+				<label>
+					Trocado no km:
+					<input
+						type="number"
+						name="trocadoNoKm"
+						value={manutencao.trocadoNoKm}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
+				</label>
 			</div>
 
 			<div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
 				<button onClick={apagarPreventivo}>Apagar</button>
-				<button onClick={edit ? guardarEdicao : () => setEdit(true)}>{edit ? "Guardar" : "Editar"}</button>
+				<button onClick={edit ? guardarEdicao : () => setEdit(true)}>
+					{edit ? "Guardar" : "Editar"}
+				</button>
 			</div>
 		</div>
 	);
 
 	function atualizarProximaManutencaoData(carroId, novaData) {
 		const carros = [...getLocalStorage.carros_preview];
-
 		const car = carros.find((c) => c.id === carroId);
 		if (!car) return;
 
-		car.proxima_manutencao = novaData; // mutation, but isolated
+		car.proxima_manutencao = novaData;
 
 		setLocalStorage({
 			...getLocalStorage,
@@ -152,6 +213,8 @@ export default function VerPreventivo() {
 		});
 	}
 }
+
+/* ===== helpers inalterados ===== */
 
 function atualizarPreventivo(viewedCars, carroId, manutencaoId, novoPreventivo, carro_km) {
 	return viewedCars.map((car) => {
@@ -164,14 +227,15 @@ function atualizarPreventivo(viewedCars, carroId, manutencaoId, novoPreventivo, 
 				preventivos: car.manutencoes.preventivos.map((p) => {
 					if (p.id !== manutencaoId) return p;
 
-					// Calculate risco
 					const risco =
-						novoPreventivo.kmsEntreTroca != null ? Number(((carro_km - novoPreventivo.trocadoNoKm) / novoPreventivo.kmsEntreTroca).toFixed(2)) : null;
+						novoPreventivo.kmsEntreTroca != null
+							? Number(
+								((carro_km - novoPreventivo.trocadoNoKm) /
+									novoPreventivo.kmsEntreTroca).toFixed(2)
+							)
+							: null;
 
-					return {
-						...novoPreventivo,
-						risco,
-					};
+					return { ...novoPreventivo, risco };
 				}),
 			},
 		};
@@ -186,7 +250,9 @@ function removerPreventivo(viewedCars, carroId, manutencaoId) {
 			...car,
 			manutencoes: {
 				...car.manutencoes,
-				preventivos: car.manutencoes.preventivos.filter((p) => p.id !== manutencaoId),
+				preventivos: car.manutencoes.preventivos.filter(
+					(p) => p.id !== manutencaoId
+				),
 			},
 		};
 	});
