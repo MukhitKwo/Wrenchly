@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ProcurarCarroPorModelo from "./adicionarPorModelo";
-import ProcurarPorEspecificacoes from "./procurarPorEspecificacoes";
 import MostrarCarrosGuardados from "./escolherCarroGuardado";
+import ProcurarPorEspecificacoes from "./procurarPorEspecificacoes";
 
 export default function NovoCarro() {
 	const [selected, setSelected] = useState("modelo");
@@ -14,6 +14,8 @@ export default function NovoCarro() {
 				return <ProcurarPorEspecificacoes />;
 			case "guardado":
 				return <MostrarCarrosGuardados />;
+			default:
+				return <ProcurarCarroPorModelo />;
 		}
 	};
 

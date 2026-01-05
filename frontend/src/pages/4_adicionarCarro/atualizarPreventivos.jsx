@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
+
 export default function AtualizarPreventivos() {
-	const { setState: setLocalStorage } = useLocalAppState();
+	const { setState: setLocalState } = useLocalAppState();
 
 	const { state } = useLocation();
 	const navigate = useNavigate();
+
 	const carro_data = state?.carro;
 	const carro_kms = state?.carroKms;
 	const allCronicos_data = state?.cronicos;
@@ -26,23 +28,50 @@ export default function AtualizarPreventivos() {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ cronicos: allCronicos_data, preventivos, carro_kms }),
+				body: JSON.stringify({
+					cronicos: allCronicos_data,
+					preventivos,
+					carro_kms,
+				}),
 			});
 
-			const data = await res.json("");
-			console.log(data.message);
+			const data = await res.json();
 
-			if (res.ok) {
-				const updatedCarPreview = { ...carro_data, proxima_manutencao: data.proxima_manutencao };
-				setLocalStorage((prev) => ({
+			if (!res.ok) {
+				setLocalState((prev) => ({
 					...prev,
-					carros_preview: [...prev.carros_preview, updatedCarPreview],
+					feedback: {
+						type: "error",
+						message: data.message || "Erro ao guardar os preventivos.",
+					},
 				}));
-
-				navigate("/garagem");
+				return;
 			}
+
+			const updatedCarPreview = {
+				...carro_data,
+				proxima_manutencao: data.proxima_manutencao,
+			};
+
+			setLocalState((prev) => ({
+				...prev,
+				carros_preview: [...prev.carros_preview, updatedCarPreview],
+				feedback: {
+					type: "success",
+					message: "Preventivos atualizados com sucesso!",
+				},
+			}));
+
+			navigate("/garagem");
 		} catch (error) {
-			console.log(error);
+			console.error(error);
+			setLocalState((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Erro inesperado. Tenta novamente.",
+				},
+			}));
 		}
 	};
 
@@ -69,7 +98,9 @@ export default function AtualizarPreventivos() {
 								<input
 									type="number"
 									value={prev.kmsEntreTroca}
-									onChange={(e) => handleChange(index, "kmsEntreTroca", e.target.value)}
+									onChange={(e) =>
+										handleChange(index, "kmsEntreTroca", e.target.value)
+									}
 									style={{ marginLeft: "5px" }}
 								/>
 							</label>
@@ -79,19 +110,30 @@ export default function AtualizarPreventivos() {
 								<input
 									type="number"
 									value={prev.trocadoNoKm}
-									onChange={(e) => handleChange(index, "trocadoNoKm", e.target.value)}
+									onChange={(e) =>
+										handleChange(index, "trocadoNoKm", e.target.value)
+									}
 									style={{ marginLeft: "5px" }}
 								/>
 							</label>
 						</div>
 
-						<div style={{ display: "flex", gap: "10px", alignItems: "center", marginTop: "5px" }}>
+						<div
+							style={{
+								display: "flex",
+								gap: "10px",
+								alignItems: "center",
+								marginTop: "5px",
+							}}
+						>
 							<label>
 								Dias Entre Troca:
 								<input
 									type="number"
 									value={prev.diasEntreTroca}
-									onChange={(e) => handleChange(index, "diasEntreTroca", e.target.value)}
+									onChange={(e) =>
+										handleChange(index, "diasEntreTroca", e.target.value)
+									}
 									style={{ marginLeft: "5px" }}
 								/>
 							</label>
@@ -101,7 +143,9 @@ export default function AtualizarPreventivos() {
 								<input
 									type="date"
 									value={prev.trocadoNaData}
-									onChange={(e) => handleChange(index, "trocadoNaData", e.target.value)}
+									onChange={(e) =>
+										handleChange(index, "trocadoNaData", e.target.value)
+									}
 									style={{ marginLeft: "5px" }}
 								/>
 							</label>
@@ -112,8 +156,11 @@ export default function AtualizarPreventivos() {
 				<p>Não há preventivos para mostrar.</p>
 			)}
 
-			<button onClick={handleSubmit} style={{ marginTop: "20px", padding: "10px 15px", borderRadius: "4px" }}>
-				Submit
+			<button
+				onClick={handleSubmit}
+				style={{ marginTop: "20px", padding: "10px 15px", borderRadius: "4px" }}
+			>
+				Adicionar
 			</button>
 		</div>
 	);

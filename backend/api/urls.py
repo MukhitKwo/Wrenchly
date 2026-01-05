@@ -25,7 +25,7 @@ urlpatterns = [
     # PROCURAR CARROS
     path("procurarCarros/", procurarCarros),
     path("salvarCarros/", salvarCarros),
-    path("carrosGuardados/", listarCarrosGuardados),
+    path("listarCarrosGuardados/", listarCarrosGuardados),
     path("obterCarroSpecs/", obterCarroSpecs),
     path("apagarCarroGuardado/", apagarCarroGuardado),
 

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 
 export default function ProcurarCarroPorModelo() {
 	const navigate = useNavigate();
 	const { state } = useLocation();
-	const { state: getLocalStorage } = useLocalAppState();
+	const { state: getLocalStorage, setState: setLocalState } = useLocalAppState();
+
 	const garagem_id = getLocalStorage.garagem.id;
 	const initialCarro = state?.initialCarro || {};
 
@@ -41,17 +42,39 @@ export default function ProcurarCarroPorModelo() {
 		.every(([, value]) => value !== null && value !== "");
 
 	const adicionarCarro = async () => {
-		if (!allFilled) return alert("Preencha os campos obrigatorios");
+		if (!allFilled) {
+			setLocalState((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Preencha todos os campos obrigatórios.",
+				},
+			}));
+			return;
+		}
 
 		try {
 			const res = await fetch("/api/adicionarCarro/", {
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ caracteristicas }),
 			});
-			const data = await res.json();
-			console.log(data.message);
 
+			const data = await res.json();
+
+			if (!res.ok) {
+				setLocalState((prev) => ({
+					...prev,
+					feedback: {
+						type: "error",
+						message: data.message || "Erro ao adicionar o carro.",
+					},
+				}));
+				return;
+			}
+
+			// upload da imagem (opcional)
 			if (file) {
 				const carroId = data.carro_data.id;
 				const formData = new FormData();
@@ -62,26 +85,47 @@ export default function ProcurarCarroPorModelo() {
 					method: "POST",
 					body: formData,
 				});
-				const imgData = await resImage.json();
-				console.log(imgData.message);
 
-				if (res.ok) {
+				if (!resImage.ok) {
+					setLocalState((prev) => ({
+						...prev,
+						feedback: {
+							type: "error",
+							message: "O carro foi criado, mas a imagem falhou.",
+						},
+					}));
+				} else {
+					const imgData = await resImage.json();
 					data.carro_data.imagem_url = imgData.imagem_url || null;
 				}
 			}
 
-			if (res.ok) {
-				navigate("/atualizarPreventivos", {
-					state: {
-						carro: data.carro_data,
-						carroKms: data.carro_kms,
-						cronicos: data.allCronicos,
-						preventivos: data.allPreventivos,
-					},
-				});
-			}
+			// sucesso
+			setLocalState((prev) => ({
+				...prev,
+				feedback: {
+					type: "success",
+					message: "Carro adicionado com sucesso.",
+				},
+			}));
+
+			navigate("/atualizarPreventivos", {
+				state: {
+					carro: data.carro_data,
+					carroKms: data.carro_kms,
+					cronicos: data.allCronicos,
+					preventivos: data.allPreventivos,
+				},
+			});
 		} catch (error) {
-			console.log(error);
+			console.error(error);
+			setLocalState((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Erro inesperado. Tenta novamente.",
+				},
+			}));
 		}
 	};
 

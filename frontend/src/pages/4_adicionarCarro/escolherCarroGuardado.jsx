@@ -1,110 +1,180 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
 
 export default function MostrarCarrosGuardados() {
 	const navigate = useNavigate();
-	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
-	const saved_cars = getSessionStorage?.carros_guardados || [];
-	const [carrosGuardados, setCarrosGuardados] = useState([]);
+	const { state: sessionState, setState: setSessionState } = useSessionAppState();
+	const { setState: setLocalState } = useLocalAppState();
+	const fetchedRef = useRef(false);
+	const [status, setStatus] = useState("idle"); // idle | loading | error
+	const [action, setAction] = useState({ id: null, type: null });
 
-	const obterCarros = async () => {
-		if (saved_cars.length > 0) {
-			setCarrosGuardados(saved_cars);
-		} else if (saved_cars.length === 0) {
-			setSessionStorage((prev) => ({
-				...prev,
-				carros_guardados: [],
-			}));
-		}
+	useEffect(() => {
+		if (fetchedRef.current) return;
+		fetchedRef.current = true;
 
-		try {
-			const res = await fetch("/api/carrosGuardados/");
-			const data = await res.json();
+		const fetchCarros = async () => {
+			setStatus("loading");
+			try {
+				const res = await fetch("/api/listarCarrosGuardados/", {
+					credentials: "include",
+				});
 
-			if (res.ok) {
-				setCarrosGuardados(data.carrosGuardados_data);
+				const data = await res.json();
 
-				setSessionStorage((prev) => ({
+				if (!res.ok) throw new Error();
+
+				setSessionState((prev) => ({
 					...prev,
 					carros_guardados: data.carrosGuardados_data,
 				}));
+
+				setStatus("idle");
+			} catch (err) {
+				console.error("Erro a buscar carros guardados", err);
+				setStatus("error");
 			}
-		} catch (err) {
-			console.error("Erro a buscar carros", err);
-		}
-	};
+		};
 
-	useEffect(() => {
-		obterCarros();
-	}, []);
+		fetchCarros();
+	}, [setSessionState]);
 
-	const adicionarCarro = async (nome) => {
+	const adicionarCarro = async (nome, id) => {
+		setAction({ id, type: "add" });
+
 		try {
 			const res = await fetch("/api/obterCarroSpecs/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 				body: JSON.stringify({ nome }),
 			});
 
 			const data = await res.json();
-			console.log(data.message);
 
-			if (res.ok) {
-				navigate("/adicionarPorModelo", {
-					state: {
-						initialCarro: data.carro_data,
-					},
-				});
+			if (!res.ok) {
+				setLocalState(prev => ({
+					...prev,
+					feedback: {
+						type: "error",
+						message: "Erro ao carregar o carro guardado."
+					}
+				}));
+				return;
 			}
+
+			setLocalState(prev => ({
+				...prev,
+				feedback: {
+					type: "success",
+					message: "Carro carregado com sucesso."
+				}
+			}));
+
+			navigate("/adicionarPorModelo", {
+				state: { initialCarro: data.carro_data },
+			});
+
 		} catch (error) {
-			console.log(error);
+			console.error(error);
+			setLocalState(prev => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Erro inesperado ao abrir o carro."
+				}
+			}));
+		} finally {
+			setAction({ id: null, type: null });
 		}
 	};
 
 	const esquecerCarro = async (id) => {
+		setAction({ id, type: "delete" });
+
 		try {
 			const res = await fetch("/api/apagarCarroGuardado/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 				body: JSON.stringify({ id }),
 			});
 
-			const data = await res.json();
-			console.log(data.message);
-
-			if (res.ok) {
-				setCarrosGuardados((prev) => prev.filter((carro) => carro.id !== id));
-
-				// also update session storage if needed
-				setSessionStorage((prev) => ({
+			if (!res.ok) {
+				setLocalState(prev => ({
 					...prev,
-					carros_guardados: (prev.carros_guardados || []).filter((carro) => carro.id !== id),
+					feedback: {
+						type: "error",
+						message: "Erro ao apagar o carro."
+					}
 				}));
+				return;
 			}
+
+			setSessionState((prev) => ({
+				...prev,
+				carros_guardados: prev.carros_guardados.filter((c) => c.id !== id),
+			}));
+
+			setLocalState(prev => ({
+				...prev,
+				feedback: {
+					type: "success",
+					message: "Carro removido dos guardados."
+				}
+			}));
+
 		} catch (error) {
-			console.log(error);
+			console.error(error);
+			setLocalState(prev => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Erro inesperado ao apagar."
+				}
+			}));
+		} finally {
+			setAction({ id: null, type: null });
 		}
 	};
 
+	const carros = sessionState?.carros_guardados || [];
+
 	return (
-		<div>
+		<div className="page-box">
 			<h1>Carros Guardados</h1>
 
-			{carrosGuardados.length === 0 ? (
+			{status === "loading" && <p>A carregar carros guardados…</p>}
+			{status === "error" && <p style={{ color: "red" }}>Erro ao carregar carros.</p>}
+
+			{status === "idle" && carros.length === 0 && (
 				<p>Nada guardado.</p>
-			) : (
+			)}
+
+			{status === "idle" && carros.length > 0 && (
 				<ul>
-					{carrosGuardados.map((carro) => (
+					{carros.map((carro) => (
 						<li key={carro.id} style={{ marginBottom: "8px" }}>
 							<strong>{carro.nome}</strong>
 
-							<button style={{ marginLeft: "10px" }} onClick={() => esquecerCarro(carro.id)}>
-								Esquecer
+							<button
+								onClick={() => esquecerCarro(carro.id)}
+								disabled={action.id === carro.id}
+							>
+								{action.id === carro.id && action.type === "delete"
+									? "A apagar…"
+									: "Esquecer"}
 							</button>
 
-							<button style={{ marginLeft: "6px" }} onClick={() => adicionarCarro(carro.nome)}>
-								Adicionar
+							<button
+								onClick={() => adicionarCarro(carro.nome, carro.id)}
+								disabled={action.id === carro.id}
+							>
+								{action.id === carro.id && action.type === "add"
+									? "A abrir…"
+									: "Adicionar"}
 							</button>
 						</li>
 					))}

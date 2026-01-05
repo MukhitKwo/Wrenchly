@@ -1,40 +1,84 @@
-import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 
 export default function ListaCarrosRecomendados() {
 	const navigate = useNavigate();
 	const { state } = useLocation();
-	const { state: getLocalStorage } = useLocalAppState();
+	const { state: getLocalStorage, setState: setLocalState } = useLocalAppState();
+
 	const garagem_id = getLocalStorage.garagem.id;
 	const candidateCars = state?.candidateCars || [];
+
 	const [savedCars, setSavedCars] = useState([]);
+	const [loading, setLoading] = useState(false);
 
 	const handleSave = (car) => {
-		// avoid duplicates
-		if (!savedCars.includes(car)) {
-			setSavedCars([...savedCars, { garagem: garagem_id, nome: car }]);
+		if (!savedCars.some((c) => c.nome === car)) {
+			setSavedCars((prev) => [
+				...prev,
+				{ garagem: garagem_id, nome: car },
+			]);
 		}
 	};
 
-	const salvarCarros = async (savedCars) => {
-		console.log(savedCars);
+	const salvarCarros = async () => {
+		if (savedCars.length === 0) {
+			setLocalState((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Seleciona pelo menos um carro para guardar.",
+				},
+			}));
+			return;
+		}
+
+		setLoading(true);
 
 		try {
 			const res = await fetch("/api/salvarCarros/", {
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ savedCars }),
 			});
 
 			const data = await res.json();
-			console.log(data.message);
 
-			if (res.ok) {
-				navigate("/garagem");
+			if (!res.ok) {
+				setLocalState((prev) => ({
+					...prev,
+					feedback: {
+						type: "error",
+						message: data.message || "Erro ao guardar os carros.",
+					},
+				}));
+				return;
 			}
-		} catch (error) {}
+
+			setLocalState((prev) => ({
+				...prev,
+				feedback: {
+					type: "success",
+					message: "Carros guardados com sucesso.",
+				},
+			}));
+
+			navigate("/garagem");
+
+		} catch (error) {
+			console.error(error);
+			setLocalState((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Erro inesperado. Tenta novamente.",
+				},
+			}));
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -60,7 +104,7 @@ export default function ListaCarrosRecomendados() {
 						>
 							<span>{car}</span>
 							<button onClick={() => handleSave(car)} disabled={isSaved}>
-								{isSaved ? "Saved" : "Save"}
+								{isSaved ? "Guardado" : "Guardar"}
 							</button>
 						</div>
 					);
@@ -71,7 +115,7 @@ export default function ListaCarrosRecomendados() {
 
 			{savedCars.length > 0 && (
 				<div style={{ marginTop: "20px" }}>
-					<h3>Saved Cars:</h3>
+					<h3>Carros selecionados:</h3>
 					<ul>
 						{savedCars.map((car, index) => (
 							<li key={index}>{car.nome}</li>
@@ -80,7 +124,13 @@ export default function ListaCarrosRecomendados() {
 				</div>
 			)}
 
-			<button onClick={() => salvarCarros(savedCars)}>Save</button>
+			<button
+				onClick={salvarCarros}
+				disabled={loading}
+				style={{ marginTop: "15px" }}
+			>
+				{loading ? "A guardar…" : "Guardar carros"}
+			</button>
 		</div>
 	);
 }
