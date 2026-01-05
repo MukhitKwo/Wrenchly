@@ -39,13 +39,13 @@ def uploadImageToDB(file_obj, bucket="car_pictures"):
         # public URL
         public_url = supabase.storage.from_(bucket).get_public_url(storage_name)
 
-        return StorageData(original=file_obj.name, uuid=storage_name, url=public_url)
+        return StorageResponse(original=file_obj.name, uuid=storage_name, url=public_url)
 
     except Exception as e:
         raise StorageException(message=e)
 
 
-class StorageData:
+class StorageResponse:
     def __init__(self, original, uuid, url):
         self.original = original
         self.uuid = uuid
