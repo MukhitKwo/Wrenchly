@@ -85,6 +85,7 @@ function Navbar() {
                             <Link to="/garagem">Garagem</Link>
                             <Link to="/notas">Notas</Link>
                             <Link to="/definicoes">Definições</Link>
+                            <Link to="/sobre">Sobre</Link>
                         </>
                     )}
 

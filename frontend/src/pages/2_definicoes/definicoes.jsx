@@ -201,7 +201,7 @@ export default function Definicoes() {
 	/* ================== UI ================== */
 
 	return (
-		<div>
+		<div className="page-box">
 			<h1>Definições</h1>
 
 			<select name="tema" value={definicoes.tema} onChange={handleChange}>

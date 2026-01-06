@@ -3,8 +3,8 @@ import React from 'react';
 
 function Sobre() {
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Sobre Nós 👋</h1>
+    <div className="page-box">
+      <h1>Sobre Nós</h1>
       <p>
         Bem-vindo à Wrenchly! Somos especializados em manutenção e reparação de equipamentos.
         A nossa missão é fornecer serviços rápidos e confiáveis aos nossos clientes.
