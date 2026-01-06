@@ -89,7 +89,7 @@ def registerUser(request):
 
             user = User.objects.create_user(username=username, email=email, password=password)
 
-            garagem_data = {"user": user.id, "nome": f"Garagem do {username}"}
+            garagem_data = {"user": user.id, "nome": f"Garagem de {username}"}
             res_crud_garagem = crud_Garagens(method="POST", data=garagem_data)
 
             definicoes_data = {"user": user.id}

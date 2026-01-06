@@ -14,7 +14,7 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 				padding: "12px",
 			}}
 		>
-			<h3>Preventivos</h3>
+			<h3>Preventivas</h3>
 
 			<div style={{ marginBottom: "12px" }}>
 				<button onClick={() => navigate("/novoPreventivo", { state: { carro_id: carroId, carro_kms: carroKms } })}>Adicionar Novo</button>

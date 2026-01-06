@@ -26,7 +26,7 @@ class Garagens(models.Model):
     nome = models.CharField("Nome", max_length=50, blank=True, null=True)  # type: ignore
 
     def __str__(self):
-        return f"{self.nome or f'Garagem do {self.user.username}'}"
+        return f"{self.nome or f'Garagem de {self.user.username}'}"
 
 
 class Carros(models.Model):

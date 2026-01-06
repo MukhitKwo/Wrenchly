@@ -1,63 +1,57 @@
 /* src/components/navbar.css */
 
 .navbar {
-  /* 1. POSICIONAMENTO CRUCIAL PARA SER FLUTUANTE (STICKY) */
   position: sticky;
   top: 0;
-  /* Fixa-o no topo da janela */
   z-index: 1000;
-  /* Garante que fique por cima de outro conteúdo enquanto faz scroll */
-
-  /* 2. ESTILOS VISUAIS */
-  background-color: #333;
-  /* Cor de fundo escura */
+  background: linear-gradient(90deg, #1e1e1e, #2c2c2c);
   color: white;
-  /* Cor do texto */
-  padding: 15px 0;
-  /* Espaçamento interno vertical */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  /* Sombra subtil para destacar */
+  padding: 12px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   width: 100%;
-  /* Ocupa toda a largura */
+  backdrop-filter: blur(8px); /* efeito de vidro fosco subtil */
+  transition: background 0.3s;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Container para alinhar o conteúdo no centro da página */
 .navbar-container {
   margin: 0 auto;
-  /* Centra o container */
   display: flex;
-  /* Permite o layout em linha (Logo + Links) */
   justify-content: space-between;
-  /* Espaço entre o logo e os links */
   align-items: center;
-  padding: 0 3%;
-  /* Espaçamento lateral */
+  padding: 0 8%;
+  max-width: 100%;
 }
 
-/* Estilo do Logotipo (Wrenchly) */
 .navbar-logo {
-  color: white;
+  color: #ffcd39;
   text-decoration: none;
-  font-size: 1.6em;
-  /* Tamanho maior */
-  font-weight: bold;
+  font-size: 1.8em;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: transform 0.2s;
 }
 
-/* Estilo dos Links de Navegação */
+.navbar-logo:hover {
+  transform: scale(1.05);
+}
+
 .navbar-links a {
   color: white;
   text-decoration: none;
   margin-left: 25px;
-  /* Espaçamento entre os links */
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  padding: 10px 14px;
+  border-radius: 8px;
+  transition: all 0.3s;
+  font-weight: 500;
+  font-size: 0.95em;
 }
 
-/* Efeito ao passar o rato (hover) */
 .navbar-links a:hover {
-  background-color: #555;
-  color: #fff;
+  background: #ffcd39;
+  color: #1e1e1e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .navbar-user {
@@ -65,20 +59,38 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  font-weight: 500;
 }
 
 .navbar-logout {
-  background: transparent;
+  background: #ff4d4d;
   border: none;
   color: white;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 1em;
-  line-height: normal;
-  font-family: inherit;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 500;
+  transition: all 0.3s;
 }
 
 .navbar-logout:hover {
-  background-color: #555;
+  background: #ff1a1a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Responsividade para ecrãs pequenos */
+@media (max-width: 768px) {
+  .navbar-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .navbar-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
 }
