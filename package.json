@@ -23,5 +23,8 @@
 	"bugs": {
 		"url": "https://github.com/MukhitKwo/CarCare/issues"
 	},
-	"homepage": "https://github.com/MukhitKwo/CarCare#readme"
+	"homepage": "https://github.com/MukhitKwo/CarCare#readme",
+	"dependencies": {
+		"react-icons": "^5.5.0"
+	}
 }

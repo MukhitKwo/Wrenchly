@@ -30,7 +30,7 @@ export default function Garagem() {
 	};
 
 	return (
-		<div className="page-box">
+		<div style={{ padding: "0 2em" }}>
 			<h1>{garagem.nome}</h1>
 
 			<div style={{ display: "flex", justifyContent: "center", gap: "14px", padding: "20px" }}>

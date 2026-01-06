@@ -35,6 +35,7 @@ function Perfil() {
         >
           Editar Perfil
         </button>
+        meter aqui tmb o logout, apagar conta e quando editar perfil, meter a cena do reset palavra passe
       </div>
     </div>
   );
