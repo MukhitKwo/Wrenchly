@@ -3,6 +3,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../context/appState.local";
 import "./navbar.css";
+import logo from "./wrenchly_logo-cropped.svg";
+
 
 function Navbar() {
     const { state, setState } = useLocalAppState();
@@ -72,7 +74,7 @@ function Navbar() {
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
-                    <img src="/wrenchly_logo-cropped.svg" alt="Wrenchly Logo" />
+                    <img src={logo} alt="Wrenchly Logo" className="logo-img"/>
                 </Link>
 
                 <div className="navbar-links">

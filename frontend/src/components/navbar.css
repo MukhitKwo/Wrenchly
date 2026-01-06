@@ -5,7 +5,7 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(90deg, #1e1e1e, #2c2c2c);
+  background: rgb(42, 42, 153);
   color: white;
   padding: 12px 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -89,6 +89,12 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
+
+.logo-img {
+    height: 60px;
+    width: auto;
+}
+
 
 /* Responsividade para ecrãs pequenos */
 @media (max-width: 768px) {
