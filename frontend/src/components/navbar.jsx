@@ -72,7 +72,7 @@ function Navbar() {
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
-                    Wrenchly
+                    <img src="/wrenchly_logo-cropped.svg" alt="Wrenchly Logo" />
                 </Link>
 
                 <div className="navbar-links">
