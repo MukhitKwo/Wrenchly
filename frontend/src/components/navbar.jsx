@@ -1,17 +1,16 @@
 // src/components/navbar.jsx
 
-import { Link, useNavigate } from "react-router-dom";
+import { FaCar, FaCog, FaHome, FaInfoCircle, FaSignInAlt, FaStickyNote, FaUser } from "react-icons/fa";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../context/appState.local";
 import "./navbar.css";
-import { NavLink } from "react-router-dom";
-import { FaHome, FaInfoCircle, FaCar, FaStickyNote, FaCog, FaUser, FaSignInAlt  } from "react-icons/fa";
 
 import logo from "./wrenchly_logo-cropped.svg";
 
 function Navbar() {
 	const { state, setState } = useLocalAppState();
 	const navigate = useNavigate();
-
+	//eslint-disable-next-line no-unused-vars
 	const handleLogout = async () => {
 		const confirmLogout = window.confirm("Tens a certeza que queres sair da tua conta?");
 		if (!confirmLogout) return;
