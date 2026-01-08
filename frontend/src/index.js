@@ -14,7 +14,6 @@ import "./index.css";
 
 // Homepage
 import Contatos from "./pages/1_homepage/contatos.jsx";
-import Home from "./pages/1_homepage/home.jsx";
 import Login from "./pages/1_homepage/login.jsx";
 import Registo from "./pages/1_homepage/registo.jsx";
 import Sobre from "./pages/1_homepage/sobre.jsx";

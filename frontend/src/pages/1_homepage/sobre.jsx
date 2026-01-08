@@ -104,13 +104,13 @@ function Sobre() {
         <p>
           A aplicação destina-se a utilizadores que pretendam um maior controlo
           sobre a manutenção dos seus veículos, desde utilizadores comuns até
-          entusiastas automóveis e pequenos negócios.
+          entusiastas automóveis e pequenos negócios.~
+        </p>
           <ul>
             <li><strong>Proprietários de veículos</strong></li>
             <li><strong>Oficinas e pequenos profissionais</strong></li>
             <li><strong>Entusiastas de automóveis</strong></li>
         </ul>
-        </p>
       </section>
 
       {/* CONTEXTO */}

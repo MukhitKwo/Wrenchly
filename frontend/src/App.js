@@ -12,7 +12,7 @@ function App() {
       </main>
       <footer className="footer">
         <p style={{ textAlign: "center", padding: "20px" }}>
-          Wrenchly © 2025
+          Wrenchly © 2026
         </p>
       </footer>
     </div>
