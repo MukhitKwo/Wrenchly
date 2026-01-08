@@ -31,7 +31,7 @@ import NovoCarro from "./pages/4_adicionarCarro/novoCarro.jsx";
 import ProcurarPorEspecificacoes from "./pages/4_adicionarCarro/procurarPorEspecificacoes.jsx";
 
 // Garagem
-import Garagem from "./pages/3_garagem/garagem/garagem.jsx";
+import Garagem from "./pages/3_garagem/garagem.jsx";
 import TodasManutencoes from "./pages/3_garagem/todasManutencoes.jsx";
 
 // Detalhes / criação
