@@ -56,7 +56,7 @@ export default function Registo() {
 					notas: data.notas_data,
 					feedback: {
 						type: "success",
-						message: "Conta criada com sucesso 🎉",
+						message: "Conta criada com sucesso",
 					},
 				}));
 

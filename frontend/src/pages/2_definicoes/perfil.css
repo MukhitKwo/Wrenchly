@@ -1,0 +1,96 @@
+/* ================= PERFIL ================= */
+
+.perfil-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+.perfil-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.perfil-section {
+    margin-top: 30px;
+}
+
+.perfil-section h2 {
+    margin-bottom: 15px;
+    border-left: 4px solid #1976d2;
+    padding-left: 10px;
+}
+
+.perfil-info p {
+    margin: 6px 0;
+}
+
+/* ================= FORM ================= */
+
+.perfil-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.perfil-form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.perfil-form input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.perfil-form.full {
+    grid-template-columns: 1fr;
+}
+
+/* ================= BOTÕES ================= */
+
+.perfil-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.perfil-actions button {
+    padding: 8px 14px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    background-color: #1976d2;
+    color: white;
+    transition: background 0.2s;
+}
+
+.perfil-actions button:hover {
+    background-color: #125aa0;
+}
+
+.perfil-actions .danger {
+    background-color: #c62828;
+}
+
+.perfil-actions .danger:hover {
+    background-color: #a61f1f;
+}
+
+.perfil-actions .secondary {
+    background-color: #777;
+}
+
+.perfil-actions .secondary:hover {
+    background-color: #555;
+}
+
+/* ================= DIVIDER ================= */
+
+.perfil-divider {
+    margin: 25px 0;
+    border-top: 1px solid #ddd;
+}
