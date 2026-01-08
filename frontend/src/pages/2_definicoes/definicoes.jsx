@@ -229,44 +229,6 @@ export default function Definicoes() {
 			</select>
 
 			<button onClick={atualizarDefinicoes}>Salvar</button>
-
-			<hr />
-
-			<input type="password" id="password1" placeholder="Nova palavra-passe" />
-			<input
-				type="password"
-				id="password2"
-				placeholder="Confirmar palavra-passe"
-			/>
-
-			<button
-				onClick={() =>
-					pedirCodigoSecreto(
-						document.getElementById("password1").value,
-						document.getElementById("password2").value
-					)
-				}
-			>
-				Pedir código
-			</button>
-
-			<input type="text" id="codigoInput" placeholder="Código" />
-
-			<button
-				onClick={() =>
-					atualizarPassword(
-						document.getElementById("password1").value,
-						document.getElementById("codigoInput").value
-					)
-				}
-			>
-				Alterar palavra-passe
-			</button>
-
-			<hr />
-
-			<button onClick={apagarUser}>Apagar Conta</button>
-			<button onClick={logoutUser}>Sair da Conta</button>
 		</div>
 	);
 }

@@ -32,7 +32,7 @@ function Sobre() {
       {/* FEATURES */}
       <section className="sobre-cards">
         <div className="card">
-          <h3>🚗 Garagem Digital</h3>
+          <h3>Garagem Digital</h3>
           <p>
             Gestão completa dos seus veículos com acesso rápido às informações
             mais importantes, sempre atualizadas.
@@ -40,7 +40,7 @@ function Sobre() {
         </div>
 
         <div className="card">
-          <h3>🛠️ Manutenção Organizada</h3>
+          <h3>Manutenção Organizada</h3>
           <p>
             Registo de manutenções corretivas, preventivas e crónicas, com histórico
             detalhado e fácil de consultar.
@@ -48,7 +48,7 @@ function Sobre() {
         </div>
 
         <div className="card">
-          <h3>📊 Cálculo de Risco</h3>
+          <h3>Cálculo de Risco</h3>
           <p>
             Acompanhamento inteligente baseado em quilometragem e datas para
             antecipar intervenções necessárias.
@@ -56,7 +56,7 @@ function Sobre() {
         </div>
 
         <div className="card">
-          <h3>📝 Notas Personalizadas</h3>
+          <h3>Notas Personalizadas</h3>
           <p>
             Anote observações importantes sobre cada veículo, mantendo tudo
             organizado e acessível.
@@ -64,7 +64,7 @@ function Sobre() {
         </div>
 
         <div className="card">
-          <h3>🔐 Segurança</h3>
+          <h3>Segurança</h3>
           <p>
             Sistema de autenticação seguro com gestão de conta, palavra-passe
             e sessão protegida.
@@ -72,7 +72,7 @@ function Sobre() {
         </div>
 
         <div className="card">
-          <h3>🤖 Inteligência Artificial</h3>
+          <h3>Inteligência Artificial</h3>
           <p>
             Integração com a API Gemini para sugestões inteligentes relacionadas
             com manutenção e veículos.
@@ -105,6 +105,11 @@ function Sobre() {
           A aplicação destina-se a utilizadores que pretendam um maior controlo
           sobre a manutenção dos seus veículos, desde utilizadores comuns até
           entusiastas automóveis e pequenos negócios.
+          <ul>
+            <li><strong>Proprietários de veículos</strong></li>
+            <li><strong>Oficinas e pequenos profissionais</strong></li>
+            <li><strong>Entusiastas de automóveis</strong></li>
+        </ul>
         </p>
       </section>
 
