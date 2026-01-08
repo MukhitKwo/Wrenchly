@@ -138,7 +138,6 @@ export default function TodasManutencoes() {
 				<Link to={`/editarCarro/${carro_id}`}>
 					<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Editar Carro</button>
 				</Link>
-				<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Caraterísticas</button>
 			</div>
 			<div style={{ marginBottom: "15px" }}>
 				<label style={{ marginRight: "10px" }}>Ordenar preventivos e cronicos por:</label>
