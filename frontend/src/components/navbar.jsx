@@ -108,7 +108,7 @@ function Navbar() {
 					{!isAuthenticated && (
 						<NavLink to="/login" className={({ isActive }) => (isActive ? "active" : "")}>
 							<FaSignInAlt style={{ marginRight: "6px" }} />
-							Sign In
+							Iniciar Sessão	
 						</NavLink>
 					)}
 				</div>
