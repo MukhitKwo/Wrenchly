@@ -77,10 +77,7 @@ function Navbar() {
 				</Link>
 
 				<div className="navbar-links">
-					<NavLink to="/sobre" className={({ isActive }) => (isActive ? "active" : "")}>
-						<FaInfoCircle style={{ marginRight: "6px" }} />
-						Sobre
-					</NavLink>
+					
 					<NavLink to="/contatos" className={({ isActive }) => (isActive ? "active" : "")}>
 						<FaHome style={{ marginRight: "6px" }} />
 						Contatos
