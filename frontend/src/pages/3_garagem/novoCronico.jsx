@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
@@ -9,6 +9,7 @@ export default function Cronico() {
 
 	const navigate = useNavigate();
 	const { state } = useLocation();
+
 	const carro_id = state?.carro_id;
 	const carro_kms = state?.carro_kms;
 
@@ -29,6 +30,29 @@ export default function Cronico() {
 		}));
 	};
 
+	//  handler para sessão expirada
+	const handleForbidden = useCallback(() => {
+		setLocalStorage((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		setSessionStorage((prev) => ({
+			...prev,
+			carros_vistos: [],
+		}));
+
+		navigate("/login", { replace: true });
+	}, [setLocalStorage, setSessionStorage, navigate]);
+
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setManutencao((prev) => ({
@@ -46,9 +70,15 @@ export default function Cronico() {
 		try {
 			const res = await fetch("/api/criarCronico/", {
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ manutencao, carro_kms }),
 			});
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
 
 			const data = await res.json();
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 
@@ -8,8 +8,25 @@ export default function EditarNota() {
     const { state, setState } = useLocalAppState();
 
     const nota = state.notas.find((n) => n.id === Number(id));
-    const [texto, setTexto] = useState(nota?.texto || "");
+    const [texto, setTexto] = useState(nota?.nota || "");
     const [loading, setLoading] = useState(false);
+
+    const handleForbidden = useCallback(() => {
+        setState((prev) => ({
+            ...prev,
+            user: null,
+            garagem: null,
+            definicoes: null,
+            carros_preview: [],
+            notas: [],
+            feedback: {
+                type: "error",
+                message: "Sessão expirada. Inicia sessão novamente.",
+            },
+        }));
+
+        navigate("/login", { replace: true });
+    }, [setState, navigate]);
 
     if (!nota) return <p>Nota não encontrada</p>;
 
@@ -32,17 +49,23 @@ export default function EditarNota() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({ nota_id: nota.id, texto }),
+                body: JSON.stringify({
+                    id: nota.id,
+                    texto,
+                }),
             });
 
-            if (!res.ok) {
-                throw new Error();
+            if (res.status === 403) {
+                handleForbidden();
+                return;
             }
+
+            if (!res.ok) throw new Error();
 
             setState((prev) => ({
                 ...prev,
                 notas: prev.notas.map((n) =>
-                    n.id === nota.id ? { ...n, texto } : n
+                    n.id === nota.id ? { ...n, nota: texto } : n
                 ),
                 feedback: {
                     type: "success",
@@ -51,7 +74,7 @@ export default function EditarNota() {
             }));
 
             navigate("/notas");
-        } catch (err) {
+        } catch {
             setState((prev) => ({
                 ...prev,
                 feedback: {

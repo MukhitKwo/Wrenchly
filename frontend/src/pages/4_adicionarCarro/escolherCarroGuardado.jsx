@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
@@ -7,9 +7,29 @@ export default function MostrarCarrosGuardados() {
 	const navigate = useNavigate();
 	const { state: sessionState, setState: setSessionState } = useSessionAppState();
 	const { setState: setLocalState } = useLocalAppState();
+
 	const fetchedRef = useRef(false);
 	const [status, setStatus] = useState("idle"); // idle | loading | error
 	const [action, setAction] = useState({ id: null, type: null });
+
+	// sessão expirada
+	const handleForbidden = useCallback(() => {
+		setLocalState((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		setSessionState({});
+		navigate("/login", { replace: true });
+	}, [setLocalState, setSessionState, navigate]);
 
 	useEffect(() => {
 		if (fetchedRef.current) return;
@@ -22,8 +42,12 @@ export default function MostrarCarrosGuardados() {
 					credentials: "include",
 				});
 
-				const data = await res.json();
+				if (res.status === 403) {
+					handleForbidden();
+					return;
+				}
 
+				const data = await res.json();
 				if (!res.ok) throw new Error();
 
 				setSessionState((prev) => ({
@@ -39,7 +63,7 @@ export default function MostrarCarrosGuardados() {
 		};
 
 		fetchCarros();
-	}, [setSessionState]);
+	}, [setSessionState, handleForbidden]);
 
 	const adicionarCarro = async (nome, id) => {
 		setAction({ id, type: "add" });
@@ -52,39 +76,43 @@ export default function MostrarCarrosGuardados() {
 				body: JSON.stringify({ nome }),
 			});
 
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
+
 			const data = await res.json();
 
 			if (!res.ok) {
-				setLocalState(prev => ({
+				setLocalState((prev) => ({
 					...prev,
 					feedback: {
 						type: "error",
-						message: "Erro ao carregar o carro guardado."
-					}
+						message: "Erro ao carregar o carro guardado.",
+					},
 				}));
 				return;
 			}
 
-			setLocalState(prev => ({
+			setLocalState((prev) => ({
 				...prev,
 				feedback: {
 					type: "success",
-					message: "Carro carregado com sucesso."
-				}
+					message: "Carro carregado com sucesso.",
+				},
 			}));
 
 			navigate("/adicionarPorModelo", {
 				state: { initialCarro: data.carro_data },
 			});
-
 		} catch (error) {
 			console.error(error);
-			setLocalState(prev => ({
+			setLocalState((prev) => ({
 				...prev,
 				feedback: {
 					type: "error",
-					message: "Erro inesperado ao abrir o carro."
-				}
+					message: "Erro inesperado ao abrir o carro.",
+				},
 			}));
 		} finally {
 			setAction({ id: null, type: null });
@@ -102,13 +130,18 @@ export default function MostrarCarrosGuardados() {
 				body: JSON.stringify({ id }),
 			});
 
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
+
 			if (!res.ok) {
-				setLocalState(prev => ({
+				setLocalState((prev) => ({
 					...prev,
 					feedback: {
 						type: "error",
-						message: "Erro ao apagar o carro."
-					}
+						message: "Erro ao apagar o carro.",
+					},
 				}));
 				return;
 			}
@@ -118,22 +151,21 @@ export default function MostrarCarrosGuardados() {
 				carros_guardados: prev.carros_guardados.filter((c) => c.id !== id),
 			}));
 
-			setLocalState(prev => ({
+			setLocalState((prev) => ({
 				...prev,
 				feedback: {
 					type: "success",
-					message: "Carro removido dos guardados."
-				}
+					message: "Carro removido dos guardados.",
+				},
 			}));
-
 		} catch (error) {
 			console.error(error);
-			setLocalState(prev => ({
+			setLocalState((prev) => ({
 				...prev,
 				feedback: {
 					type: "error",
-					message: "Erro inesperado ao apagar."
-				}
+					message: "Erro inesperado ao apagar.",
+				},
 			}));
 		} finally {
 			setAction({ id: null, type: null });
@@ -149,9 +181,7 @@ export default function MostrarCarrosGuardados() {
 			{status === "loading" && <p>A carregar carros guardados…</p>}
 			{status === "error" && <p style={{ color: "red" }}>Erro ao carregar carros.</p>}
 
-			{status === "idle" && carros.length === 0 && (
-				<p>Nada guardado.</p>
-			)}
+			{status === "idle" && carros.length === 0 && <p>Nada guardado.</p>}
 
 			{status === "idle" && carros.length > 0 && (
 				<ul>

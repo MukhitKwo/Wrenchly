@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 
 export default function AtualizarPreventivos() {
 	const { setState: setLocalState } = useLocalAppState();
-
 	const { state } = useLocation();
 	const navigate = useNavigate();
 
@@ -14,6 +13,24 @@ export default function AtualizarPreventivos() {
 	const allPreventivos_data = state?.preventivos;
 
 	const [preventivos, setPreventivos] = useState(allPreventivos_data || []);
+
+	// sessão expirada
+	const handleForbidden = useCallback(() => {
+		setLocalState((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		navigate("/login", { replace: true });
+	}, [setLocalState, navigate]);
 
 	const handleChange = (index, field, value) => {
 		const updated = [...preventivos];
@@ -25,6 +42,7 @@ export default function AtualizarPreventivos() {
 		try {
 			const res = await fetch("/api/adicionarPreventivos/", {
 				method: "POST",
+				credentials: "include",
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -34,6 +52,11 @@ export default function AtualizarPreventivos() {
 					carro_kms,
 				}),
 			});
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
 
 			const data = await res.json();
 

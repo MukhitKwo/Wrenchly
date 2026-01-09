@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 
 export default function NotasTodas() {
     const { state, setState } = useLocalAppState();
+    const navigate = useNavigate();
 
     const notas = state?.notas || [];
     const carros = state?.carros_preview || [];
@@ -16,13 +18,29 @@ export default function NotasTodas() {
 
     const notasCarregadasRef = useRef(false);
 
-    // helper simples de feedback
     const showFeedback = useCallback((type, message) => {
         setState((prev) => ({
             ...prev,
             feedback: { type, message },
         }));
     }, [setState]);
+    const handleForbidden = useCallback(() => {
+        setState((prev) => ({
+            ...prev,
+            user: null,
+            garagem: null,
+            definicoes: null,
+            carros_preview: [],
+            notas: [],
+            feedback: {
+                type: "error",
+                message: "Sessão expirada. Inicia sessão novamente.",
+            },
+        }));
+
+        navigate("/login", { replace: true });
+    }, [setState, navigate]);
+
 
     useEffect(() => {
         if (notasCarregadasRef.current) return;
@@ -40,6 +58,11 @@ export default function NotasTodas() {
                     method: "GET",
                     credentials: "include",
                 });
+
+                if (res.status === 403) {
+                    handleForbidden();
+                    return;
+                }
 
                 const data = await res.json();
 
@@ -60,7 +83,7 @@ export default function NotasTodas() {
         };
 
         carregarNotas();
-    }, [setState, state?.notas?.length, showFeedback]);
+    }, [setState, state?.notas?.length, showFeedback, handleForbidden]);
 
     const getNomeCarro = (carroId) => {
         const carro = carros.find((c) => c.id === Number(carroId));
@@ -83,6 +106,11 @@ export default function NotasTodas() {
                     texto: textoNota,
                 }),
             });
+
+            if (res.status === 403) {
+                handleForbidden();
+                return;
+            }
 
             if (!res.ok) throw new Error();
 
@@ -115,6 +143,11 @@ export default function NotasTodas() {
                 }),
             });
 
+            if (res.status === 403) {
+                handleForbidden();
+                return;
+            }
+
             if (!res.ok) throw new Error();
 
             setState((prev) => ({
@@ -141,6 +174,11 @@ export default function NotasTodas() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id }),
             });
+
+            if (res.status === 403) {
+                handleForbidden();
+                return;
+            }
 
             if (!res.ok) throw new Error();
 

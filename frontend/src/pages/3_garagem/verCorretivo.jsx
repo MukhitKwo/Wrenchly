@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
@@ -9,18 +9,43 @@ export default function VerCorretivo() {
 	const { setState: setLocalStorage } = useLocalAppState();
 	const { carro_id, manutencao_id } = useParams();
 
-	const viewed_cars = useMemo(() => session?.carros_vistos || [], 
-	[session.carros_vistos]);
+	const viewed_cars = useMemo(
+		() => session?.carros_vistos || [],
+		[session?.carros_vistos]
+	);
 
 	const [manutencao, setManutencao] = useState(null);
 	const [edit, setEdit] = useState(false);
 
-	const showFeedback = (type, message) => {
+	const showFeedback = useCallback((type, message) => {
 		setLocalStorage((prev) => ({
 			...prev,
 			feedback: { type, message },
 		}));
-	};
+	}, [setLocalStorage]);
+
+	//  handler sessão expirada
+	const handleForbidden = useCallback(() => {
+		setLocalStorage((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		setSession((prev) => ({
+			...prev,
+			carros_vistos: [],
+		}));
+
+		navigate("/login", { replace: true });
+	}, [setLocalStorage, setSession, navigate]);
 
 	useEffect(() => {
 		const car = viewed_cars.find((c) => c.id === Number(carro_id));
@@ -42,8 +67,14 @@ export default function VerCorretivo() {
 			const res = await fetch("/api/editarCorretivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 				body: JSON.stringify({ manutencao }),
 			});
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
 
 			const data = await res.json();
 
@@ -82,11 +113,17 @@ export default function VerCorretivo() {
 			const res = await fetch("/api/apagarCorretivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 				body: JSON.stringify({
 					id: manutencao.id,
 					carro_id: manutencao.carro,
 				}),
 			});
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
 
 			const data = await res.json();
 
@@ -126,36 +163,49 @@ export default function VerCorretivo() {
 				<button onClick={() => navigate(-1)}>Voltar</button>
 			</div>
 
-			<h1>Manutenção Crónica</h1>
+			<h1>Manutenção Corretiva</h1>
 
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
 				<label>
 					Nome:
-					<input name="nome" value={manutencao.nome} onChange={handleChange} disabled={!edit} />
+					<input
+						name="nome"
+						value={manutencao.nome}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
 				</label>
 
 				<label>
 					Descrição:
-					<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} disabled={!edit} />
-				</label>
-
-				<label>
-					Tipo:
-					<select name="tipo" value={manutencao.tipo} onChange={handleChange} disabled={!edit}>
-						<option value="corretiva">Corretiva</option>
-						<option value="preventiva">Preventiva</option>
-						<option value="cronica">Crónica</option>
-					</select>
+					<textarea
+						name="descricao"
+						value={manutencao.descricao}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
 				</label>
 
 				<label>
 					Data:
-					<input type="date" name="data" value={manutencao.data} onChange={handleChange} disabled={!edit} />
+					<input
+						type="date"
+						name="data"
+						value={manutencao.data}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
 				</label>
 
 				<label>
 					Custo (€):
-					<input type="number" name="custo" value={manutencao.custo} onChange={handleChange} disabled={!edit} />
+					<input
+						type="number"
+						name="custo"
+						value={manutencao.custo}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
 				</label>
 
 				<label>

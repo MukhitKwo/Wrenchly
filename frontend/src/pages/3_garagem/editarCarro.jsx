@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
@@ -9,7 +9,9 @@ export default function EditarCarro() {
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
 	const { state: getLocalStorage, setState: setLocalStorage } = useLocalAppState();
 
-	const carro = getSessionStorage.carros_vistos?.find((c) => c.id === Number(carro_id));
+	const carro = getSessionStorage.carros_vistos?.find(
+		(c) => c.id === Number(carro_id)
+	);
 
 	const [form, setForm] = useState({
 		marca: carro?.marca || "",
@@ -25,21 +27,48 @@ export default function EditarCarro() {
 
 	const [loading, setLoading] = useState(false);
 
+	// sessão expirada
+	const handleForbidden = useCallback(() => {
+		setLocalStorage((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		setSessionStorage((prev) => ({
+			...prev,
+			carros_vistos: [],
+		}));
+
+		navigate("/login", { replace: true });
+	}, [setLocalStorage, setSessionStorage, navigate]);
+
 	const guardarAlteracoes = async () => {
 		setLoading(true);
 		try {
 			const res = await fetch("/api/editarCarro/", {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 				body: JSON.stringify({
 					carro_id,
 					caracteristicas: form,
 				}),
 			});
 
-			if (!res.ok) {
-				throw new Error();
+			if (res.status === 403) {
+				handleForbidden();
+				return;
 			}
+
+			if (!res.ok) throw new Error();
 
 			// atualizar session
 			const carrosAtualizados = getSessionStorage.carros_vistos.map((c) =>
@@ -72,7 +101,7 @@ export default function EditarCarro() {
 			}));
 
 			navigate("/garagem", { replace: true });
-		} catch (err) {
+		} catch {
 			setLocalStorage((prev) => ({
 				...prev,
 				feedback: {
@@ -93,21 +122,29 @@ export default function EditarCarro() {
 			const res = await fetch("/api/apagarCarro/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 				body: JSON.stringify({ carro_id: Number(carro_id) }),
 			});
 
-			if (!res.ok) {
-				throw new Error();
+			if (res.status === 403) {
+				handleForbidden();
+				return;
 			}
+
+			if (!res.ok) throw new Error();
 
 			setSessionStorage((prev) => ({
 				...prev,
-				carros_vistos: prev.carros_vistos.filter((car) => car.id !== Number(carro_id)),
+				carros_vistos: prev.carros_vistos.filter(
+					(car) => car.id !== Number(carro_id)
+				),
 			}));
 
 			setLocalStorage((prev) => ({
 				...prev,
-				carros_preview: prev.carros_preview.filter((car) => car.id !== Number(carro_id)),
+				carros_preview: prev.carros_preview.filter(
+					(car) => car.id !== Number(carro_id)
+				),
 				feedback: {
 					type: "success",
 					message: "Carro eliminado com sucesso.",
@@ -115,7 +152,7 @@ export default function EditarCarro() {
 			}));
 
 			navigate("/garagem");
-		} catch (err) {
+		} catch {
 			setLocalStorage((prev) => ({
 				...prev,
 				feedback: {
@@ -157,7 +194,11 @@ export default function EditarCarro() {
 				<button onClick={guardarAlteracoes} disabled={loading}>
 					{loading ? "A guardar..." : "Guardar Alterações"}
 				</button>
-				<button onClick={handleDeleteCar} disabled={loading} style={{ background: "#d9534f", color: "white" }}>
+				<button
+					onClick={handleDeleteCar}
+					disabled={loading}
+					style={{ background: "#d9534f", color: "white" }}
+				>
 					{loading ? "A eliminar..." : "Eliminar Carro"}
 				</button>
 			</div>

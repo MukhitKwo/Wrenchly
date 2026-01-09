@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
@@ -26,42 +25,70 @@ export default function Perfil() {
     }));
   };
 
+  /* ============ SESSÃO EXPIRADA (403) ============ */
+  const handleForbidden = () => {
+    clearLocal();
+    clearSession();
+    showFeedback("error", "Sessão expirada. Inicia sessão novamente.");
+    navigate("/login", { replace: true });
+  };
+
   /* ================= LOGOUT ================= */
   const handleLogout = async () => {
     if (!window.confirm("Tens a certeza que queres sair da tua conta?")) return;
 
-    await fetch("/api/logoutUser/", {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      const res = await fetch("/api/logoutUser/", {
+        method: "POST",
+        credentials: "include",
+      });
 
-    clearLocal();
-    clearSession();
-    showFeedback("success", "Sessão terminada com sucesso.");
-    navigate("/login");
+      if (res.status === 403) {
+        handleForbidden();
+        return;
+      }
+
+      clearLocal();
+      clearSession();
+      showFeedback("success", "Sessão terminada com sucesso.");
+      navigate("/login");
+    } catch (err) {
+      console.error(err);
+      showFeedback("error", "Erro inesperado ao terminar sessão.");
+    }
   };
 
   /* ================= APAGAR CONTA ================= */
   const handleDeleteAccount = async () => {
     if (
       !window.confirm(
-        "⚠️ Esta ação é irreversível. Tens a certeza que queres apagar a conta?"
+        " Esta ação é irreversível. Tens a certeza que queres apagar a conta?"
       )
     )
       return;
 
-    const res = await fetch("/api/apagarUser/", {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      const res = await fetch("/api/apagarUser/", {
+        method: "POST",
+        credentials: "include",
+      });
 
-    if (res.ok) {
-      clearLocal();
-      clearSession();
-      showFeedback("success", "Conta apagada com sucesso.");
-      navigate("/registo");
-    } else {
-      showFeedback("error", "Erro ao apagar a conta.");
+      if (res.status === 403) {
+        handleForbidden();
+        return;
+      }
+
+      if (res.ok) {
+        clearLocal();
+        clearSession();
+        showFeedback("success", "Conta apagada com sucesso.");
+        navigate("/registo");
+      } else {
+        showFeedback("error", "Erro ao apagar a conta.");
+      }
+    } catch (err) {
+      console.error(err);
+      showFeedback("error", "Erro inesperado ao apagar conta.");
     }
   };
 
@@ -77,21 +104,31 @@ export default function Perfil() {
       return;
     }
 
-    const res = await fetch("/api/pedirCodigoSecreto/", {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      const res = await fetch("/api/pedirCodigoSecreto/", {
+        method: "POST",
+        credentials: "include",
+      });
 
-    const data = await res.json();
+      if (res.status === 403) {
+        handleForbidden();
+        return;
+      }
 
-    if (res.ok) {
-      setCodigoHashed(data.hashed_code);
-      showFeedback(
-        "success",
-        "Código de verificação enviado para o teu email."
-      );
-    } else {
-      showFeedback("error", data.message || "Erro ao enviar código.");
+      const data = await res.json();
+
+      if (res.ok) {
+        setCodigoHashed(data.hashed_code);
+        showFeedback(
+          "success",
+          "Código de verificação enviado para o teu email."
+        );
+      } else {
+        showFeedback("error", data.message || "Erro ao enviar código.");
+      }
+    } catch (err) {
+      console.error(err);
+      showFeedback("error", "Erro inesperado ao pedir código.");
     }
   };
 
@@ -102,27 +139,37 @@ export default function Perfil() {
       return;
     }
 
-    const res = await fetch("/api/atualizarPassword/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        password: password1,
-        codigoInput: codigo,
-        codigoHashed,
-      }),
-    });
+    try {
+      const res = await fetch("/api/atualizarPassword/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          password: password1,
+          codigoInput: codigo,
+          codigoHashed,
+        }),
+      });
 
-    const data = await res.json();
+      if (res.status === 403) {
+        handleForbidden();
+        return;
+      }
 
-    if (res.ok) {
-      setPassword1("");
-      setPassword2("");
-      setCodigo("");
-      setCodigoHashed(null);
-      showFeedback("success", "Palavra-passe atualizada com sucesso.");
-    } else {
-      showFeedback("error", data.message || "Erro ao atualizar palavra-passe.");
+      const data = await res.json();
+
+      if (res.ok) {
+        setPassword1("");
+        setPassword2("");
+        setCodigo("");
+        setCodigoHashed(null);
+        showFeedback("success", "Palavra-passe atualizada com sucesso.");
+      } else {
+        showFeedback("error", data.message || "Erro ao atualizar palavra-passe.");
+      }
+    } catch (err) {
+      console.error(err);
+      showFeedback("error", "Erro inesperado ao atualizar palavra-passe.");
     }
   };
 

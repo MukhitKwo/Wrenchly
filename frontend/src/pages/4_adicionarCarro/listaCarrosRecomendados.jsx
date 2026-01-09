@@ -1,17 +1,39 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
+import { useSessionAppState } from "../../context/appState.session";
 
 export default function ListaCarrosRecomendados() {
 	const navigate = useNavigate();
 	const { state } = useLocation();
+
 	const { state: getLocalStorage, setState: setLocalState } = useLocalAppState();
+	const { setState: setSessionState } = useSessionAppState();
 
 	const garagem_id = getLocalStorage.garagem.id;
 	const candidateCars = state?.candidateCars || [];
 
 	const [savedCars, setSavedCars] = useState([]);
 	const [loading, setLoading] = useState(false);
+
+	// sessão expirada
+	const handleForbidden = useCallback(() => {
+		setLocalState((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		setSessionState({});
+		navigate("/login", { replace: true });
+	}, [setLocalState, setSessionState, navigate]);
 
 	const handleSave = (car) => {
 		if (!savedCars.some((c) => c.nome === car)) {
@@ -44,6 +66,11 @@ export default function ListaCarrosRecomendados() {
 				body: JSON.stringify({ savedCars }),
 			});
 
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
+
 			const data = await res.json();
 
 			if (!res.ok) {
@@ -66,7 +93,6 @@ export default function ListaCarrosRecomendados() {
 			}));
 
 			navigate("/garagem");
-
 		} catch (error) {
 			console.error(error);
 			setLocalState((prev) => ({

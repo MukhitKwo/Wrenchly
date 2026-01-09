@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocalAppState } from "../../context/appState.local";
 
 export default function ProcurarPorEspecificacoes() {
 	const navigate = useNavigate();
+	const { setState } = useLocalAppState();
 
 	const [especificacoes, setEspecificacoes] = useState({});
 
@@ -14,27 +16,54 @@ export default function ProcurarPorEspecificacoes() {
 		}));
 	};
 
+	const handleForbidden = useCallback(() => {
+		setState((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		navigate("/login", { replace: true });
+	}, [setState, navigate]);
+
 	const procurarCarros = async (specs) => {
 		try {
 			const res = await fetch("/api/procurarCarros/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ specs: specs }),
+				credentials: "include",
+				body: JSON.stringify({ specs }),
 			});
 
-			const data = await res.json();
-			console.log(data.message);
-
-			if (res.ok) {
-				navigate("/listaCarrosRecomendados", {
-					state: { candidateCars: data.candidateCars_data },
-				});
+			if (res.status === 403) {
+				handleForbidden();
+				return;
 			}
+
+			const data = await res.json();
+
+			if (!res.ok) return;
+
+			navigate("/listaCarrosRecomendados", {
+				state: { candidateCars: data.candidateCars_data },
+			});
 		} catch (error) {
-			console.log(error);
+			console.error(error);
+			setState((prev) => ({
+				...prev,
+				feedback: {
+					type: "error",
+					message: "Erro inesperado ao procurar carros.",
+				},
+			}));
 		}
 	};
-
 	return (
 		<div style={{ backgroundColor: "#f9f9f9", padding: "25px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
 			<h2 style={{ marginBottom: "20px", borderBottom: "1px solid #ddd", paddingBottom: "5px" }}>Pesquisar por Especificações</h2>

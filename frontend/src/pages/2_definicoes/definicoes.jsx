@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
@@ -14,12 +14,31 @@ export default function Definicoes() {
 
 	const { clear: clearSessionStorage } = useSessionAppState();
 
+
+
 	const showFeedback = (type, message) => {
 		setLocalStorage((prev) => ({
 			...prev,
 			feedback: { type, message },
 		}));
 	};
+
+
+	const handleForbidden = useCallback(() => {
+		clearLocalStorage();
+		clearSessionStorage();
+
+		setLocalStorage((prev) => ({
+			...prev,
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		navigate("/login", { replace: true });
+	}, [clearLocalStorage, clearSessionStorage, setLocalStorage, navigate]);
+
 
 	const definicoes_data = getLocalStorage?.definicoes || {
 		tema: "claro",
@@ -33,8 +52,6 @@ export default function Definicoes() {
 		linguagem: definicoes_data.linguagem,
 	});
 
-	const [codigoHashed, setCodigoHashed] = useState(null);
-
 	const handleChange = (e) => {
 		const { name, type, value, checked } = e.target;
 		setDefinicoes((prev) => ({
@@ -43,7 +60,6 @@ export default function Definicoes() {
 		}));
 	};
 
-	/* ================== DEFINIÇÕES ================== */
 
 	const atualizarDefinicoes = async () => {
 		try {
@@ -52,9 +68,15 @@ export default function Definicoes() {
 				{
 					method: "PUT",
 					headers: { "Content-Type": "application/json" },
+					credentials: "include",
 					body: JSON.stringify({ definicoes }),
 				}
 			);
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
 
 			const data = await res.json();
 
@@ -75,139 +97,18 @@ export default function Definicoes() {
 		}
 	};
 
-	/* ================== LOGOUT ================== */
-
-	const logoutUser = async () => {
-		if (!window.confirm("Tens a certeza que queres sair da tua conta?")) return;
-
-		try {
-			const res = await fetch("/api/logoutUser/", {
-				method: "POST",
-				credentials: "include",
-			});
-
-			if (!res.ok) {
-				showFeedback("error", "Erro ao terminar sessão.");
-				return;
-			}
-
-			clearLocalStorage();
-			clearSessionStorage();
-
-			showFeedback("success", "Sessão terminada com sucesso.");
-			navigate("/login", { replace: true });
-		} catch (error) {
-			console.error(error);
-			showFeedback("error", "Erro inesperado ao terminar sessão.");
-		}
-	};
-
-	/* ================== PASSWORD ================== */
-
-	const pedirCodigoSecreto = async (password1, password2) => {
-		if (!password1 || !password2) {
-			showFeedback("error", "Preenche ambos os campos de palavra-passe.");
-			return;
-		}
-
-		if (password1 !== password2) {
-			showFeedback("error", "As palavras-passe não correspondem.");
-			return;
-		}
-
-		if (!window.confirm("Tens a certeza que queres mudar a palavra-passe?"))
-			return;
-
-		try {
-			const res = await fetch("/api/pedirCodigoSecreto/", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({}),
-			});
-
-			const data = await res.json();
-
-			if (!res.ok) {
-				showFeedback("error", data.message || "Erro ao pedir código.");
-				return;
-			}
-
-			setCodigoHashed(data.hashed_code);
-			showFeedback("success", "Código de confirmação enviado.");
-		} catch (error) {
-			console.error(error);
-			showFeedback("error", "Erro inesperado ao pedir código.");
-		}
-	};
-
-	const atualizarPassword = async (password, codigoInput) => {
-		if (!codigoInput) {
-			showFeedback("error", "Preenche o código de confirmação.");
-			return;
-		}
-
-		if (!window.confirm("Tens a certeza que queres mudar a palavra-passe?"))
-			return;
-
-		try {
-			const res = await fetch("/api/atualizarPassword/", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ password, codigoInput, codigoHashed }),
-			});
-
-			const data = await res.json();
-
-			if (!res.ok) {
-				showFeedback("error", data.message || "Erro ao atualizar palavra-passe.");
-				return;
-			}
-
-			showFeedback("success", "Palavra-passe alterada com sucesso.");
-		} catch (error) {
-			console.error(error);
-			showFeedback("error", "Erro inesperado ao atualizar palavra-passe.");
-		}
-	};
-
-	/* ================== APAGAR CONTA ================== */
-
-	const apagarUser = async () => {
-		if (!window.confirm("Tens a certeza que queres apagar a tua conta?"))
-			return;
-
-		try {
-			const res = await fetch("/api/apagarUser/", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-			});
-
-			if (!res.ok) {
-				showFeedback("error", "Erro ao apagar conta.");
-				return;
-			}
-
-			clearLocalStorage();
-			clearSessionStorage();
-
-			showFeedback("success", "Conta apagada com sucesso.");
-			navigate("/registo", { replace: true });
-		} catch (error) {
-			console.error(error);
-			showFeedback("error", "Erro inesperado ao apagar conta.");
-		}
-	};
-
-	/* ================== UI ================== */
 
 	return (
 		<div className="page-box">
 			<h1>Definições</h1>
 
-			<select name="tema" value={definicoes.tema} onChange={handleChange}>
-				<option value="claro">Claro</option>
-				<option value="escuro">Escuro</option>
-			</select>
+			<label>
+				Tema
+				<select name="tema" value={definicoes.tema} onChange={handleChange}>
+					<option value="claro">Claro</option>
+					<option value="escuro">Escuro</option>
+				</select>
+			</label>
 
 			<label>
 				<input
@@ -219,16 +120,21 @@ export default function Definicoes() {
 				Permitir notificações
 			</label>
 
-			<select
-				name="linguagem"
-				value={definicoes.linguagem}
-				onChange={handleChange}
-			>
-				<option value="pt">Português</option>
-				<option value="en">English</option>
-			</select>
+			<label>
+				Linguagem
+				<select
+					name="linguagem"
+					value={definicoes.linguagem}
+					onChange={handleChange}
+				>
+					<option value="pt">Português</option>
+					<option value="en">English</option>
+				</select>
+			</label>
 
-			<button onClick={atualizarDefinicoes}>Salvar</button>
+			<button onClick={atualizarDefinicoes}>
+				Guardar definições
+			</button>
 		</div>
 	);
 }

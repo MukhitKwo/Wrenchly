@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
@@ -9,6 +9,7 @@ export default function NovoCorretivo() {
 
 	const navigate = useNavigate();
 	const { state } = useLocation();
+
 	const carro_id = state?.carro_id;
 	const carro_kms = state?.carro_kms;
 
@@ -23,12 +24,12 @@ export default function NovoCorretivo() {
 	const [manutencao, setManutencao] = useState({
 		carro: carro_id,
 		nome: manutencaoData.nome || "",
-		tipo: tipo,
+		tipo,
 		descricao: "",
 		quilometragem: "",
 		custo: "",
 		data: dateToday,
-		nota: ""
+		nota: "",
 	});
 
 	const showFeedback = (type, message) => {
@@ -37,6 +38,29 @@ export default function NovoCorretivo() {
 			feedback: { type, message },
 		}));
 	};
+
+	// handler  sessão expirada
+	const handleForbidden = useCallback(() => {
+		setLocalStorage((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		setSessionStorage((prev) => ({
+			...prev,
+			carros_vistos: [],
+		}));
+
+		navigate("/login", { replace: true });
+	}, [setLocalStorage, setSessionStorage, navigate]);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -55,9 +79,15 @@ export default function NovoCorretivo() {
 		try {
 			const res = await fetch("/api/criarCorretivo/", {
 				method: "POST",
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ manutencao, carro_kms }),
 			});
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
 
 			const data = await res.json();
 
@@ -72,6 +102,7 @@ export default function NovoCorretivo() {
 			if (tipo === "preventivo") {
 				const resUpdate = await fetch("/api/atualizarPreventivoDataKm/", {
 					method: "POST",
+					credentials: "include",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
 						manutencaoData,
@@ -79,6 +110,12 @@ export default function NovoCorretivo() {
 						data: manutencao.data,
 					}),
 				});
+
+				if (resUpdate.status === 403) {
+					handleForbidden();
+					return;
+				}
+
 				const dataUpdate = await resUpdate.json();
 
 				if (resUpdate.ok) {
@@ -86,12 +123,7 @@ export default function NovoCorretivo() {
 						viewed_cars,
 						carro_id,
 						manutencaoData.id,
-						{
-							trocadoNoKm: dataUpdate.trocadoNoKm,
-							trocarNoKm: dataUpdate.trocarNoKm,
-							trocadoNaData: dataUpdate.trocadoNaData,
-							trocarNaData: dataUpdate.trocarNaData,
-						}
+						dataUpdate
 					);
 
 					const proximaData = proximaManutencao(updatedPreventivos);
@@ -110,12 +142,19 @@ export default function NovoCorretivo() {
 			if (tipo === "cronico") {
 				const resUpdate = await fetch("/api/atualizarCronicoKm/", {
 					method: "POST",
+					credentials: "include",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
 						manutencaoData,
 						km: manutencao.quilometragem,
 					}),
 				});
+
+				if (resUpdate.status === 403) {
+					handleForbidden();
+					return;
+				}
+
 				const dataUpdate = await resUpdate.json();
 
 				if (resUpdate.ok) {
@@ -123,10 +162,7 @@ export default function NovoCorretivo() {
 						viewed_cars,
 						carro_id,
 						manutencaoData.id,
-						{
-							trocadoNoKm: dataUpdate.trocadoNoKm,
-							trocarNoKm: dataUpdate.trocarNoKm,
-						}
+						dataUpdate
 					);
 				}
 			}
@@ -161,54 +197,28 @@ export default function NovoCorretivo() {
 
 			<div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
 				<button onClick={() => navigate(-1)}>Voltar</button>
-				<button type="button" onClick={guardarManutencao}>
-					Guardar
-				</button>
+				<button onClick={guardarManutencao}>Guardar</button>
 			</div>
 
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
-				<label>
-					Nome:
-					<input name="nome" value={manutencao.nome} onChange={handleChange} />
-				</label>
-
-				<label>
-					Tipo:
+				<label>Nome:<input name="nome" value={manutencao.nome} onChange={handleChange} /></label>
+				<label>Tipo:
 					<select name="tipo" value={manutencao.tipo} onChange={handleChange}>
 						<option value="corretivo">Corretivo</option>
 						<option value="preventivo">Preventivo</option>
 						<option value="cronico">Crónico</option>
 					</select>
 				</label>
-
-				<label>
-					Descrição:
-					<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} />
-				</label>
-
-				<label>
-					Quilometragem:
-					<input type="number" name="quilometragem" value={manutencao.quilometragem} onChange={handleChange} />
-				</label>
-
-				<label>
-					Data:
-					<input type="date" name="data" value={manutencao.data} onChange={handleChange} />
-				</label>
-
-				<label>
-					Custo (€):
-					<input type="number" name="custo" value={manutencao.custo} onChange={handleChange} />
-				</label>
-
-				<label>
-					Notas:
-					<textarea name="nota" value={manutencao.nota} onChange={handleChange} />
-				</label>
+				<label>Descrição:<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} /></label>
+				<label>Quilometragem:<input type="number" name="quilometragem" value={manutencao.quilometragem} onChange={handleChange} /></label>
+				<label>Data:<input type="date" name="data" value={manutencao.data} onChange={handleChange} /></label>
+				<label>Custo (€):<input type="number" name="custo" value={manutencao.custo} onChange={handleChange} /></label>
+				<label>Notas:<textarea name="nota" value={manutencao.nota} onChange={handleChange} /></label>
 			</div>
 		</div>
 	);
 }
+
 
 function recalcularRisco(arr, novoKm) {
 	return arr.map((man) => ({

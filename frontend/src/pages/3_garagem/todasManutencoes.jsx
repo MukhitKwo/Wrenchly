@@ -12,15 +12,14 @@ export default function TodasManutencoes() {
 	const { carro_id } = useParams();
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
 	const { setState: setLocalStorage } = useLocalAppState();
-	const viewed_cars = useMemo(() => getSessionStorage?.carros_vistos || [], [getSessionStorage]);
-	const showFeedback = useCallback((type, message) => {
-		setLocalStorage((prev) => ({
-			...prev,
-			feedback: { type, message },
-		}));
-	}, [setLocalStorage]);
-	const { loading, runWithLoading } = usePageLoader(true);
 	const navigate = useNavigate();
+
+	const viewed_cars = useMemo(
+		() => getSessionStorage?.carros_vistos || [],
+		[getSessionStorage]
+	);
+
+	const { loading, runWithLoading } = usePageLoader(true);
 
 	const [carro, setCarro] = useState();
 	const [corretivos, setCorretivos] = useState([]);
@@ -28,6 +27,36 @@ export default function TodasManutencoes() {
 	const [cronicos, setCronicos] = useState([]);
 	const [carroKms, setCarroKms] = useState();
 	const [ordenacao, setOrdenacao] = useState("km");
+
+	const showFeedback = useCallback((type, message) => {
+		setLocalStorage((prev) => ({
+			...prev,
+			feedback: { type, message },
+		}));
+	}, [setLocalStorage]);
+
+	// handler sessão expirada
+	const handleForbidden = useCallback(() => {
+		setLocalStorage((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		setSessionStorage((prev) => ({
+			...prev,
+			carros_vistos: [],
+		}));
+
+		navigate("/login", { replace: true });
+	}, [setLocalStorage, setSessionStorage, navigate]);
 
 	const ordenarManutencoes = (listaManutencoes) => {
 		if (!Array.isArray(listaManutencoes)) return [];
@@ -49,10 +78,9 @@ export default function TodasManutencoes() {
 		if (viewed_cars.length > 0) {
 			const car_data = viewed_cars.find((car) => car.id === Number(carro_id));
 
-			if (car_data != null) {
+			if (car_data) {
 				setCarroKms(car_data.quilometragem);
 				setCarro(car_data);
-
 				setCorretivos(car_data.manutencoes.corretivos);
 				setPreventivos(car_data.manutencoes.preventivos);
 				setCronicos(car_data.manutencoes.cronicos);
@@ -61,54 +89,64 @@ export default function TodasManutencoes() {
 		}
 
 		try {
-			const res = await fetch(`/api/obterTodasManutencoes/?carro_id=${carro_id}`);
+			const res = await fetch(`/api/obterTodasManutencoes/?carro_id=${carro_id}`, {
+				credentials: "include",
+			});
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
+
 			const data = await res.json();
 
-			if (res.ok) {
-				const carroKms = data.carro_data.quilometragem;
-
-				const AdicionarRisco = (manutencao) =>
-					manutencao.map((man) => ({
-						...man,
-						risco: Number(((carroKms - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2)),
-					}));
-
-				const preventivoComRisco = AdicionarRisco(data.preventivos_data);
-				const cronicoComRisco = AdicionarRisco(data.cronicos_data);
-
-				setCarro(data.carro_data);
-				setCarroKms(carroKms);
-				setCorretivos(data.corretivos_data);
-				setPreventivos(preventivoComRisco);
-				setCronicos(cronicoComRisco);
-
-				setSessionStorage((prev) => {
-					const carros = prev.carros_vistos || [];
-
-					const exists = carros.some((c) => c.id === data.carro_data.id);
-					if (exists) return prev;
-
-					return {
-						...prev,
-						carros_vistos: [
-							...carros,
-							{
-								...data.carro_data,
-								manutencoes: {
-									corretivos: data.corretivos_data,
-									preventivos: preventivoComRisco,
-									cronicos: cronicoComRisco,
-								},
-							},
-						],
-					};
-				});
+			if (!res.ok) {
+				showFeedback("error", "Erro ao carregar manutenções.");
+				return;
 			}
+
+			const carroKms = data.carro_data.quilometragem;
+
+			const adicionarRisco = (manutencao) =>
+				manutencao.map((man) => ({
+					...man,
+					risco: Number(((carroKms - man.trocadoNoKm) / man.kmsEntreTroca).toFixed(2)),
+				}));
+
+			const preventivoComRisco = adicionarRisco(data.preventivos_data);
+			const cronicoComRisco = adicionarRisco(data.cronicos_data);
+
+			setCarro(data.carro_data);
+			setCarroKms(carroKms);
+			setCorretivos(data.corretivos_data);
+			setPreventivos(preventivoComRisco);
+			setCronicos(cronicoComRisco);
+
+			setSessionStorage((prev) => {
+				const carros = prev.carros_vistos || [];
+				const exists = carros.some((c) => c.id === data.carro_data.id);
+				if (exists) return prev;
+
+				return {
+					...prev,
+					carros_vistos: [
+						...carros,
+						{
+							...data.carro_data,
+							manutencoes: {
+								corretivos: data.corretivos_data,
+								preventivos: preventivoComRisco,
+								cronicos: cronicoComRisco,
+							},
+						},
+					],
+				};
+			});
 		} catch (err) {
 			console.error(err);
 			showFeedback("error", "Erro ao carregar manutenções.");
 		}
-	}, [carro_id, viewed_cars, setSessionStorage, showFeedback]);
+	}, [carro_id, viewed_cars, setSessionStorage, showFeedback, handleForbidden]);
 
 	useEffect(() => {
 		runWithLoading(() => verManutencoes());
@@ -117,7 +155,7 @@ export default function TodasManutencoes() {
 	if (loading) {
 		return <LoadingSpinner text="A carregar manutenções..." />;
 	}
-	
+
 	if (!carro) {
 		return (
 			<div style={{ padding: "20px" }}>
@@ -126,6 +164,7 @@ export default function TodasManutencoes() {
 			</div>
 		);
 	}
+
 	return (
 		<div style={{ padding: "20px" }}>
 			<h1>Manutenções</h1>
@@ -133,14 +172,17 @@ export default function TodasManutencoes() {
 
 			<div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
 				<Link to="/garagem">
-					<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Voltar</button>
+					<button>Voltar</button>
 				</Link>
 				<Link to={`/editarCarro/${carro_id}`}>
-					<button style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>Editar Carro</button>
+					<button>Editar Carro</button>
 				</Link>
 			</div>
+
 			<div style={{ marginBottom: "15px" }}>
-				<label style={{ marginRight: "10px" }}>Ordenar preventivos e cronicos por:</label>
+				<label style={{ marginRight: "10px" }}>
+					Ordenar preventivos e crónicos por:
+				</label>
 				<select value={ordenacao} onChange={(e) => setOrdenacao(e.target.value)}>
 					<option value="km">Quilometragem</option>
 					<option value="data">Data</option>
@@ -148,15 +190,24 @@ export default function TodasManutencoes() {
 				</select>
 			</div>
 
-			{/* ONE grid */}
 			<div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
 				<ListaCorretivos
-					corretivos={corretivos.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0))}
+					corretivos={corretivos.sort(
+						(a, b) => new Date(b.data || 0) - new Date(a.data || 0)
+					)}
 					carroId={carro_id}
 					carroKms={carro?.quilometragem || 0}
 				/>
-				<ListaPreventivos preventivos={ordenarManutencoes(preventivos)} carroId={carro_id} carroKms={carro?.quilometragem || 0} />
-				<ListaCronicos cronicos={ordenarManutencoes(cronicos)} carroId={carro_id} carroKms={carro?.quilometragem || 0} />
+				<ListaPreventivos
+					preventivos={ordenarManutencoes(preventivos)}
+					carroId={carro_id}
+					carroKms={carro?.quilometragem || 0}
+				/>
+				<ListaCronicos
+					cronicos={ordenarManutencoes(cronicos)}
+					carroId={carro_id}
+					carroKms={carro?.quilometragem || 0}
+				/>
 			</div>
 		</div>
 	);

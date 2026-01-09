@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
@@ -23,12 +23,35 @@ export default function VerPreventivo() {
 	const [edit, setEdit] = useState(false);
 	const [carro_km, setCarro_km] = useState(null);
 
-	const showFeedback = (type, message) => {
+	const showFeedback = useCallback((type, message) => {
 		setLocalStorage((prev) => ({
 			...prev,
 			feedback: { type, message },
 		}));
-	};
+	}, [setLocalStorage]);
+
+	// sessão expirada
+	const handleForbidden = useCallback(() => {
+		setLocalStorage((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		setSessionStorage((prev) => ({
+			...prev,
+			carros_vistos: [],
+		}));
+
+		navigate("/login", { replace: true });
+	}, [setLocalStorage, setSessionStorage, navigate]);
 
 	useEffect(() => {
 		const car = viewed_cars.find((c) => c.id === Number(carro_id));
@@ -52,8 +75,14 @@ export default function VerPreventivo() {
 			const res = await fetch("/api/editarPreventivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 				body: JSON.stringify({ manutencao, carro_km }),
 			});
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
 
 			const data = await res.json();
 
@@ -97,11 +126,17 @@ export default function VerPreventivo() {
 			const res = await fetch("/api/apagarPreventivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 				body: JSON.stringify({
 					id: manutencao.id,
 					carro_id: manutencao.carro,
 				}),
 			});
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
 
 			const data = await res.json();
 
@@ -207,15 +242,12 @@ export default function VerPreventivo() {
 
 		car.proxima_manutencao = novaData;
 
-		setLocalStorage({
-			...getLocalStorage,
+		setLocalStorage((prev) => ({
+			...prev,
 			carros_preview: carros,
-		});
+		}));
 	}
 }
-
-/* ===== helpers inalterados ===== */
-
 function atualizarPreventivo(viewedCars, carroId, manutencaoId, novoPreventivo, carro_km) {
 	return viewedCars.map((car) => {
 		if (car.id !== Number(carroId)) return car;

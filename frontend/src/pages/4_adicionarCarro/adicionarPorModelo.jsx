@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 
@@ -27,6 +27,24 @@ export default function ProcurarCarroPorModelo() {
 	});
 
 	const [file, setFile] = useState(null);
+
+	/* ================== 403 ================== */
+	const handleForbidden = useCallback(() => {
+		setLocalState((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		navigate("/login", { replace: true });
+	}, [setLocalState, navigate]);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -61,6 +79,12 @@ export default function ProcurarCarroPorModelo() {
 				body: JSON.stringify({ caracteristicas }),
 			});
 
+			//  403 antes de tentar ler JSON
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
+
 			const data = await res.json();
 
 			if (!res.ok) {
@@ -74,7 +98,7 @@ export default function ProcurarCarroPorModelo() {
 				return;
 			}
 
-			// upload da imagem (opcional)
+			// upload da imagem
 			if (file) {
 				const carroId = data.carro_data.id;
 				const formData = new FormData();
@@ -83,8 +107,15 @@ export default function ProcurarCarroPorModelo() {
 
 				const resImage = await fetch("/api/adicionarCarroImagem/", {
 					method: "POST",
+					credentials: "include", //  cookie/sessão
 					body: formData,
 				});
+
+				// 403 no upload também
+				if (resImage.status === 403) {
+					handleForbidden();
+					return;
+				}
 
 				if (!resImage.ok) {
 					setLocalState((prev) => ({

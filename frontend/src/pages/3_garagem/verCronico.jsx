@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
@@ -10,20 +10,43 @@ export default function VerCronico() {
 	const { carro_id, manutencao_id } = useParams();
 
 	const viewed_cars = useMemo(
-		() => session.carros_vistos || [],
-		[session.carros_vistos]
+		() => session?.carros_vistos || [],
+		[session?.carros_vistos]
 	);
 
 	const [manutencao, setManutencao] = useState(null);
 	const [edit, setEdit] = useState(false);
 	const [carro_km, setCarro_km] = useState(null);
 
-	const showFeedback = (type, message) => {
+	const showFeedback = useCallback((type, message) => {
 		setLocalStorage((prev) => ({
 			...prev,
 			feedback: { type, message },
 		}));
-	};
+	}, [setLocalStorage]);
+
+	//  handler sessão expirada
+	const handleForbidden = useCallback(() => {
+		setLocalStorage((prev) => ({
+			...prev,
+			user: null,
+			garagem: null,
+			definicoes: null,
+			carros_preview: [],
+			notas: [],
+			feedback: {
+				type: "error",
+				message: "Sessão expirada. Inicia sessão novamente.",
+			},
+		}));
+
+		setSession((prev) => ({
+			...prev,
+			carros_vistos: [],
+		}));
+
+		navigate("/login", { replace: true });
+	}, [setLocalStorage, setSession, navigate]);
 
 	useEffect(() => {
 		const car = viewed_cars.find((c) => c.id === Number(carro_id));
@@ -47,8 +70,14 @@ export default function VerCronico() {
 			const res = await fetch("/api/editarCronico/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 				body: JSON.stringify({ manutencao, carro_km }),
 			});
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
 
 			const data = await res.json();
 			if (!res.ok) {
@@ -86,11 +115,17 @@ export default function VerCronico() {
 			const res = await fetch("/api/apagarCronico/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
+				credentials: "include",
 				body: JSON.stringify({
 					id: manutencao.id,
 					carro_id: manutencao.carro,
 				}),
 			});
+
+			if (res.status === 403) {
+				handleForbidden();
+				return;
+			}
 
 			const data = await res.json();
 			if (!res.ok) {
@@ -134,12 +169,22 @@ export default function VerCronico() {
 			<div style={{ display: "grid", gap: "10px", maxWidth: "400px" }}>
 				<label>
 					Nome:
-					<input name="nome" value={manutencao.nome} onChange={handleChange} disabled={!edit} />
+					<input
+						name="nome"
+						value={manutencao.nome}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
 				</label>
 
 				<label>
 					Descrição:
-					<textarea name="descricao" value={manutencao.descricao} onChange={handleChange} disabled={!edit} />
+					<textarea
+						name="descricao"
+						value={manutencao.descricao}
+						onChange={handleChange}
+						disabled={!edit}
+					/>
 				</label>
 
 				<label>
