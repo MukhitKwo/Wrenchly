@@ -3,10 +3,20 @@ body {
 	background-color: #f4f4f4;
 	margin: 0;
 	padding: 0;
+	color: #111;
 }
 
-h1, h2 {
-	margin-bottom: 10px;
+body.theme-dark {
+	background-color: #121212;
+	color: #eaeaea;
+}
+
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark p,
+body.theme-dark label {
+	color: #eaeaea;
 }
 
 button {
@@ -18,6 +28,11 @@ button {
 	border-radius: 4px;
 }
 
+body.theme-dark button {
+	background-color: #333;
+}
+
 button:hover {
 	background-color: #444;
 }
+

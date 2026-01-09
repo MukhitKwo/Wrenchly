@@ -10,3 +10,9 @@
 	margin-bottom: 10px;
 	border-radius: 6px;
 }
+body.theme-dark .card,
+body.theme-dark .page,
+body.theme-dark .page-box {
+	background-color: #1e1e1e;
+	color: #eaeaea;
+}

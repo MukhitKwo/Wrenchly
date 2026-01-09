@@ -44,13 +44,13 @@
 
 /* VARIAÇÕES */
 .sobre-section.light {
-    background-color: #f5f7fa;
+    background-color: inherit;
     padding: 60px 20px;
     border-radius: 10px;
 }
 
 .sobre-section.destaque {
-    background: linear-gradient(135deg, #eef3f9, #ffffff);
+    background: inherit;
     padding: 60px 20px;
     border-left: 6px solid #1976d2;
     border-radius: 6px;
@@ -88,7 +88,7 @@
 }
 
 .card {
-    background: white;
+    background: inherit;
     border-radius: 10px;
     padding: 25px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
@@ -130,4 +130,31 @@
     .sobre-cards {
         grid-template-columns: 1fr;
     }
+}
+
+body.theme-dark .sobre-page {
+    color: #eaeaea;
+}
+
+/* Secções */
+body.theme-dark .sobre-section {
+    color: #eaeaea;
+}
+
+/* Cards */
+body.theme-dark .card {
+    background-color: #1e1e1e;
+    color: #eaeaea;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+
+/* Listas */
+body.theme-dark .sobre-section li::before {
+    color: #64b5f6; /* azul mais suave no dark */
+}
+
+/* Footer */
+body.theme-dark .sobre-footer {
+    background-color: #0a1e3a;
+    color: #eaeaea;
 }

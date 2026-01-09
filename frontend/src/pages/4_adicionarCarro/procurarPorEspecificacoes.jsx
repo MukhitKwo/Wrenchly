@@ -65,7 +65,7 @@ export default function ProcurarPorEspecificacoes() {
 		}
 	};
 	return (
-		<div style={{ backgroundColor: "#f9f9f9", padding: "25px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+		<div style={{ backgroundColor: "inherit", padding: "25px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
 			<h2 style={{ marginBottom: "20px", borderBottom: "1px solid #ddd", paddingBottom: "5px" }}>Pesquisar por Especificações</h2>
 
 			<div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "12px" }}>

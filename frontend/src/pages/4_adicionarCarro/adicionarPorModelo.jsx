@@ -161,7 +161,7 @@ export default function ProcurarCarroPorModelo() {
 	};
 
 	return (
-		<div style={{ backgroundColor: "#f9f9f9", padding: "25px", borderRadius: "12px" }}>
+		<div style={{ backgroundColor: "inherit", padding: "25px", borderRadius: "12px" }}>
 			<h2 style={{ marginBottom: "20px" }}>Pesquisar por Modelo</h2>
 
 			<div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "12px" }}>

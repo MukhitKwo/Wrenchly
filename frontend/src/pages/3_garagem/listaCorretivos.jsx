@@ -34,8 +34,8 @@ export default function ListaCorretivos({ corretivos, carroId, carroKms }) {
 							cursor: "pointer",
 							transition: "background 0.2s",
 						}}
-						onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
-						onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
+						onMouseEnter={(e) => (e.currentTarget.style.background = "inherit")}
+						onMouseLeave={(e) => (e.currentTarget.style.background = "inherit")}
 					>
 						<strong>{manutencao.nome}</strong>
 						<p>No Kms: {manutencao.quilometragem}</p>

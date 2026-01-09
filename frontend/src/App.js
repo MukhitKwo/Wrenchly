@@ -1,8 +1,20 @@
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Feedback from "./components/Feedback.jsx";
 import Navbar from "./components/navbar";
+import { useLocalAppState } from "./context/appState.local";
 
 function App() {
+  const { state } = useLocalAppState();
+
+  useEffect(() => {
+    if (state?.definicoes?.tema === "escuro") {
+      document.body.classList.add("theme-dark");
+    } else {
+      document.body.classList.remove("theme-dark");
+    }
+  }, [state?.definicoes?.tema]);
+
   return (
     <div className="app-container">
       <Navbar />
@@ -12,10 +24,11 @@ function App() {
       </main>
       <footer className="footer">
         <p style={{ textAlign: "center", padding: "20px" }}>
-          Wrenchly © 2026
+          Wrenchly ©️ 2026
         </p>
       </footer>
     </div>
   );
 }
+
 export default App;

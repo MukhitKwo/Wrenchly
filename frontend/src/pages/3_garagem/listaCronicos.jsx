@@ -36,8 +36,8 @@ export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 							position: "relative",
 							borderLeft: `6px solid ${getRiskColor(manutencao.risco)}`,
 						}}
-						onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
-						onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
+						onMouseEnter={(e) => (e.currentTarget.style.background = "inherit")}
+						onMouseLeave={(e) => (e.currentTarget.style.background = "inherit")}
 						onClick={() => navigate(`/todasManutencoes/${carroId}/cronico/${manutencao.id}`)}
 					>
 						<strong>{manutencao.nome}</strong>

@@ -36,8 +36,8 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 							position: "relative",
 							borderLeft: `6px solid ${getRiskColor(manutencao.risco)}`,
 						}}
-						onMouseEnter={(e) => (e.currentTarget.style.background = "#fafafa")}
-						onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
+						onMouseEnter={(e) => (e.currentTarget.style.background = "inherit")}
+						onMouseLeave={(e) => (e.currentTarget.style.background = "inherit")}
 						onClick={() => navigate(`/todasManutencoes/${carroId}/preventivo/${manutencao.id}`)}
 					>
 						<strong>{manutencao.nome}</strong>

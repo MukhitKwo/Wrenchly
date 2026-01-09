@@ -35,7 +35,7 @@ export default function NovoCarro() {
 				</button>
 			</div>
 
-			<div style={{ backgroundColor: "#f9f9f9", padding: "20px", borderRadius: "12px" }}>{renderComponent()}</div>
+			<div style={{ backgroundColor: "inherit", padding: "20px", borderRadius: "12px" }}>{renderComponent()}</div>
 		</div>
 	);
 }

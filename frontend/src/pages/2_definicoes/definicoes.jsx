@@ -14,8 +14,6 @@ export default function Definicoes() {
 
 	const { clear: clearSessionStorage } = useSessionAppState();
 
-
-
 	const showFeedback = (type, message) => {
 		setLocalStorage((prev) => ({
 			...prev,
@@ -23,7 +21,7 @@ export default function Definicoes() {
 		}));
 	};
 
-
+	/* ================== Forbidden ================== */
 	const handleForbidden = useCallback(() => {
 		clearLocalStorage();
 		clearSessionStorage();
@@ -39,7 +37,7 @@ export default function Definicoes() {
 		navigate("/login", { replace: true });
 	}, [clearLocalStorage, clearSessionStorage, setLocalStorage, navigate]);
 
-
+	/* ================== STATE ================== */
 	const definicoes_data = getLocalStorage?.definicoes || {
 		tema: "claro",
 		notificacoes: false,
@@ -60,8 +58,14 @@ export default function Definicoes() {
 		}));
 	};
 
-
+	/* ================== SUBMIT ================== */
 	const atualizarDefinicoes = async () => {
+		// estado inválido
+		if (!definicoes_data?.id) {
+			showFeedback("error", "Definições não carregadas. Faz login novamente.");
+			return;
+		}
+
 		try {
 			const res = await fetch(
 				`/api/atualizarDefinicoes/${definicoes_data.id}`,
@@ -96,8 +100,6 @@ export default function Definicoes() {
 			showFeedback("error", "Erro inesperado ao guardar definições.");
 		}
 	};
-
-
 	return (
 		<div className="page-box">
 			<h1>Definições</h1>
@@ -109,17 +111,6 @@ export default function Definicoes() {
 					<option value="escuro">Escuro</option>
 				</select>
 			</label>
-
-			<label>
-				<input
-					type="checkbox"
-					name="notificacoes"
-					checked={definicoes.notificacoes}
-					onChange={handleChange}
-				/>
-				Permitir notificações
-			</label>
-
 			<label>
 				Linguagem
 				<select
@@ -132,7 +123,10 @@ export default function Definicoes() {
 				</select>
 			</label>
 
-			<button onClick={atualizarDefinicoes}>
+			<button
+				onClick={atualizarDefinicoes}
+				disabled={!definicoes_data?.id}
+			>
 				Guardar definições
 			</button>
 		</div>

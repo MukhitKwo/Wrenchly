@@ -30,3 +30,54 @@ code {
 	text-align: center;
 	background-color: #eee;
 }
+
+body.theme-dark {
+	background-color: #121212;
+	color: #eaeaea;
+}
+
+body.theme-dark .page-box {
+	background-color: #1e1e1e;
+	border-color: #333;
+}
+
+body.theme-dark .card {
+	background-color: #1e1e1e;
+}
+
+body.theme-dark button {
+	background-color: #333;
+	color: #fff;
+}
+
+body.theme-dark button:hover {
+	background-color: #444;
+}
+
+body.theme-dark .footer {
+	background-color: #1a1a1a;
+	color: #aaa;
+}
+body.theme-dark,
+body.theme-dark p,
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark h5,
+body.theme-dark h6,
+body.theme-dark label,
+body.theme-dark span {
+	color: #eaeaea;
+}
+body.theme-dark input,
+body.theme-dark select,
+body.theme-dark textarea {
+	background-color: #1e1e1e;
+	color: #eaeaea;
+	border: 1px solid #444;
+}
+
+body.theme-dark input::placeholder {
+	color: #aaa;
+}
