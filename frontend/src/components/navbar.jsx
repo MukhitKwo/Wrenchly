@@ -2,12 +2,11 @@ import { useState } from "react";
 import {
     FaBars,
     FaCar,
-    FaCog,
     FaHome,
     FaInfoCircle,
     FaSignInAlt,
     FaStickyNote,
-    FaUser,
+    FaUser
 } from "react-icons/fa";
 import { Link, NavLink } from "react-router-dom";
 import { useLocalAppState } from "../context/appState.local";
@@ -41,7 +40,7 @@ function Navbar() {
                         <>
                             <NavLink to="/garagem" onClick={()=>setMenuOpen(false)}><FaCar /> Garagem</NavLink>
                             <NavLink to="/notas" onClick={()=>setMenuOpen(false)}><FaStickyNote /> Notas</NavLink>
-                            <NavLink to="/definicoes" onClick={()=>setMenuOpen(false)}><FaCog /> Definições</NavLink>
+                            {/*<NavLink to="/definicoes" onClick={()=>setMenuOpen(false)}><FaCog /> Definições</NavLink>*/}
                             <NavLink to="/perfil" onClick={()=>setMenuOpen(false)}><FaUser /> Perfil</NavLink>
                         </>
                     )}

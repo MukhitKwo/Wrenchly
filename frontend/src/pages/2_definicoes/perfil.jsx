@@ -12,11 +12,17 @@ export default function Perfil() {
   const { clear: clearSession } = useSessionAppState();
 
   const user = localState?.user;
+  const definicoes_data = localState?.definicoes;
 
   const [password1, setPassword1] = useState("");
   const [password2, setPassword2] = useState("");
   const [codigo, setCodigo] = useState("");
   const [codigoHashed, setCodigoHashed] = useState(null);
+
+  const [definicoes, setDefinicoes] = useState({
+    tema: definicoes_data?.tema || "claro",
+    linguagem: definicoes_data?.linguagem || "pt",
+  });
 
   const showFeedback = (type, message) => {
     setLocalState((prev) => ({
@@ -25,7 +31,7 @@ export default function Perfil() {
     }));
   };
 
-  /* ============ SESSÃO EXPIRADA (403) ============ */
+  /* ============ SESSÃO EXPIRADA ============ */
   const handleForbidden = () => {
     clearLocal();
     clearSession();
@@ -52,20 +58,12 @@ export default function Perfil() {
       clearSession();
       showFeedback("success", "Sessão terminada com sucesso.");
       navigate("/login");
-    } catch (err) {
-      console.error(err);
+    } catch {
       showFeedback("error", "Erro inesperado ao terminar sessão.");
     }
   };
-
-  /* ================= APAGAR CONTA ================= */
   const handleDeleteAccount = async () => {
-    if (
-      !window.confirm(
-        " Esta ação é irreversível. Tens a certeza que queres apagar a conta?"
-      )
-    )
-      return;
+    if (!window.confirm("Esta ação é irreversível. Tens a certeza?")) return;
 
     try {
       const res = await fetch("/api/apagarUser/", {
@@ -86,16 +84,13 @@ export default function Perfil() {
       } else {
         showFeedback("error", "Erro ao apagar a conta.");
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
       showFeedback("error", "Erro inesperado ao apagar conta.");
     }
   };
-
-  /* ================= PEDIR CÓDIGO ================= */
   const pedirCodigoSecreto = async () => {
     if (!password1 || !password2) {
-      showFeedback("error", "Preenche ambos os campos da palavra-passe.");
+      showFeedback("error", "Preenche ambos os campos.");
       return;
     }
 
@@ -116,26 +111,16 @@ export default function Perfil() {
       }
 
       const data = await res.json();
-
-      if (res.ok) {
-        setCodigoHashed(data.hashed_code);
-        showFeedback(
-          "success",
-          "Código de verificação enviado para o teu email."
-        );
-      } else {
-        showFeedback("error", data.message || "Erro ao enviar código.");
-      }
-    } catch (err) {
-      console.error(err);
-      showFeedback("error", "Erro inesperado ao pedir código.");
+      setCodigoHashed(data.hashed_code);
+      showFeedback("success", "Código enviado para o email.");
+    } catch {
+      showFeedback("error", "Erro ao pedir código.");
     }
   };
 
-  /* ================= ALTERAR PASSWORD ================= */
   const alterarPassword = async () => {
     if (!codigo) {
-      showFeedback("error", "Insere o código recebido por email.");
+      showFeedback("error", "Insere o código.");
       return;
     }
 
@@ -156,20 +141,46 @@ export default function Perfil() {
         return;
       }
 
-      const data = await res.json();
-
       if (res.ok) {
         setPassword1("");
         setPassword2("");
         setCodigo("");
         setCodigoHashed(null);
-        showFeedback("success", "Palavra-passe atualizada com sucesso.");
-      } else {
-        showFeedback("error", data.message || "Erro ao atualizar palavra-passe.");
+        showFeedback("success", "Palavra-passe atualizada.");
       }
-    } catch (err) {
-      console.error(err);
-      showFeedback("error", "Erro inesperado ao atualizar palavra-passe.");
+    } catch {
+      showFeedback("error", "Erro ao atualizar palavra-passe.");
+    }
+  };
+  const atualizarDefinicoes = async () => {
+    if (!definicoes_data?.id) return;
+
+    try {
+      const res = await fetch(
+        `/api/atualizarDefinicoes/${definicoes_data.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ definicoes }),
+        }
+      );
+
+      if (res.status === 403) {
+        handleForbidden();
+        return;
+      }
+
+      const data = await res.json();
+
+      setLocalState((prev) => ({
+        ...prev,
+        definicoes: data.definicoes_data,
+      }));
+
+      showFeedback("success", "Preferências atualizadas.");
+    } catch {
+      showFeedback("error", "Erro ao guardar preferências.");
     }
   };
 
@@ -187,6 +198,30 @@ export default function Perfil() {
 
       <div className="perfil-divider" />
 
+      <div className="perfil-section">
+        <h2>Preferências</h2>
+
+        <label>
+          Tema
+          <select
+            value={definicoes.tema}
+            onChange={(e) =>
+              setDefinicoes((p) => ({ ...p, tema: e.target.value }))
+            }
+          >
+            <option value="claro">Claro</option>
+            <option value="escuro">Escuro</option>
+          </select>
+        </label>
+
+        <div className="perfil-actions">
+          <button onClick={atualizarDefinicoes}>
+            Guardar preferências
+          </button>
+        </div>
+      </div>
+
+      <div className="perfil-divider" />
       <div className="perfil-section">
         <h2>Segurança</h2>
 
@@ -212,28 +247,21 @@ export default function Perfil() {
 
         <div className="perfil-actions">
           <button onClick={pedirCodigoSecreto}>
-            Pedir código de verificação
+            Pedir código
           </button>
         </div>
 
         {codigoHashed && (
           <>
-            <div className="perfil-form full">
-              <label>
-                Código recebido por email
-                <input
-                  type="text"
-                  value={codigo}
-                  onChange={(e) => setCodigo(e.target.value)}
-                />
-              </label>
-            </div>
-
-            <div className="perfil-actions">
-              <button onClick={alterarPassword}>
-                Alterar palavra-passe
-              </button>
-            </div>
+            <input
+              type="text"
+              placeholder="Código"
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value)}
+            />
+            <button onClick={alterarPassword}>
+              Alterar palavra-passe
+            </button>
           </>
         )}
       </div>
@@ -243,11 +271,9 @@ export default function Perfil() {
       <div className="perfil-section">
         <h2>Conta</h2>
         <div className="perfil-actions">
-          <button className="secondary" onClick={handleLogout}>
-            Sair da Conta
-          </button>
+          <button onClick={handleLogout}>Sair</button>
           <button className="danger" onClick={handleDeleteAccount}>
-            Apagar Conta
+            Apagar conta
           </button>
         </div>
       </div>

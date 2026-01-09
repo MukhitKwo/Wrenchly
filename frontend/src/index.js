@@ -19,7 +19,6 @@ import Registo from "./pages/1_homepage/registo.jsx";
 import Sobre from "./pages/1_homepage/sobre.jsx";
 
 // Definições
-import Definicoes from "./pages/2_definicoes/definicoes.jsx";
 import Perfil from "./pages/2_definicoes/perfil.jsx";
 
 // Adicionar carro
@@ -58,7 +57,7 @@ const router = createBrowserRouter([
 			{element: <ProtectedRoute />, 
 			children: [
 				{ path: "perfil", element: <Perfil /> },
-				{ path: "definicoes", element:<Definicoes /> },
+				//{ path: "definicoes", element:<Definicoes /> },
 
 				{ path: "novoCarro", element: <NovoCarro /> },
 				{ path: "adicionarPorModelo", element: <AdicionarCarroPorModelo />},
