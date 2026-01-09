@@ -3,7 +3,7 @@ import {
     FaBars,
     FaCar,
     FaHome,
-    FaInfoCircle,
+    FaPhoneAlt,
     FaSignInAlt,
     FaStickyNote,
     FaUser
@@ -33,15 +33,15 @@ function Navbar() {
                 </button>
 
                 <div className={`navbar-links ${menuOpen ? "open" : ""}`}>
-                    <NavLink to="/"> <FaHome />  Home </NavLink>
-                    <NavLink to="/contatos" onClick={()=>setMenuOpen(false)}> <FaInfoCircle />  Contatos </NavLink>
+                    <NavLink to="/"> <FaHome />   </NavLink>
+                    <NavLink to="/contatos" onClick={()=>setMenuOpen(false)}> <FaPhoneAlt />   </NavLink>
 
                     {isAuthenticated && (
                         <>
-                            <NavLink to="/garagem" onClick={()=>setMenuOpen(false)}><FaCar /> Garagem</NavLink>
-                            <NavLink to="/notas" onClick={()=>setMenuOpen(false)}><FaStickyNote /> Notas</NavLink>
+                            <NavLink to="/garagem" onClick={()=>setMenuOpen(false)}><FaCar /> </NavLink>
+                            <NavLink to="/notas" onClick={()=>setMenuOpen(false)}><FaStickyNote /> </NavLink>
                             {/*<NavLink to="/definicoes" onClick={()=>setMenuOpen(false)}><FaCog /> Definições</NavLink>*/}
-                            <NavLink to="/perfil" onClick={()=>setMenuOpen(false)}><FaUser /> Perfil</NavLink>
+                            <NavLink to="/perfil" onClick={()=>setMenuOpen(false)}><FaUser /></NavLink>
                         </>
                     )}
 

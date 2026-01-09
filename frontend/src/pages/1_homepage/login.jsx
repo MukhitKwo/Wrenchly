@@ -87,11 +87,11 @@ export default function Login() {
 				fontFamily: "sans-serif",
 			}}
 		>
-			<h2 style={{ marginBottom: "20px" }}>Login</h2>
+			<h2 style={{ marginBottom: "20px" }}>LOGIN</h2>
 
 			<input
 				type="text"
-				placeholder="Username"
+				placeholder="Utilizador"
 				value={username}
 				onChange={(e) => setUsername(e.target.value)}
 				style={{ width: "100%", padding: "10px", marginBottom: "15px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "16px" }}
@@ -99,7 +99,7 @@ export default function Login() {
 
 			<input
 				type="password"
-				placeholder="Password"
+				placeholder="Palavra-passe"
 				value={password}
 				onChange={(e) => setPassword(e.target.value)}
 				style={{ width: "100%", padding: "10px", marginBottom: "20px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "16px" }}
@@ -119,7 +119,7 @@ export default function Login() {
 						cursor: "pointer",
 					}}
 				>
-					Register
+					Registar
 				</button>
 
 				<button

@@ -20,7 +20,7 @@ export default function ListaCorretivos({ corretivos, carroId, carroKms }) {
 			</div>
 
 			{corretivas.length === 0 ? (
-				<p style={{ opacity: 0.6 }}>No corrective maintenances.</p>
+				<p style={{ opacity: 0.6 }}>Não tem corretivos.</p>
 			) : (
 				corretivas.map((manutencao) => (
 					<div

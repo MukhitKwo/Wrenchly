@@ -136,7 +136,7 @@ export default function ProcurarCarroPorModelo() {
 				...prev,
 				feedback: {
 					type: "success",
-					message: "Carro adicionado com sucesso.",
+					message: "A carregar os preventivos...",
 				},
 			}));
 

@@ -81,7 +81,7 @@ export default function AtualizarPreventivos() {
 				carros_preview: [...prev.carros_preview, updatedCarPreview],
 				feedback: {
 					type: "success",
-					message: "Preventivos atualizados com sucesso!",
+					message: "Carro adicionado com sucesso!",
 				},
 			}));
 
