@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const LocalAppStateContext = createContext(null);
 
@@ -9,7 +9,11 @@ export function LocalAppStateProvider({ children }) {
 	});
 
 	useEffect(() => {
-		localStorage.setItem("myLocalAppState", JSON.stringify(state));
+		const { feedback, ...stateToStore } = state;
+		localStorage.setItem(
+			"myLocalAppState",
+			JSON.stringify(stateToStore)
+		);
 	}, [state]);
 
 	const clear = () => {
