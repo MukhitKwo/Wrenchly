@@ -15,6 +15,7 @@ SB_USER = os.getenv("SB_USER")
 SB_PASSWORD = os.getenv("SB_PASSWORD")
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+USE_GEMINI_DUMMY = True if os.getenv("USE_GEMINI_DUMMY", "").lower() == "true" else False
 
 WRENCHLY_EMAIL = os.getenv("WRENCHLY_EMAIL")
 WRENCHLY_APP_KEY = os.getenv("WRENCHLY_APP_KEY")

@@ -35,7 +35,7 @@ from .crud import (
 )
 from .storage import StorageException, uploadImageToDB
 
-useDummyData = True
+useDummyData = settings.USE_GEMINI_DUMMY
 
 
 #! ============ CSRF EXEMPT FOR SESSION AUTHENTICATED APIs ============
@@ -117,7 +117,7 @@ def loginUser(request):
         return Response({"message": "User not found"}, status=401)
 
     login(request, user)
-    
+
     try:
         with transaction.atomic():
 
@@ -145,8 +145,6 @@ def loginUser(request):
         return Response({"message": e.message}, status=e.status)
     except Exception as e:
         return Response({"message": f"Registration failed: {str(e)}"}, status=400)
-
-    
 
     return Response({"message": "User, Garagem and Definiçoes found",
                      "user_data": userData(user),
@@ -540,6 +538,8 @@ def criarCorretivo(request):
                      "carro_km": carro_kms},
                     status=200)
 #! ============ LISTAR TODAS AS NOTAS ============
+
+
 @api_view(["GET"])
 @authentication_classes([CsrfExemptSessionAuthentication])
 @permission_classes([IsAuthenticated])
@@ -581,7 +581,7 @@ def criarNotaManual(request):
         "nota_data": nota
     }, status=201)
 
-    
+
 #! ============ EDITAR NOTA ============
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -628,7 +628,6 @@ def apagarNota(request):
     }, status=200)
 
 
-
 #! ============ EDITAR CORRETIVO ============
 @api_view(["POST"])
 @authentication_classes([CsrfExemptSessionAuthentication])
@@ -666,7 +665,6 @@ def apagarCorretivo(request):
 
     return Response({"message": "Corretivo deleted"},
                     status=200)
-
 
 
 #! ============ CRIAR PREVENTIVO ============
@@ -999,4 +997,3 @@ def getTrocarNaData(manutencao):
     # risco_dias = round(diasDifferenca / diasEntreTroca, 3)  # data - data, funciona sem .date()
 
     return trocarNaData
-
