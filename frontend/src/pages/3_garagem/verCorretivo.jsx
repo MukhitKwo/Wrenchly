@@ -64,7 +64,7 @@ export default function VerCorretivo() {
 
 	const guardarEdicao = async () => {
 		try {
-			const res = await fetch("/api/editarCorretivo/", {
+			const res = await fetch("http://localhost:8001/api/editarCorretivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
@@ -110,7 +110,7 @@ export default function VerCorretivo() {
 		if (!window.confirm("Apagar esta manutenção?")) return;
 
 		try {
-			const res = await fetch("/api/apagarCorretivo/", {
+			const res = await fetch("http://localhost:8001/api/apagarCorretivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",

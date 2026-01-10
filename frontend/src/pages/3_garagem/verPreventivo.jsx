@@ -72,7 +72,7 @@ export default function VerPreventivo() {
 
 	const guardarEdicao = async () => {
 		try {
-			const res = await fetch("/api/editarPreventivo/", {
+			const res = await fetch("http://localhost:8001/api/editarPreventivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
@@ -123,7 +123,7 @@ export default function VerPreventivo() {
 		if (!window.confirm("Apagar esta manutenção preventiva?")) return;
 
 		try {
-			const res = await fetch("/api/apagarPreventivo/", {
+			const res = await fetch("http://localhost:8001/api/apagarPreventivo/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",

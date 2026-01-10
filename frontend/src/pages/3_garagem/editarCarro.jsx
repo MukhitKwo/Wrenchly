@@ -51,7 +51,7 @@ export default function EditarCarro() {
 	const guardarAlteracoes = async () => {
 		setLoading(true);
 		try {
-			const res = await fetch("/api/editarCarro/", {
+			const res = await fetch("http://localhost:8001/api/editarCarro/", {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
@@ -115,7 +115,7 @@ export default function EditarCarro() {
 
 		setLoading(true);
 		try {
-			const res = await fetch("/api/apagarCarro/", {
+			const res = await fetch("http://localhost:8001/api/apagarCarro/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",

@@ -44,7 +44,7 @@ export default function AtualizarPreventivos() {
 		setLoading(true);
 
 		try {
-			const res = await fetch("/api/adicionarPreventivos/", {
+			const res = await fetch("http://localhost:8001/api/adicionarPreventivos/", {
 				method: "POST",
 				credentials: "include",
 				headers: {

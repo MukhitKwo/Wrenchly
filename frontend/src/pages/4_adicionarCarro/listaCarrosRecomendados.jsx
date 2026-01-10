@@ -57,7 +57,7 @@ export default function ListaCarrosRecomendados() {
 		setLoading(true);
 
 		try {
-			const res = await fetch("/api/salvarCarros/", {
+			const res = await fetch("http://localhost:8001/api/salvarCarros/", {
 				method: "POST",
 				credentials: "include",
 				headers: { "Content-Type": "application/json" },

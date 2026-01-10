@@ -43,7 +43,7 @@ export default function Perfil() {
     if (!window.confirm("Tens a certeza que queres sair da tua conta?")) return;
 
     try {
-      const res = await fetch("/api/logoutUser/", {
+      const res = await fetch("http://localhost:8001/api/logoutUser/", {
         method: "POST",
         credentials: "include",
       });
@@ -65,7 +65,7 @@ export default function Perfil() {
     if (!window.confirm("Esta ação é irreversível. Tens a certeza?")) return;
 
     try {
-      const res = await fetch("/api/apagarUser/", {
+      const res = await fetch("http://localhost:8001/api/apagarUser/", {
         method: "POST",
         credentials: "include",
       });
@@ -99,7 +99,7 @@ export default function Perfil() {
 		}
 
     try {
-      const res = await fetch("/api/pedirCodigoSecreto/", {
+      const res = await fetch("http://localhost:8001/api/pedirCodigoSecreto/", {
         method: "POST",
         credentials: "include",
       });
@@ -124,7 +124,7 @@ export default function Perfil() {
     }
 
     try {
-      const res = await fetch("/api/atualizarPassword/", {
+      const res = await fetch("http://localhost:8001/api/atualizarPassword/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

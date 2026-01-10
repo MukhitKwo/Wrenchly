@@ -76,7 +76,7 @@ export default function NovoPreventivo() {
 		}
 
 		try {
-			const res = await fetch("/api/criarPreventivo/", {
+			const res = await fetch("http://localhost:8001/api/criarPreventivo/", {
 				method: "POST",
 				credentials: "include",
 				headers: { "Content-Type": "application/json" },

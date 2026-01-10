@@ -37,7 +37,7 @@ export default function ProcurarPorEspecificacoes() {
 	const procurarCarros = async (specs) => {
 		setLoading(true);
 		try {
-			const res = await fetch("/api/procurarCarros/", {
+			const res = await fetch("http://localhost:8001/api/procurarCarros/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",

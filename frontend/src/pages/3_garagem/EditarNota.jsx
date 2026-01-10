@@ -45,7 +45,7 @@ export default function EditarNota() {
         setLoading(true);
 
         try {
-            const res = await fetch("/api/editarNota/", {
+            const res = await fetch("http://localhost:8001/api/editarNota/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

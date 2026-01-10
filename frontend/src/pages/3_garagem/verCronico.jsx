@@ -67,7 +67,7 @@ export default function VerCronico() {
 
 	const guardarEdicao = async () => {
 		try {
-			const res = await fetch("/api/editarCronico/", {
+			const res = await fetch("http://localhost:8001/api/editarCronico/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
@@ -112,7 +112,7 @@ export default function VerCronico() {
 		if (!window.confirm("Apagar este problema crónico?")) return;
 
 		try {
-			const res = await fetch("/api/apagarCronico/", {
+			const res = await fetch("http://localhost:8001/api/apagarCronico/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",

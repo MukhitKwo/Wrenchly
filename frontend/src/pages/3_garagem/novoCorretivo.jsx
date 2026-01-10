@@ -77,7 +77,7 @@ export default function NovoCorretivo() {
 		}
 
 		try {
-			const res = await fetch("/api/criarCorretivo/", {
+			const res = await fetch("http://localhost:8001/api/criarCorretivo/", {
 				method: "POST",
 				credentials: "include",
 				headers: { "Content-Type": "application/json" },
@@ -100,7 +100,7 @@ export default function NovoCorretivo() {
 			let updatedCronicos = [];
 
 			if (tipo === "preventivo") {
-				const resUpdate = await fetch("/api/atualizarPreventivoDataKm/", {
+				const resUpdate = await fetch("http://localhost:8001/api/atualizarPreventivoDataKm/", {
 					method: "POST",
 					credentials: "include",
 					headers: { "Content-Type": "application/json" },
@@ -140,7 +140,7 @@ export default function NovoCorretivo() {
 			}
 
 			if (tipo === "cronico") {
-				const resUpdate = await fetch("/api/atualizarCronicoKm/", {
+				const resUpdate = await fetch("http://localhost:8001/api/atualizarCronicoKm/", {
 					method: "POST",
 					credentials: "include",
 					headers: { "Content-Type": "application/json" },

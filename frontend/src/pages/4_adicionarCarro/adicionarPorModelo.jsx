@@ -79,7 +79,7 @@ export default function ProcurarCarroPorModelo() {
 			setLoading(true);
 			setLoadingtext("A criar veiculo...");
 
-			const res = await fetch("/api/adicionarCarro/", {
+			const res = await fetch("http://localhost:8001/api/adicionarCarro/", {
 				method: "POST",
 				credentials: "include",
 				headers: { "Content-Type": "application/json" },
@@ -113,7 +113,7 @@ export default function ProcurarCarroPorModelo() {
 				formData.append("image", file);
 				formData.append("carro_id", carroId);
 
-				const resImage = await fetch("/api/adicionarCarroImagem/", {
+				const resImage = await fetch("http://localhost:8001/api/adicionarCarroImagem/", {
 					method: "POST",
 					credentials: "include", //  cookie/sessão
 					body: formData,

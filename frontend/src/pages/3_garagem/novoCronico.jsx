@@ -68,7 +68,7 @@ export default function Cronico() {
 		}
 
 		try {
-			const res = await fetch("/api/criarCronico/", {
+			const res = await fetch("http://localhost:8001/api/criarCronico/", {
 				method: "POST",
 				credentials: "include",
 				headers: { "Content-Type": "application/json" },

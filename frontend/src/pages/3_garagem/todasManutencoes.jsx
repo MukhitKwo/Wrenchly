@@ -91,7 +91,7 @@ export default function TodasManutencoes() {
 		}
 
 		try {
-			const res = await fetch(`/api/obterTodasManutencoes/?carro_id=${carro_id}`, {
+			const res = await fetch(`http://localhost:8001/api/obterTodasManutencoes/?carro_id=${carro_id}`, {
 				credentials: "include",
 			});
 

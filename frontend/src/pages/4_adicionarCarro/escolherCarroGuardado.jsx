@@ -43,7 +43,7 @@ export default function MostrarCarrosGuardados() {
 			setLoading(true);
 			setLoadingtext("A obter veiculos guardados...");
 			try {
-				const res = await fetch("/api/listarCarrosGuardados/", {
+				const res = await fetch("http://localhost:8001/api/listarCarrosGuardados/", {
 					credentials: "include",
 				});
 
@@ -77,7 +77,7 @@ export default function MostrarCarrosGuardados() {
 		setLoading(true);
 		setLoadingtext("A obter info do veiculo...");
 		try {
-			const res = await fetch("/api/obterCarroSpecs/", {
+			const res = await fetch("http://localhost:8001/api/obterCarroSpecs/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
@@ -132,7 +132,7 @@ export default function MostrarCarrosGuardados() {
 		setAction({ id, type: "delete" });
 
 		try {
-			const res = await fetch("/api/apagarCarroGuardado/", {
+			const res = await fetch("http://localhost:8001/api/apagarCarroGuardado/", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",

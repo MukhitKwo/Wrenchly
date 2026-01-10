@@ -25,7 +25,7 @@ export default function Registo() {
 
 
 		try {
-			const res = await fetch("/api/registerUser/", {
+			const res = await fetch("http://localhost:8001/api/registerUser/", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

@@ -48,7 +48,7 @@ export default function NotasTodas() {
             try {
                 setLoading(true);
 
-                const res = await fetch("/api/notas/", {
+                const res = await fetch("http://localhost:8001/api/notas/", {
                     method: "GET",
                     credentials: "include",
                 });
@@ -89,7 +89,7 @@ export default function NotasTodas() {
         }
 
         try {
-            const res = await fetch("/api/criarNota/", {
+            const res = await fetch("http://localhost:8001/api/criarNota/", {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
@@ -125,7 +125,7 @@ export default function NotasTodas() {
 
     const guardarNota = async (id) => {
         try {
-            const res = await fetch("/api/editarNota/", {
+            const res = await fetch("http://localhost:8001/api/editarNota/", {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
@@ -160,7 +160,7 @@ export default function NotasTodas() {
         if (!window.confirm("Apagar esta nota?")) return;
 
         try {
-            const res = await fetch("/api/apagarNota/", {
+            const res = await fetch("http://localhost:8001/api/apagarNota/", {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },

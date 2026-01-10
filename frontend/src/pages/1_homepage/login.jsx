@@ -28,11 +28,10 @@ export default function Login() {
 		setLoading(true);
 
 		try {
-			const res = await fetch("/api/loginUser/", {
+			const res = await fetch("http://localhost:8001/api/loginUser/", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: {"Content-Type": "application/json"},
+				credentials: 'include',
 				body: JSON.stringify({ username, password }),
 			});
 

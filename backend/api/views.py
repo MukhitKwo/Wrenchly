@@ -60,14 +60,6 @@ def dev_log(request):
     return Response({"success": True})
 
 
-#! ================== EMAIL ==================
-
-
-def send_email_user(request):
-    send_email(request.user.email)
-    return Response({"success": True, "message": "Email enviado"})
-
-
 #! ================== Registro ==================
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -124,8 +116,9 @@ def loginUser(request):
     if not user:
         return Response({"message": "User not found"}, status=401)
 
+    login(request, user)
+    
     try:
-
         with transaction.atomic():
 
             res_crud_garagem = crud_Garagens(method="GET", user=user)
@@ -153,7 +146,7 @@ def loginUser(request):
     except Exception as e:
         return Response({"message": f"Registration failed: {str(e)}"}, status=400)
 
-    login(request, user)
+    
 
     return Response({"message": "User, Garagem and Definiçoes found",
                      "user_data": userData(user),
