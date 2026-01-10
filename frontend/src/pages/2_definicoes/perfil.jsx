@@ -5,19 +5,18 @@ import { useSessionAppState } from "../../context/appState.session";
 import "./perfil.css";
 
 export default function Perfil() {
-  const navigate = useNavigate();
+	const navigate = useNavigate();
 
-  const { state: localState, setState: setLocalState, clear: clearLocal } =
-    useLocalAppState();
-  const { clear: clearSession } = useSessionAppState();
+	const { state: localState, setState: setLocalState, clear: clearLocal } = useLocalAppState();
+	const { clear: clearSession } = useSessionAppState();
 
   const user = localState?.user;
   const definicoes_data = localState?.definicoes;
 
-  const [password1, setPassword1] = useState("");
-  const [password2, setPassword2] = useState("");
-  const [codigo, setCodigo] = useState("");
-  const [codigoHashed, setCodigoHashed] = useState(null);
+	const [password1, setPassword1] = useState("");
+	const [password2, setPassword2] = useState("");
+	const [codigo, setCodigo] = useState("");
+	const [codigoHashed, setCodigoHashed] = useState(null);
 
   const [definicoes, setDefinicoes] = useState({
     tema: definicoes_data?.tema || "claro",
@@ -94,10 +93,10 @@ export default function Perfil() {
       return;
     }
 
-    if (password1 !== password2) {
-      showFeedback("error", "As palavras-passe não coincidem.");
-      return;
-    }
+		if (password1 !== password2) {
+			showFeedback("error", "As palavras-passe não coincidem.");
+			return;
+		}
 
     try {
       const res = await fetch("/api/pedirCodigoSecreto/", {
@@ -184,19 +183,23 @@ export default function Perfil() {
     }
   };
 
-  if (!user) return null;
+	if (!user) return null;
 
-  return (
-    <div className="page-box perfil-container">
-      <h1>Perfil do Utilizador</h1>
+	return (
+		<div className="page-box perfil-container">
+			<h1>Perfil do Utilizador</h1>
 
-      <div className="perfil-section perfil-info">
-        <h2>Informações da Conta</h2>
-        <p><strong>Utilizador:</strong> {user.username}</p>
-        <p><strong>Email:</strong> {user.email}</p>
-      </div>
+			<div className="perfil-section perfil-info">
+				<h2>Informações da Conta</h2>
+				<p>
+					<strong>Utilizador:</strong> {user.username}
+				</p>
+				<p>
+					<strong>Email:</strong> {user.email}
+				</p>
+			</div>
 
-      <div className="perfil-divider" />
+			<div className="perfil-divider" />
 
       <div className="perfil-section">
         <h2>Preferências</h2>
@@ -225,25 +228,17 @@ export default function Perfil() {
       <div className="perfil-section">
         <h2>Segurança</h2>
 
-        <div className="perfil-form">
-          <label>
-            Nova palavra-passe
-            <input
-              type="password"
-              value={password1}
-              onChange={(e) => setPassword1(e.target.value)}
-            />
-          </label>
+				<div className="perfil-form">
+					<label>
+						Nova palavra-passe
+						<input type="password" value={password1} onChange={(e) => setPassword1(e.target.value)} />
+					</label>
 
-          <label>
-            Confirmar palavra-passe
-            <input
-              type="password"
-              value={password2}
-              onChange={(e) => setPassword2(e.target.value)}
-            />
-          </label>
-        </div>
+					<label>
+						Confirmar palavra-passe
+						<input type="password" value={password2} onChange={(e) => setPassword2(e.target.value)} />
+					</label>
+				</div>
 
         <div className="perfil-actions">
           <button onClick={pedirCodigoSecreto}>
@@ -266,7 +261,7 @@ export default function Perfil() {
         )}
       </div>
 
-      <div className="perfil-divider" />
+			<div className="perfil-divider" />
 
       <div className="perfil-section">
         <h2>Conta</h2>

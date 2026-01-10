@@ -43,7 +43,6 @@ import VerCorretivo from "./pages/3_garagem/verCorretivo.jsx";
 import VerCronico from "./pages/3_garagem/verCronico.jsx";
 import VerPreventivo from "./pages/3_garagem/verPreventivo.jsx";
 
-
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -59,46 +58,47 @@ const router = createBrowserRouter([
 				{ path: "perfil", element: <Perfil /> },
 				//{ path: "definicoes", element:<Definicoes /> },
 
-				{ path: "novoCarro", element: <NovoCarro /> },
-				{ path: "adicionarPorModelo", element: <AdicionarCarroPorModelo />},
-				{ path: "procurarPorEspecificacoes", element: <ProcurarPorEspecificacoes /> },
-				{ path: "atualizarPreventivos", element: <AtualizarPreventivos /> },
-				{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
-				{ path: "listaCarrosSalvos", element:<MostrarCarrosGuardados /> },
+					{ path: "novoCarro", element: <NovoCarro /> },
+					{ path: "adicionarPorModelo", element: <AdicionarCarroPorModelo /> },
+					{ path: "procurarPorEspecificacoes", element: <ProcurarPorEspecificacoes /> },
+					{ path: "atualizarPreventivos", element: <AtualizarPreventivos /> },
+					{ path: "listaCarrosRecomendados", element: <ListaCarrosRecomendados /> },
+					{ path: "listaCarrosSalvos", element: <MostrarCarrosGuardados /> },
 
-				{ path: "garagem", element: <Garagem /> },
-				{ path: "todasManutencoes/:carro_id", element: <TodasManutencoes /> },
-				{ path: "editarCarro/:carro_id", element: <EditarCarro /> },
-				{ path: "notas", element:<NotasTodas /> },
+					{ path: "garagem", element: <Garagem /> },
+					{ path: "todasManutencoes/:carro_id", element: <TodasManutencoes /> },
+					{ path: "editarCarro/:carro_id", element: <EditarCarro /> },
+					{ path: "notas", element: <NotasTodas /> },
 
+					{ path: "novoCorretivo", element: <NovoCorretivo /> },
+					{ path: "novoPreventivo", element: <NovoPreventivo /> },
+					{ path: "novoCronico", element: <NovoCronico /> },
 
-
-				{ path: "novoCorretivo", element: <NovoCorretivo /> },
-				{ path: "novoPreventivo", element: <NovoPreventivo /> },
-				{ path: "novoCronico", element: <NovoCronico /> },
-
-				{ path: "todasManutencoes/:carro_id/corretivo/:manutencao_id", element: <VerCorretivo /> },
-				{ path: "todasManutencoes/:carro_id/preventivo/:manutencao_id", element: <VerPreventivo />},
-				{ path: "todasManutencoes/:carro_id/cronico/:manutencao_id", element:<VerCronico /> },
+					{ path: "todasManutencoes/:carro_id/corretivo/:manutencao_id", element: <VerCorretivo /> },
+					{ path: "todasManutencoes/:carro_id/preventivo/:manutencao_id", element: <VerPreventivo /> },
+					{ path: "todasManutencoes/:carro_id/cronico/:manutencao_id", element: <VerCronico /> },
+				],
+			},
 		],
 	},
-]
-	}]);
+]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-	<React.StrictMode>
-		<LocalAppStateProvider>
-			<SessionAppStateProvider>
-				<RouterProvider router={router}
-				fallback={<LoadingSpinner />} />
-			</SessionAppStateProvider>
-		</LocalAppStateProvider>
-	</React.StrictMode>
+	<LocalAppStateProvider>
+		<SessionAppStateProvider>
+			<RouterProvider router={router} fallback={<LoadingSpinner />} />
+		</SessionAppStateProvider>
+	</LocalAppStateProvider>
 );
-
-// (Pode remover o 'reportWebVitals' se não o estiver a usar ativamente)
-// import reportWebVitals from './reportWebVitals';
-// O código 'reportWebVitals()' pode ser mantido ou removido.
-// reportWebVitals();
+// root.render(
+	// <React.StrictMode>
+// 		<LocalAppStateProvider>
+// 			<SessionAppStateProvider>
+// 				<RouterProvider router={router}
+// 				fallback={<LoadingSpinner />} />
+// 			</SessionAppStateProvider>
+// 		</LocalAppStateProvider>
+// 	</React.StrictMode>
+// );
