@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 
@@ -16,14 +16,13 @@ export default function NotasTodas() {
     const [textoNota, setTextoNota] = useState("");
     const [carroSelecionado, setCarroSelecionado] = useState("");
 
-    const notasCarregadasRef = useRef(false);
-
     const showFeedback = useCallback((type, message) => {
         setState((prev) => ({
             ...prev,
             feedback: { type, message },
         }));
     }, [setState]);
+
     const handleForbidden = useCallback(() => {
         setState((prev) => ({
             ...prev,
@@ -41,14 +40,9 @@ export default function NotasTodas() {
         navigate("/login", { replace: true });
     }, [setState, navigate]);
 
-
+    /* ================= CARREGAR NOTAS ================= */
     useEffect(() => {
-        if (notasCarregadasRef.current) return;
-
-        if (state?.notas?.length) {
-            notasCarregadasRef.current = true;
-            return;
-        }
+        if (state?.notas?.length) return;
 
         const carregarNotas = async () => {
             try {
@@ -65,15 +59,12 @@ export default function NotasTodas() {
                 }
 
                 const data = await res.json();
-
                 if (!res.ok) throw new Error();
 
                 setState((prev) => ({
                     ...prev,
                     notas: data.notas_data,
                 }));
-
-                notasCarregadasRef.current = true;
             } catch (err) {
                 console.error("Erro ao carregar notas:", err);
                 showFeedback("error", "Erro ao carregar notas.");
@@ -83,13 +74,14 @@ export default function NotasTodas() {
         };
 
         carregarNotas();
-    }, [setState, state?.notas?.length, showFeedback, handleForbidden]);
+    }, [state?.notas?.length, handleForbidden, showFeedback, setState]);
 
     const getNomeCarro = (carroId) => {
         const carro = carros.find((c) => c.id === Number(carroId));
         return carro ? carro.full_name : `Carro #${carroId}`;
     };
 
+    /* ================= CRUD ================= */
     const criarNota = async () => {
         if (!textoNota || !carroSelecionado) {
             showFeedback("error", "Preenche o texto e seleciona um carro.");
@@ -193,9 +185,7 @@ export default function NotasTodas() {
         }
     };
 
-    if (loading) {
-        return <p>A carregar notas...</p>;
-    }
+    if (loading) return <p>A carregar notas...</p>;
 
     return (
         <div className="page-box">
