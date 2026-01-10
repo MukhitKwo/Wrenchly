@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function AtualizarPreventivos() {
 	const { setState: setLocalState } = useLocalAppState();
@@ -13,6 +14,7 @@ export default function AtualizarPreventivos() {
 	const allPreventivos_data = state?.preventivos;
 
 	const [preventivos, setPreventivos] = useState(allPreventivos_data || []);
+	const [loading, setLoading] = useState(false); // new state
 
 	// sessão expirada
 	const handleForbidden = useCallback(() => {
@@ -38,7 +40,9 @@ export default function AtualizarPreventivos() {
 		setPreventivos(updated);
 	};
 
-	const handleSubmit = async () => {
+	const updatePreventivos = async () => {
+		setLoading(true);
+
 		try {
 			const res = await fetch("/api/adicionarPreventivos/", {
 				method: "POST",
@@ -95,6 +99,8 @@ export default function AtualizarPreventivos() {
 					message: "Erro inesperado. Tenta novamente.",
 				},
 			}));
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -121,9 +127,7 @@ export default function AtualizarPreventivos() {
 								<input
 									type="number"
 									value={prev.kmsEntreTroca}
-									onChange={(e) =>
-										handleChange(index, "kmsEntreTroca", e.target.value)
-									}
+									onChange={(e) => handleChange(index, "kmsEntreTroca", e.target.value)}
 									style={{ marginLeft: "5px" }}
 								/>
 							</label>
@@ -133,9 +137,7 @@ export default function AtualizarPreventivos() {
 								<input
 									type="number"
 									value={prev.trocadoNoKm}
-									onChange={(e) =>
-										handleChange(index, "trocadoNoKm", e.target.value)
-									}
+									onChange={(e) => handleChange(index, "trocadoNoKm", e.target.value)}
 									style={{ marginLeft: "5px" }}
 								/>
 							</label>
@@ -154,9 +156,7 @@ export default function AtualizarPreventivos() {
 								<input
 									type="number"
 									value={prev.diasEntreTroca}
-									onChange={(e) =>
-										handleChange(index, "diasEntreTroca", e.target.value)
-									}
+									onChange={(e) => handleChange(index, "diasEntreTroca", e.target.value)}
 									style={{ marginLeft: "5px" }}
 								/>
 							</label>
@@ -166,9 +166,7 @@ export default function AtualizarPreventivos() {
 								<input
 									type="date"
 									value={prev.trocadoNaData}
-									onChange={(e) =>
-										handleChange(index, "trocadoNaData", e.target.value)
-									}
+									onChange={(e) => handleChange(index, "trocadoNaData", e.target.value)}
 									style={{ marginLeft: "5px" }}
 								/>
 							</label>
@@ -179,12 +177,10 @@ export default function AtualizarPreventivos() {
 				<p>Não há preventivos para mostrar.</p>
 			)}
 
-			<button
-				onClick={handleSubmit}
-				style={{ marginTop: "20px", padding: "10px 15px", borderRadius: "4px" }}
-			>
+			<button onClick={updatePreventivos} style={{ marginTop: "20px", padding: "10px 15px", borderRadius: "4px" }}>
 				Adicionar
 			</button>
+			{loading && <LoadingSpinner text="A atualizar preventivos..." />}
 		</div>
 	);
 }

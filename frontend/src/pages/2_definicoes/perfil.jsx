@@ -266,10 +266,10 @@ export default function Perfil() {
       <div className="perfil-section">
         <h2>Conta</h2>
         <div className="perfil-actions">
-          <button onClick={handleLogout}>Sair</button>
           <button className="danger" onClick={handleDeleteAccount}>
             Apagar conta
           </button>
+          <button onClick={handleLogout}>Sair</button>
         </div>
       </div>
     </div>

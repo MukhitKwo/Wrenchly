@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function ListaCarrosRecomendados() {
 	const navigate = useNavigate();
@@ -37,10 +38,7 @@ export default function ListaCarrosRecomendados() {
 
 	const handleSave = (car) => {
 		if (!savedCars.some((c) => c.nome === car)) {
-			setSavedCars((prev) => [
-				...prev,
-				{ garagem: garagem_id, nome: car },
-			]);
+			setSavedCars((prev) => [...prev, { garagem: garagem_id, nome: car }]);
 		}
 	};
 
@@ -150,13 +148,10 @@ export default function ListaCarrosRecomendados() {
 				</div>
 			)}
 
-			<button
-				onClick={salvarCarros}
-				disabled={loading}
-				style={{ marginTop: "15px" }}
-			>
-				{loading ? "A guardar…" : "Guardar carros"}
+			<button onClick={salvarCarros} style={{ marginTop: "15px" }}>
+				Guardar carros
 			</button>
+			{loading && <LoadingSpinner text="A guardar veiculos..." />}
 		</div>
 	);
 }

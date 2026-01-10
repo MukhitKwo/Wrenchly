@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { getRiskColor } from "../../utils/riskColor";
 
+import "./garagem.css";
+
 export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 	const navigate = useNavigate();
 
@@ -17,7 +19,9 @@ export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 			<h3>Crónicos</h3>
 
 			<div style={{ marginBottom: "12px" }}>
-				<button onClick={() => navigate("/novoCronico", { state: { carro_id: carroId, carro_kms: carroKms } })}>Adicionar Novo</button>
+				<button onClick={() => navigate("/novoCronico", { state: { carro_id: carroId, carro_kms: carroKms } })} className="standar-button">
+					Adicionar Novo
+				</button>
 			</div>
 
 			{corretivas.length === 0 ? (
@@ -40,22 +44,26 @@ export default function ListaCronicos({ cronicos, carroId, carroKms }) {
 						onMouseLeave={(e) => (e.currentTarget.style.background = "inherit")}
 						onClick={() => navigate(`/todasManutencoes/${carroId}/cronico/${manutencao.id}`)}
 					>
-						<strong>{manutencao.nome}</strong>
-
-						<p>Trocar no Km: {manutencao.trocarNoKm} km</p>
-						<p>
-							Risco:{" "}
-							<span
+						<div style={{ display: "flex", alignItems: "center" }}>
+							<div
 								style={{
-									color: getRiskColor(manutencao.risco),
-									fontWeight: "bold",
+									flexBasis: "70%", // name takes 70% of the width
+									overflow: "hidden",
+									textOverflow: "ellipsis",
 								}}
 							>
-								{manutencao.risco}
-							</span>
-						</p>
+								<strong>{manutencao.nome}</strong>
+							</div>
 
-						{manutencao.notas && <p>Notes: {manutencao.notas}</p>}
+							<div style={{ flexBasis: "30%", textAlign: "right" }}>
+								Risco: <span style={{ color: getRiskColor(manutencao.risco), fontWeight: "bold" }}>{manutencao.risco}</span>
+							</div>
+						</div>
+
+						<p>Trocado no Km: {manutencao.trocadoNoKm} km</p>
+						<p>Trocar no Km: {manutencao.trocarNoKm} km</p>
+
+						{/* {manutencao.notas && <p>Notes: {manutencao.notas}</p>} */}
 
 						{/* Fazer button bottom right */}
 						<div style={{ position: "absolute", bottom: "10px", right: "10px" }}>

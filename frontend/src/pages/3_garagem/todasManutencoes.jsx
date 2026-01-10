@@ -8,16 +8,15 @@ import ListaCorretivos from "./listaCorretivos";
 import ListaCronicos from "./listaCronicos";
 import ListaPreventivos from "./listaPreventivos";
 
+import "./garagem.css";
+
 export default function TodasManutencoes() {
 	const { carro_id } = useParams();
 	const { state: getSessionStorage, setState: setSessionStorage } = useSessionAppState();
 	const { setState: setLocalStorage } = useLocalAppState();
 	const navigate = useNavigate();
 
-	const viewed_cars = useMemo(
-		() => getSessionStorage?.carros_vistos || [],
-		[getSessionStorage]
-	);
+	const viewed_cars = useMemo(() => getSessionStorage?.carros_vistos || [], [getSessionStorage]);
 
 	const { loading, runWithLoading } = usePageLoader(true);
 
@@ -28,12 +27,15 @@ export default function TodasManutencoes() {
 	const [carroKms, setCarroKms] = useState();
 	const [ordenacao, setOrdenacao] = useState("km");
 
-	const showFeedback = useCallback((type, message) => {
-		setLocalStorage((prev) => ({
-			...prev,
-			feedback: { type, message },
-		}));
-	}, [setLocalStorage]);
+	const showFeedback = useCallback(
+		(type, message) => {
+			setLocalStorage((prev) => ({
+				...prev,
+				feedback: { type, message },
+			}));
+		},
+		[setLocalStorage]
+	);
 
 	// handler sessão expirada
 	const handleForbidden = useCallback(() => {
@@ -167,22 +169,22 @@ export default function TodasManutencoes() {
 
 	return (
 		<div style={{ padding: "20px" }}>
-			<h1>Manutenções</h1>
+			<h1>
+				Manutenções de {carro.marca} {carro.modelo} {carro.ano}
+			</h1>
 			<h3>Carro tem: {carroKms}km</h3>
 
 			<div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
 				<Link to="/garagem">
-					<button>Voltar</button>
+					<button className="standar-button">Voltar</button>
 				</Link>
 				<Link to={`/editarCarro/${carro_id}`}>
-					<button>Editar Carro</button>
+					<button className="standar-button">Editar Carro</button>
 				</Link>
 			</div>
 
 			<div style={{ marginBottom: "15px" }}>
-				<label style={{ marginRight: "10px" }}>
-					Ordenar preventivos e crónicos por:
-				</label>
+				<label style={{ marginRight: "10px" }}>Ordenar preventivos e crónicos por:</label>
 				<select value={ordenacao} onChange={(e) => setOrdenacao(e.target.value)}>
 					<option value="km">Quilometragem</option>
 					<option value="data">Data</option>
@@ -192,22 +194,12 @@ export default function TodasManutencoes() {
 
 			<div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
 				<ListaCorretivos
-					corretivos={corretivos.sort(
-						(a, b) => new Date(b.data || 0) - new Date(a.data || 0)
-					)}
+					corretivos={corretivos.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0))}
 					carroId={carro_id}
 					carroKms={carro?.quilometragem || 0}
 				/>
-				<ListaPreventivos
-					preventivos={ordenarManutencoes(preventivos)}
-					carroId={carro_id}
-					carroKms={carro?.quilometragem || 0}
-				/>
-				<ListaCronicos
-					cronicos={ordenarManutencoes(cronicos)}
-					carroId={carro_id}
-					carroKms={carro?.quilometragem || 0}
-				/>
+				<ListaPreventivos preventivos={ordenarManutencoes(preventivos)} carroId={carro_id} carroKms={carro?.quilometragem || 0} />
+				<ListaCronicos cronicos={ordenarManutencoes(cronicos)} carroId={carro_id} carroKms={carro?.quilometragem || 0} />
 			</div>
 		</div>
 	);

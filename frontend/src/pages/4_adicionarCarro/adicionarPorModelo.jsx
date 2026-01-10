@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function ProcurarCarroPorModelo() {
 	const navigate = useNavigate();
@@ -9,6 +10,9 @@ export default function ProcurarCarroPorModelo() {
 
 	const garagem_id = getLocalStorage.garagem.id;
 	const initialCarro = state?.initialCarro || {};
+
+	const [loading, setLoading] = useState(false);
+	const [loadingText, setLoadingtext] = useState(false);
 
 	const [caracteristicas, setCaracteristicas] = useState({
 		categoria: "",
@@ -72,6 +76,9 @@ export default function ProcurarCarroPorModelo() {
 		}
 
 		try {
+			setLoading(true);
+			setLoadingtext("A criar veiculo...");
+
 			const res = await fetch("/api/adicionarCarro/", {
 				method: "POST",
 				credentials: "include",
@@ -92,7 +99,7 @@ export default function ProcurarCarroPorModelo() {
 					...prev,
 					feedback: {
 						type: "error",
-						message: data.message || "Erro ao adicionar o carro.",
+						message: data.message,
 					},
 				}));
 				return;
@@ -100,6 +107,7 @@ export default function ProcurarCarroPorModelo() {
 
 			// upload da imagem
 			if (file) {
+				setLoadingtext("A adicionar imagem...");
 				const carroId = data.carro_data.id;
 				const formData = new FormData();
 				formData.append("image", file);
@@ -157,6 +165,8 @@ export default function ProcurarCarroPorModelo() {
 					message: "Erro inesperado. Tenta novamente.",
 				},
 			}));
+		} finally {
+			setLoading(false); // hide spinner
 		}
 	};
 
@@ -257,6 +267,7 @@ export default function ProcurarCarroPorModelo() {
 					Adicionar
 				</button>
 			</div>
+			{loading && <LoadingSpinner text={loadingText} />}
 		</div>
 	);
 }

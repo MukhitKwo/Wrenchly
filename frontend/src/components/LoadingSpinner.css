@@ -1,23 +1,21 @@
 /* Overlay */
 .loading-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
+  position: fixed; /* already correct */
+  top: 0;
+  left: 0;
+  width: 100vw;   /* use 100vw to cover full width */
+  height: 100vh;  /* use 100vh to cover full height */
+  background: rgba(0,0,0,0.55);
+  z-index: 9999;
 
-	background: rgba(0, 0, 0, 0.55);
-	z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
-	opacity: 0;
-	animation: fadeIn 0.35s ease forwards;
+  /* animation: fadeIn 0.35s ease forwards; */
 }
 
-/* Conteúdo centrado */
+/* Content centered */
 .loading-content {
 	display: flex;
 	flex-direction: column;
@@ -37,7 +35,7 @@
 	animation: spin 1.4s linear infinite;
 }
 
-/* Texto */
+/* Text */
 .loading-text {
 	color: white;
 	font-size: 1.1rem;
@@ -45,13 +43,12 @@
 	opacity: 0.85;
 }
 
-/* Animações */
+/* Animations */
 @keyframes spin {
-	from {
+	0% {
 		transform: rotate(0deg);
 	}
-
-	to {
+	100% {
 		transform: rotate(360deg);
 	}
 }
@@ -60,7 +57,6 @@
 	from {
 		opacity: 0;
 	}
-
 	to {
 		opacity: 1;
 	}

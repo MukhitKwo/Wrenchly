@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { getRiskColor } from "../../utils/riskColor";
 
+import "./garagem.css";
+
 export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 	const navigate = useNavigate();
 
@@ -17,7 +19,9 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 			<h3>Preventivas</h3>
 
 			<div style={{ marginBottom: "12px" }}>
-				<button onClick={() => navigate("/novoPreventivo", { state: { carro_id: carroId, carro_kms: carroKms } })}>Adicionar Novo</button>
+				<button onClick={() => navigate("/novoPreventivo", { state: { carro_id: carroId, carro_kms: carroKms } })} className="standar-button">
+					Adicionar Novo
+				</button>
 			</div>
 
 			{preventivoData.length === 0 ? (
@@ -40,24 +44,30 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 						onMouseLeave={(e) => (e.currentTarget.style.background = "inherit")}
 						onClick={() => navigate(`/todasManutencoes/${carroId}/preventivo/${manutencao.id}`)}
 					>
-						<strong>{manutencao.nome}</strong>
+						<div style={{ display: "flex", alignItems: "center" }}>
+							<div
+								style={{
+									flexBasis: "70%", // name takes 70% of the width
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+								}}
+							>
+								<strong>{manutencao.nome}</strong>
+							</div>
 
+							<div style={{ flexBasis: "30%", textAlign: "right" }}>
+								Risco: <span style={{ color: getRiskColor(manutencao.risco), fontWeight: "bold" }}>{manutencao.risco}</span>
+							</div>
+						</div>
+
+						<p>
+							Trocado no Km: {manutencao.trocadoNoKm} km | Data: {manutencao.trocadoNaData}
+						</p>
 						<p>
 							Trocar no Km: {manutencao.trocarNoKm} km | Data: {manutencao.trocarNaData}
 						</p>
-						<p>
-							Risco:{" "}
-							<span
-								style={{
-									color: getRiskColor(manutencao.risco),
-									fontWeight: "bold",
-								}}
-							>
-								{manutencao.risco}
-							</span>
-						</p>
 
-						{manutencao.notas && <p>Notes: {manutencao.notas}</p>}
+						{/* {manutencao.notas && <p>Notes: {manutencao.notas}</p>} */}
 
 						{/* Fazer button bottom right */}
 						<div style={{ position: "absolute", bottom: "10px", right: "10px" }}>

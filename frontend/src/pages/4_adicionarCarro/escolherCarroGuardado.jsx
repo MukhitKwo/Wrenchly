@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import { useSessionAppState } from "../../context/appState.session";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function MostrarCarrosGuardados() {
 	const navigate = useNavigate();
@@ -11,6 +12,8 @@ export default function MostrarCarrosGuardados() {
 	const fetchedRef = useRef(false);
 	const [status, setStatus] = useState("idle"); // idle | loading | error
 	const [action, setAction] = useState({ id: null, type: null });
+	const [loading, setLoading] = useState(false);
+	const [loadingText, setLoadingtext] = useState(false);
 
 	// sessão expirada
 	const handleForbidden = useCallback(() => {
@@ -37,6 +40,8 @@ export default function MostrarCarrosGuardados() {
 
 		const fetchCarros = async () => {
 			setStatus("loading");
+			setLoading(true);
+			setLoadingtext("A obter veiculos guardados...");
 			try {
 				const res = await fetch("/api/listarCarrosGuardados/", {
 					credentials: "include",
@@ -59,6 +64,8 @@ export default function MostrarCarrosGuardados() {
 			} catch (err) {
 				console.error("Erro a buscar carros guardados", err);
 				setStatus("error");
+			} finally {
+				setLoading(false);
 			}
 		};
 
@@ -67,7 +74,8 @@ export default function MostrarCarrosGuardados() {
 
 	const adicionarCarro = async (nome, id) => {
 		setAction({ id, type: "add" });
-
+		setLoading(true);
+		setLoadingtext("A obter info do veiculo...");
 		try {
 			const res = await fetch("/api/obterCarroSpecs/", {
 				method: "POST",
@@ -116,6 +124,7 @@ export default function MostrarCarrosGuardados() {
 			}));
 		} finally {
 			setAction({ id: null, type: null });
+			setLoading(false);
 		}
 	};
 
@@ -178,7 +187,6 @@ export default function MostrarCarrosGuardados() {
 		<div className="page-box">
 			<h1>Carros Guardados</h1>
 
-			{status === "loading" && <p>A carregar carros guardados…</p>}
 			{status === "error" && <p style={{ color: "red" }}>Erro ao carregar carros.</p>}
 
 			{status === "idle" && carros.length === 0 && <p>Nada guardado.</p>}
@@ -189,27 +197,18 @@ export default function MostrarCarrosGuardados() {
 						<li key={carro.id} style={{ marginBottom: "8px" }}>
 							<strong>{carro.nome}</strong>
 
-							<button
-								onClick={() => esquecerCarro(carro.id)}
-								disabled={action.id === carro.id}
-							>
-								{action.id === carro.id && action.type === "delete"
-									? "A apagar…"
-									: "Esquecer"}
+							<button onClick={() => esquecerCarro(carro.id)} disabled={action.id === carro.id}>
+								{action.id === carro.id && action.type === "delete" ? "A apagar…" : "Esquecer"}
 							</button>
 
-							<button
-								onClick={() => adicionarCarro(carro.nome, carro.id)}
-								disabled={action.id === carro.id}
-							>
-								{action.id === carro.id && action.type === "add"
-									? "A abrir…"
-									: "Adicionar"}
+							<button onClick={() => adicionarCarro(carro.nome, carro.id)} disabled={action.id === carro.id}>
+								{action.id === carro.id && action.type === "add" ? "A abrir…" : "Adicionar"}
 							</button>
 						</li>
 					))}
 				</ul>
 			)}
+			{loading && <LoadingSpinner text={loadingText} />}
 		</div>
 	);
 }

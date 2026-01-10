@@ -1,13 +1,15 @@
-import React from "react";
+import {React, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function Login() {
 	// const [email, setEmail] = React.useState("");
-	const [username, setUsername] = React.useState("");
-	const [password, setPassword] = React.useState("");
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
 	const navigate = useNavigate(); // hook to navigate programmatically
 	const { setState: setLocalStorage } = useLocalAppState();
+	const [loading, setLoading] = useState(false); // new state
 
 	const loginUser = async () => {
 		// console.log({ email, username, password });
@@ -23,6 +25,7 @@ export default function Login() {
 			return;
 		}
 
+		setLoading(true);
 
 		try {
 			const res = await fetch("/api/loginUser/", {
@@ -44,7 +47,6 @@ export default function Login() {
 				}));
 				return;
 			}
-
 
 			if (res.ok) {
 				setLocalStorage({
@@ -69,8 +71,9 @@ export default function Login() {
 					message: "Erro de ligação ao servidor",
 				},
 			}));
+		} finally {
+			setLoading(false); // hide spinner
 		}
-
 	};
 
 	return (
@@ -138,6 +141,7 @@ export default function Login() {
 					Login
 				</button>
 			</div>
+			{loading && <LoadingSpinner text="A iniciar sessão..." />}
 		</div>
 	);
 }

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import defaultImage from "../../components/car_default_image.jpg";
 import { useLocalAppState } from "../../context/appState.local";
+import { FaPlus } from "react-icons/fa";
 
 import "./garagem.css";
 
@@ -44,17 +45,11 @@ export default function Garagem() {
 		const copia = [...listaCarros];
 
 		if (ordenacaoCarros === "nome") {
-			return copia.sort((a, b) =>
-				(a.full_name || "").localeCompare(b.full_name || "")
-			);
+			return copia.sort((a, b) => (a.full_name || "").localeCompare(b.full_name || ""));
 		}
 
 		if (ordenacaoCarros === "manutencao") {
-			return copia.sort(
-				(a, b) =>
-					new Date(a.proxima_manutencao) -
-					new Date(b.proxima_manutencao)
-			);
+			return copia.sort((a, b) => new Date(a.proxima_manutencao) - new Date(b.proxima_manutencao));
 		}
 
 		return copia.sort((a, b) => b.id - a.id);
@@ -63,40 +58,30 @@ export default function Garagem() {
 	if (!garagem) return null; // evita render intermédio
 
 	return (
-		<div style={{ padding: "0 2em" }}>
-			<h1>{garagem.nome}</h1>
+		<div>
+			<div className="garage-header">
+				{/* Left */}
+				<div className="garage-left">
+					<label>Ordenar por:</label>
+					<select value={ordenacaoCarros} onChange={(e) => setOrdenacaoCarros(e.target.value)}>
+						<option value="criacao">Criação</option>
+						<option value="nome">Nome (A–Z)</option>
+						<option value="manutencao">Manutenção</option>
+					</select>
+				</div>
 
-			<div
-				style={{
-					display: "flex",
-					justifyContent: "center",
-					gap: "14px",
-					padding: "20px",
-				}}
-			>
-				<Link to="/novoCarro">
-					<button style={{ padding: "10px 20px", borderRadius: "8px" }}>
-						Adicionar carro
-					</button>
-				</Link>
+				{/* Center */}
+				<h1 className="garage-title">{garagem.nome}</h1>
 
-				<Link to="/notas">
-					<button style={{ padding: "10px 20px", borderRadius: "8px" }}>
-						Notas todos os carros
-					</button>
-				</Link>
-			</div>
-
-			<div style={{ marginBottom: "16px" }}>
-				<label style={{ marginRight: "10px" }}>Ordenar por:</label>
-				<select
-					value={ordenacaoCarros}
-					onChange={(e) => setOrdenacaoCarros(e.target.value)}
-				>
-					<option value="criacao">Criação</option>
-					<option value="nome">Nome (A–Z)</option>
-					<option value="manutencao">Manutenção</option>
-				</select>
+				{/* Right */}
+				<div className="garage-right">
+					<Link to="/novoCarro">
+						<button className="standar-button">
+							<FaPlus style={{ marginRight: "8px" }} />
+							Adicionar carro
+						</button>
+					</Link>
+				</div>
 			</div>
 
 			<div
@@ -112,11 +97,7 @@ export default function Garagem() {
 					<p>Não tens carros na garagem.</p>
 				) : (
 					ordenarCarros(carros).map((carro) => (
-						<Link
-							key={carro.id}
-							to={`/todasManutencoes/${carro.id}`}
-							className="carro-link"
-						>
+						<Link key={carro.id} to={`/todasManutencoes/${carro.id}`} className="carro-link">
 							<CarroCard carro={carro} />
 						</Link>
 					))
@@ -131,9 +112,7 @@ function diasParaManutencao(data) {
 
 	const proximaManutencao = new Date(data);
 	const hoje = new Date();
-	const diffDias = Math.ceil(
-		(proximaManutencao - hoje) / (1000 * 60 * 60 * 24)
-	);
+	const diffDias = Math.ceil((proximaManutencao - hoje) / (1000 * 60 * 60 * 24));
 
 	return diffDias >= 0 ? `${diffDias} dias` : "Pendente";
 }
@@ -149,14 +128,11 @@ function CarroCard({ carro }) {
 			<div className="carro-overlay">
 				<div className="carro-header">
 					<h2>{carro.full_name || "Sem nome"}</h2>
-					<span className="carro-matricula">
-						{carro.matricula ?? "N/A"}
-					</span>
+					<span className="carro-matricula">{carro.matricula ?? "N/A"}</span>
 				</div>
 
 				<div className="carro-footer">
-					<strong>Próxima manutenção:</strong>{" "}
-					{diasParaManutencao(carro.proxima_manutencao)}
+					<strong>Próxima manutenção:</strong> {diasParaManutencao(carro.proxima_manutencao)}
 				</div>
 			</div>
 		</div>

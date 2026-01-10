@@ -1,12 +1,14 @@
 import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function ProcurarPorEspecificacoes() {
 	const navigate = useNavigate();
 	const { setState } = useLocalAppState();
 
 	const [especificacoes, setEspecificacoes] = useState({});
+	const [loading, setLoading] = useState(false);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -33,6 +35,7 @@ export default function ProcurarPorEspecificacoes() {
 	}, [setState, navigate]);
 
 	const procurarCarros = async (specs) => {
+		setLoading(true);
 		try {
 			const res = await fetch("/api/procurarCarros/", {
 				method: "POST",
@@ -62,6 +65,8 @@ export default function ProcurarPorEspecificacoes() {
 					message: "Erro inesperado ao procurar carros.",
 				},
 			}));
+		} finally {
+			setLoading(false);
 		}
 	};
 	return (
@@ -206,6 +211,7 @@ export default function ProcurarPorEspecificacoes() {
 					Procurar
 				</button>
 			</div>
+			{loading && <LoadingSpinner text="A procurar veiculos..." />}
 		</div>
 	);
 }
