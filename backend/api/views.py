@@ -35,7 +35,7 @@ from .crud import (
 )
 from .storage import StorageException, uploadImageToDB
 
-useDummyData = settings.USE_GEMINI_DUMMY
+useDummyData = True if not settings.GEMINI_API_KEY else False
 
 
 #! ============ CSRF EXEMPT FOR SESSION AUTHENTICATED APIs ============
