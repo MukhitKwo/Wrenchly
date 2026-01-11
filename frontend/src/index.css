@@ -8,12 +8,6 @@ body {
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
-
-.page-box {
-	padding: 30px;
-	border: 1px solid #ddd;
-}
-
 .app-container {
 	min-height: 100vh;
 	display: flex;
@@ -80,4 +74,75 @@ body.theme-dark textarea {
 
 body.theme-dark input::placeholder {
 	color: #aaa;
+}
+.page-box {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+.page-box h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.page-box h2 {
+    margin-bottom: 15px;
+    border-left: 4px solid #1976d2;
+    padding-left: 10px;
+}
+
+.page-box section,
+.page-box .section {
+    margin-top: 30px;
+}
+.page-box form,
+.page-box .form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.page-box label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    gap: 6px;
+}
+
+.page-box input,
+.page-box select,
+.page-box textarea {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+.page-box button {
+    padding: 8px 14px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    background-color: #1976d2;
+    color: white;
+    transition: background 0.2s;
+}
+
+.page-box button:hover {
+    background-color: #125aa0;
+}
+
+.page-box button.danger {
+    background-color: #c62828;
+}
+
+.page-box button.danger:hover {
+    background-color: #a61f1f;
+}
+
+.page-box button.secondary {
+    background-color: #777;
+}
+
+.page-box button.secondary:hover {
+    background-color: #555;
 }
