@@ -156,7 +156,7 @@ export default function Perfil() {
 
     try {
       const res = await fetch(
-        `/api/atualizarDefinicoes/${definicoes_data.id}`,
+        `http://localhost:8001/api/atualizarDefinicoes/${definicoes_data.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
