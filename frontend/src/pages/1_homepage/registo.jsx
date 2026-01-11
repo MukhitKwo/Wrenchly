@@ -1,13 +1,15 @@
-import React from "react";
+import { React, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function Registo() {
-	const [email, setEmail] = React.useState("");
-	const [username, setUsername] = React.useState("");
-	const [password, setPassword] = React.useState("");
+	const [email, setEmail] = useState("");
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
 	const navigate = useNavigate(); // hook to navigate programmatically
 	const { setState: setLocalStorage } = useLocalAppState(); // access global state
+	const [loading, setLoading] = useState(false);
 
 	const registarUser = async () => {
 		// console.log({ email, username, password });
@@ -23,6 +25,9 @@ export default function Registo() {
 			return;
 		}
 
+		setLoading(true);
+		console.log(loading);
+		
 
 		try {
 			const res = await fetch("http://localhost:8001/api/registerUser/", {
@@ -45,7 +50,6 @@ export default function Registo() {
 				return;
 			}
 
-
 			if (res.ok) {
 				setLocalStorage((prev) => ({
 					...prev,
@@ -62,7 +66,6 @@ export default function Registo() {
 
 				navigate("/garagem");
 			}
-
 		} catch (err) {
 			setLocalStorage((prev) => ({
 				...prev,
@@ -71,6 +74,8 @@ export default function Registo() {
 					message: "Erro de ligação ao servidor",
 				},
 			}));
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -147,6 +152,7 @@ export default function Registo() {
 					Register
 				</button>
 			</div>
+			{loading && <LoadingSpinner text="A criar registo..." />}
 		</div>
 	);
 }

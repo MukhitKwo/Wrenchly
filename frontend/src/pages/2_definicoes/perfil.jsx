@@ -151,6 +151,7 @@ export default function Perfil() {
       showFeedback("error", "Erro ao atualizar palavra-passe.");
     }
   };
+  
   const atualizarDefinicoes = async () => {
     if (!definicoes_data?.id) return;
 
