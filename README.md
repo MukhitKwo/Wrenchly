@@ -5,13 +5,13 @@
 ![npm](https://img.shields.io/badge/npm-v10.9.2-red)
 
 
-Aplicação web que permite aos utilizadores gerir os seus carros, registar reparações e acompanhar o histórico de manutenção. A app inclui um sistema de previsão que identifica problemas comuns ou crónicos e envia lembretes para trocas de óleo, seguros e outras manutenções periódicas.
+Aplicação web que permite aos utilizadores gerir os seus veiculos, registar reparações e acompanhar o histórico de manutenção. A app inclui um sistema de previsão que identifica problemas comuns ou crónicos e envia lembretes para trocas de óleo, seguros e outras manutenções periódicas.
 
-Além disso, os utilizadores podem procurar veículos com base em características específicas para encontrar o carro que melhor se adapta às suas necessidades.
+Além disso, os utilizadores podem procurar veículos com base em características específicas para encontrar o veiculo que melhor se adapta às suas necessidades.
 
 # Funcionalidades
 
-- Adicionar e gerir carros.
+- Adicionar e gerir veiculos.
 - Registar reparações e manutenção.
 - Histórico completo de manutenção.
 - Sistema de previsão de problemas comuns/crónicos.
@@ -41,8 +41,8 @@ npm run frontend | f
 
 # Colaboradores
 
-- **António** – Backend
-- **Guilherme** – Backend
-- **Rui** – Midleman
+- **António** – Backend/Frontend
+- **Guilherme** – Backend/Fronten
+- **Rui** – Frontend
 - **Daniel** – Frontend
 - **Pablo** – Frontend
