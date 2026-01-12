@@ -59,9 +59,8 @@
 }
 
 .navbar-links a.active {
-	background-color: rgba(24, 95, 173, 0.25);
-	/* color: #185fad; */
-	box-shadow: inset 0 -4px 0 #185fad; /* blue line at bottom inside link */
+	background-color: rgba(14, 77, 144, 0.25);
+	box-shadow: inset 0 -4px 0 #185fad;
 }
 
 .navbar-user {

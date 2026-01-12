@@ -1,5 +1,3 @@
-// src/index.js (NOVO CÓDIGO)
-// src/index.js
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";

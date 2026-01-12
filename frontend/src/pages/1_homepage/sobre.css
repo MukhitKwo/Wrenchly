@@ -12,6 +12,8 @@
 
   width: 100%;
   height: 100vh;
+  margin:0;
+  padding:0;
 
   background-image: url('../../components/imagem-homepage.png');
   background-size: cover;
@@ -105,6 +107,7 @@
 
 .card {
     background: inherit;
+    background-color: #1860ad33;
     border-radius: 10px;
     padding: 25px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
@@ -175,3 +178,9 @@ body.theme-dark .sobre-footer {
     color: #eaeaea;
 }
 
+html, body{
+    margin:0;
+    padding:0;
+    width:100%;
+    overflow-x:hidden;
+}

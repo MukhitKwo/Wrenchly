@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Feedback from "./components/Feedback.jsx";
 import Navbar from "./components/navbar";
 import { useLocalAppState } from "./context/appState.local";
+import BackToTop from "./components/backToTop";
 
 function App() {
   const { state } = useLocalAppState();
@@ -27,6 +28,9 @@ function App() {
           Wrenchly ©️ 2026
         </p>
       </footer>
+
+      {/* ✅ Botão flutuante BackToTop */}
+      <BackToTop />
     </div>
   );
 }

@@ -35,6 +35,16 @@
 	animation: spin 1.4s linear infinite;
 }
 
+.spinner-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 36px;  /* ajusta ao tamanho que quiseres */
+  height: 36px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
 /* Text */
 .loading-text {
 	color: white;
