@@ -23,7 +23,6 @@
   color: white;
   text-align: left;
 
-  /* 👇 ESTE É O SEGREDO */
   padding-top: clamp(100px, 25vh, 320px);
   padding-left: clamp(20px, 5vw, 80px);
   padding-right: clamp(20px, 5vw, 80px);
@@ -42,7 +41,6 @@
   line-height: 1.5;
 }
 
-/* SECTIONS */
 .sobre-section {
     max-width: 900px;
     margin: 70px auto;
@@ -60,7 +58,6 @@
     text-align: justify;
 }
 
-/* VARIAÇÕES */
 .sobre-section.light {
     background-color: inherit;
     padding: 60px 20px;
@@ -74,7 +71,6 @@
     border-radius: 6px;
 }
 
-/* LISTAS */
 .sobre-section ul {
     max-width: 600px;
     margin: 25px auto;
@@ -95,7 +91,6 @@
     left: 0;
 }
 
-/* CARDS */
 .sobre-cards {
     max-width: 1100px;
     margin: 80px auto;
@@ -124,7 +119,6 @@
     font-size: 1.1rem;
 }
 
-/* FOOTER */
 .sobre-footer {
     background-color: #0d47a1;
     color: white;
@@ -155,24 +149,20 @@ body.theme-dark .sobre-page {
     color: #eaeaea;
 }
 
-/* Secções */
 body.theme-dark .sobre-section {
     color: #eaeaea;
 }
 
-/* Cards */
 body.theme-dark .card {
     background-color: #1e1e1e;
     color: #eaeaea;
     box-shadow: 0 4px 15px rgba(0,0,0,0.6);
 }
 
-/* Listas */
 body.theme-dark .sobre-section li::before {
-    color: #64b5f6; /* azul mais suave no dark */
+    color: #64b5f6;
 }
 
-/* Footer */
 body.theme-dark .sobre-footer {
     background-color: #0a1e3a;
     color: #eaeaea;

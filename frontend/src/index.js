@@ -10,16 +10,13 @@ import { LocalAppStateProvider } from "./context/appState.local.jsx";
 import { SessionAppStateProvider } from "./context/appState.session.jsx";
 import "./index.css";
 
-// Homepage
 import Contatos from "./pages/1_homepage/contatos.jsx";
 import Login from "./pages/1_homepage/login.jsx";
 import Registo from "./pages/1_homepage/registo.jsx";
 import Sobre from "./pages/1_homepage/sobre.jsx";
 
-// Definições
 import Perfil from "./pages/2_definicoes/perfil.jsx";
 
-// Adicionar carro
 import AdicionarCarroPorModelo from "./pages/4_adicionarCarro/adicionarPorModelo.jsx";
 import AtualizarPreventivos from "./pages/4_adicionarCarro/atualizarPreventivos.jsx";
 import MostrarCarrosGuardados from "./pages/4_adicionarCarro/escolherCarroGuardado.jsx";
@@ -27,11 +24,9 @@ import ListaCarrosRecomendados from "./pages/4_adicionarCarro/listaCarrosRecomen
 import NovoCarro from "./pages/4_adicionarCarro/novoCarro.jsx";
 import ProcurarPorEspecificacoes from "./pages/4_adicionarCarro/procurarPorEspecificacoes.jsx";
 
-// Garagem
 import Garagem from "./pages/3_garagem/garagem.jsx";
 import TodasManutencoes from "./pages/3_garagem/todasManutencoes.jsx";
 
-// Detalhes / criação
 import EditarCarro from "./pages/3_garagem/editarCarro.jsx";
 import NotasTodas from "./pages/3_garagem/notasTodas.jsx";
 import NovoCorretivo from "./pages/3_garagem/novoCorretivo.jsx";
@@ -54,7 +49,6 @@ const router = createBrowserRouter([
 			{element: <ProtectedRoute />, 
 			children: [
 				{ path: "perfil", element: <Perfil /> },
-				//{ path: "definicoes", element:<Definicoes /> },
 
 					{ path: "novoCarro", element: <NovoCarro /> },
 					{ path: "adicionarPorModelo", element: <AdicionarCarroPorModelo /> },
@@ -90,13 +84,3 @@ root.render(
 		</SessionAppStateProvider>
 	</LocalAppStateProvider>
 );
-// root.render(
-	// <React.StrictMode>
-// 		<LocalAppStateProvider>
-// 			<SessionAppStateProvider>
-// 				<RouterProvider router={router}
-// 				fallback={<LoadingSpinner />} />
-// 			</SessionAppStateProvider>
-// 		</LocalAppStateProvider>
-// 	</React.StrictMode>
-// );

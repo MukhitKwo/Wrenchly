@@ -1,5 +1,3 @@
-/* ================= PERFIL ================= */
-
 .perfil-container {
     max-width: 800px;
     margin: 0 auto;
@@ -25,8 +23,6 @@
     margin: 6px 0;
 }
 
-/* ================= FORM ================= */
-
 .perfil-form {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -49,8 +45,6 @@
 .perfil-form.full {
     grid-template-columns: 1fr;
 }
-
-/* ================= BOTÕES ================= */
 
 .perfil-actions {
     display: flex;

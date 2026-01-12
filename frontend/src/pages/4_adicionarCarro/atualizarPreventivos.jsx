@@ -14,9 +14,8 @@ export default function AtualizarPreventivos() {
 	const allPreventivos_data = state?.preventivos;
 
 	const [preventivos, setPreventivos] = useState(allPreventivos_data || []);
-	const [loading, setLoading] = useState(false); // new state
+	const [loading, setLoading] = useState(false);
 
-	// sessão expirada
 	const handleForbidden = useCallback(() => {
 		setLocalState((prev) => ({
 			...prev,

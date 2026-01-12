@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import "./adicionarEProcurar.css"; // mesmo CSS do AdicionarPorModelo
+import "./adicionarEProcurar.css";
 
 export default function ProcurarPorEspecificacoes() {
   const navigate = useNavigate();
@@ -75,7 +75,6 @@ export default function ProcurarPorEspecificacoes() {
       <h2>Pesquisar por Especificações</h2>
 
       <div className="form-grid">
-        {/* Categoria */}
         <div className="form-row">
           <label>Categoria</label>
           <select
@@ -101,7 +100,6 @@ export default function ProcurarPorEspecificacoes() {
           </select>
         </div>
 
-        {/* Marca */}
         <div className="form-row">
           <label>Marca</label>
           <input
@@ -111,7 +109,6 @@ export default function ProcurarPorEspecificacoes() {
           />
         </div>
 
-        {/* Modelo */}
         <div className="form-row">
           <label>Modelo</label>
           <input
@@ -121,7 +118,6 @@ export default function ProcurarPorEspecificacoes() {
           />
         </div>
 
-        {/* Ano mínimo */}
         <div className="form-row">
           <label>Ano mínimo</label>
           <input
@@ -132,7 +128,6 @@ export default function ProcurarPorEspecificacoes() {
           />
         </div>
 
-        {/* Ano máximo */}
         <div className="form-row">
           <label>Ano máximo</label>
           <input
@@ -143,7 +138,6 @@ export default function ProcurarPorEspecificacoes() {
           />
         </div>
 
-        {/* Combustível */}
         <div className="form-row">
           <label>Combustível</label>
           <select
@@ -159,7 +153,6 @@ export default function ProcurarPorEspecificacoes() {
           </select>
         </div>
 
-        {/* Transmissão */}
         <div className="form-row">
           <label>Transmissão</label>
           <select
@@ -173,7 +166,6 @@ export default function ProcurarPorEspecificacoes() {
           </select>
         </div>
 
-        {/* Tração */}
         <div className="form-row">
           <label>Tração</label>
           <select
@@ -188,7 +180,6 @@ export default function ProcurarPorEspecificacoes() {
           </select>
         </div>
 
-        {/* Carroçaria */}
         <div className="form-row">
           <label>Carroçaria</label>
           <select
@@ -205,7 +196,6 @@ export default function ProcurarPorEspecificacoes() {
           </select>
         </div>
 
-        {/* Cavalos */}
         <div className="form-row">
           <label>Cavalos mín</label>
           <input
@@ -225,7 +215,6 @@ export default function ProcurarPorEspecificacoes() {
           />
         </div>
 
-        {/* Cilindrada */}
         <div className="form-row">
           <label>Cilindrada mín (cc)</label>
           <input
@@ -245,7 +234,6 @@ export default function ProcurarPorEspecificacoes() {
           />
         </div>
 
-        {/* Portas */}
         <div className="form-row">
           <label>Portas</label>
           <input
@@ -256,7 +244,6 @@ export default function ProcurarPorEspecificacoes() {
           />
         </div>
 
-        {/* Lugares */}
         <div className="form-row">
           <label>Lugares</label>
           <input
@@ -267,7 +254,6 @@ export default function ProcurarPorEspecificacoes() {
           />
         </div>
 
-        {/* Ordenar */}
         <div className="form-row">
           <label>Ordenar por</label>
           <select

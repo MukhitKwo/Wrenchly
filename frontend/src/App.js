@@ -28,8 +28,6 @@ function App() {
           Wrenchly ©️ 2026
         </p>
       </footer>
-
-      {/* ✅ Botão flutuante BackToTop */}
       <BackToTop />
     </div>
   );

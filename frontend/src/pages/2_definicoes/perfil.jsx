@@ -30,7 +30,6 @@ export default function Perfil() {
     }));
   };
 
-  /* ============ SESSÃO EXPIRADA ============ */
   const handleForbidden = () => {
     clearLocal();
     clearSession();
@@ -38,7 +37,6 @@ export default function Perfil() {
     navigate("/login", { replace: true });
   };
 
-  /* ================= LOGOUT ================= */
   const handleLogout = async () => {
     if (!window.confirm("Tens a certeza que queres sair da tua conta?")) return;
 

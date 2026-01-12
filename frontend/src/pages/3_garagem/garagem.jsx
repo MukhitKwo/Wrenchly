@@ -32,7 +32,6 @@ export default function Garagem() {
 		navigate("/login", { replace: true });
 	}, [setState, navigate]);
 
-	// proteção contra sessão expirada / estado inválido
 	useEffect(() => {
 		if (!garagem) {
 			handleForbidden();
@@ -55,12 +54,12 @@ export default function Garagem() {
 		return copia.sort((a, b) => b.id - a.id);
 	};
 
-	if (!garagem) return null; // evita render intermédio
+	if (!garagem) return null;
 
 	return (
 		<div>
 			<div className="garage-header">
-				{/* Left */}
+
 				<div className="garage-left">
 					<label>Ordenar por:</label>
 					<select value={ordenacaoCarros} onChange={(e) => setOrdenacaoCarros(e.target.value)}>
@@ -70,10 +69,8 @@ export default function Garagem() {
 					</select>
 				</div>
 
-				{/* Center */}
 				<h1 className="garage-title">{garagem.nome}</h1>
 
-				{/* Right */}
 				<div className="garage-right">
 					<Link to="/novoCarro">
 						<button className="standar-button">

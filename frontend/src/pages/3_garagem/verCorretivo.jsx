@@ -24,7 +24,6 @@ export default function VerCorretivo() {
 		}));
 	}, [setLocalStorage]);
 
-	//  handler sessão expirada
 	const handleForbidden = useCallback(() => {
 		setLocalStorage((prev) => ({
 			...prev,

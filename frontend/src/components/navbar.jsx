@@ -43,8 +43,6 @@ function Navbar() {
 								<FaStickyNote />
 								<span className="nav-text">Notas</span>
 							</NavLink>
-							{/*<NavLink to="/definicoes" onClick={()=>setMenuOpen(false)}><FaCog /> Definições</NavLink>*/}
-
 							<div style={{ borderLeft: "2px solid #185fad", margin: "6px 2px" }}></div>
 
 							<NavLink to="/perfil" onClick={() => setMenuOpen(false)}>

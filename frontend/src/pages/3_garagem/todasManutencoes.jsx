@@ -37,7 +37,6 @@ export default function TodasManutencoes() {
 		[setLocalStorage]
 	);
 
-	// handler sessão expirada
 	const handleForbidden = useCallback(() => {
 		setLocalStorage((prev) => ({
 			...prev,

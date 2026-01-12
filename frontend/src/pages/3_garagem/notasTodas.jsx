@@ -40,7 +40,6 @@ export default function NotasTodas() {
         navigate("/login", { replace: true });
     }, [setState, navigate]);
 
-    /* ================= CARREGAR NOTAS ================= */
     useEffect(() => {
         if (state?.notas?.length) return;
 
@@ -81,7 +80,6 @@ export default function NotasTodas() {
         return carro ? carro.full_name : `Carro #${carroId}`;
     };
 
-    /* ================= CRUD ================= */
     const criarNota = async () => {
         if (!textoNota || !carroSelecionado) {
             showFeedback("error", "Preenche o texto e seleciona um carro.");

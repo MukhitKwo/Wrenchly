@@ -38,7 +38,6 @@ export default function NovoPreventivo() {
 		}));
 	};
 
-	//  handler  para sessão expirada
 	const handleForbidden = useCallback(() => {
 		setLocalStorage((prev) => ({
 			...prev,

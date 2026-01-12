@@ -17,7 +17,6 @@ export default function ListaCarrosRecomendados() {
 	const [savedCars, setSavedCars] = useState([]);
 	const [loading, setLoading] = useState(false);
 
-	// sessão expirada
 	const handleForbidden = useCallback(() => {
 		setLocalState((prev) => ({
 			...prev,

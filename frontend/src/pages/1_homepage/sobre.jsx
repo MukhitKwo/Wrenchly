@@ -4,12 +4,10 @@ function Sobre() {
   return (
     <div className="sobre-page">
 
-      {/* HERO */}
       <section className="sobre-hero" >
         <h1>Wrenchly</h1>
       </section>
 
-      {/* VISÃO */}
       <section className="sobre-section">
         <h2>A nossa visão</h2>
         <p>
@@ -25,7 +23,6 @@ function Sobre() {
         </p>
       </section>
 
-      {/* FEATURES */}
       <section className="sobre-cards">
         <div className="card">
           <h3>Garagem Digital</h3>
@@ -76,7 +73,6 @@ function Sobre() {
         </div>
       </section>
 
-      {/* TECNOLOGIA */}
       <section className="sobre-section destaque">
         <h2>Tecnologia & Arquitetura</h2>
         <p>
@@ -94,7 +90,6 @@ function Sobre() {
         </ul>
       </section>
 
-      {/* PUBLICO */}
       <section className="sobre-section">
         <h2>Público-Alvo</h2>
         <p>
@@ -109,7 +104,6 @@ function Sobre() {
         </ul>
       </section>
 
-      {/* CONTEXTO */}
       <section className="sobre-section light">
         <h2>Contexto do Projeto</h2>
         <p>
@@ -119,7 +113,6 @@ function Sobre() {
         </p>
       </section>
 
-      {/* FOOTER */}
       <footer className="sobre-footer">
         <span>Gestão inteligente para uma condução mais segura</span>
       </footer>

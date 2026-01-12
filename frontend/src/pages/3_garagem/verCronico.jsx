@@ -25,7 +25,6 @@ export default function VerCronico() {
 		}));
 	}, [setLocalStorage]);
 
-	//  handler sessão expirada
 	const handleForbidden = useCallback(() => {
 		setLocalStorage((prev) => ({
 			...prev,

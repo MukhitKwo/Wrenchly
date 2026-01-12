@@ -7,7 +7,7 @@ function BackToTop() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setVisible(window.scrollY > 200); // mostrar o botão depois de 200px de scroll
+      setVisible(window.scrollY > 200);
     };
 
     window.addEventListener("scroll", handleScroll);

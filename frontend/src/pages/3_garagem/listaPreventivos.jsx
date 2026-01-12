@@ -47,7 +47,7 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 						<div style={{ display: "flex", alignItems: "center" }}>
 							<div
 								style={{
-									flexBasis: "70%", // name takes 70% of the width
+									flexBasis: "70%",
 									overflow: "hidden",
 									textOverflow: "ellipsis",
 								}}
@@ -67,13 +67,10 @@ export default function ListaPreventivos({ preventivos, carroId, carroKms }) {
 							Trocar no Km: {manutencao.trocarNoKm} km | Data: {manutencao.trocarNaData}
 						</p>
 
-						{/* {manutencao.notas && <p>Notes: {manutencao.notas}</p>} */}
-
-						{/* Fazer button bottom right */}
 						<div style={{ position: "absolute", bottom: "10px", right: "10px" }}>
 							<button
 								onClick={(e) => {
-									e.stopPropagation(); // prevent panel click
+									e.stopPropagation();
 									navigate("/novoCorretivo", {
 										state: {
 											carro_id: carroId,

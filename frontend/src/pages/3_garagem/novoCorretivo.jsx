@@ -39,7 +39,6 @@ export default function NovoCorretivo() {
 		}));
 	};
 
-	// handler  sessão expirada
 	const handleForbidden = useCallback(() => {
 		setLocalStorage((prev) => ({
 			...prev,

@@ -21,7 +21,6 @@ export default function Definicoes() {
 		}));
 	};
 
-	/* ================== Forbidden ================== */
 	const handleForbidden = useCallback(() => {
 		clearLocalStorage();
 		clearSessionStorage();
@@ -37,7 +36,6 @@ export default function Definicoes() {
 		navigate("/login", { replace: true });
 	}, [clearLocalStorage, clearSessionStorage, setLocalStorage, navigate]);
 
-	/* ================== STATE ================== */
 	const definicoes_data = getLocalStorage?.definicoes || {
 		tema: "claro",
 		notificacoes: false,
@@ -58,9 +56,7 @@ export default function Definicoes() {
 		}));
 	};
 
-	/* ================== SUBMIT ================== */
 	const atualizarDefinicoes = async () => {
-		// estado inválido
 		if (!definicoes_data?.id) {
 			showFeedback("error", "Definições não carregadas. Faz login novamente.");
 			return;

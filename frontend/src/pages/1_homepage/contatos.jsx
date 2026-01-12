@@ -69,7 +69,6 @@ function Contatos() {
         Estamos disponíveis para responder às suas perguntas. Use o método de contato que preferir:
       </p>
 
-      {/* Email */}
       <div style={rowStyle}>
         <div><strong>Email:</strong> wrenchly.notification@gmail.com</div>
         <img
@@ -81,7 +80,6 @@ function Contatos() {
         />
       </div>
 
-      {/* Telefone */}
       <div style={rowStyle}>
         <div><strong>Telefone:</strong> +351 912 345 678</div>
         <img
@@ -93,7 +91,6 @@ function Contatos() {
         />
       </div>
 
-      {/* Morada */}
       <div style={rowStyle}>
         <div>
           <strong>Morada:</strong> Rua Comandante Pinho e Freitas, nº 28, 3750 – 127 Águeda
@@ -107,7 +104,6 @@ function Contatos() {
         />
       </div>
 
-      {/* Formulário de Contato Funcional */}
       <div
         style={{
           border: '1px solid #ccc',

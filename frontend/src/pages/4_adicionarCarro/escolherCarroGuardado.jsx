@@ -10,12 +10,11 @@ export default function MostrarCarrosGuardados() {
 	const { setState: setLocalState } = useLocalAppState();
 
 	const fetchedRef = useRef(false);
-	const [status, setStatus] = useState("idle"); // idle | loading | error
+	const [status, setStatus] = useState("idle");
 	const [action, setAction] = useState({ id: null, type: null });
 	const [loading, setLoading] = useState(false);
 	const [loadingText, setLoadingtext] = useState(false);
 
-	// sessão expirada
 	const handleForbidden = useCallback(() => {
 		setLocalState((prev) => ({
 			...prev,

@@ -14,12 +14,10 @@ code {
 	flex-direction: column;
 }
 
-/* Main ocupa todo o espaço entre navbar e footer */
 .main-content {
 	flex: 1;
 }
 
-/* Footer sempre em baixo */
 .footer {
 	text-align: center;
 	background-color: #eee;

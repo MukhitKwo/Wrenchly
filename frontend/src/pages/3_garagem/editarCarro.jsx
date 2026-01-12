@@ -25,7 +25,6 @@ export default function EditarCarro() {
 
 	const [loading, setLoading] = useState(false);
 
-	// sessão expirada
 	const handleForbidden = useCallback(() => {
 		setLocalStorage((prev) => ({
 			...prev,
@@ -68,15 +67,13 @@ export default function EditarCarro() {
 
 			if (!res.ok) throw new Error();
 
-			// atualizar session
 			const carrosAtualizados = getSessionStorage.carros_vistos.map((c) => (c.id === Number(carro_id) ? { ...c, ...form } : c));
 
 			setSessionStorage((prev) => ({
 				...prev,
 				carros_vistos: carrosAtualizados,
 			}));
-
-			// atualizar local
+ 
 			const carrosPreviewAtualizados = getLocalStorage.carros_preview.map((car) =>
 				car.id === Number(carro_id)
 					? {

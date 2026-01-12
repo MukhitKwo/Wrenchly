@@ -7,13 +7,11 @@ export default function Registo() {
 	const [email, setEmail] = useState("");
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-	const navigate = useNavigate(); // hook to navigate programmatically
-	const { setState: setLocalStorage } = useLocalAppState(); // access global state
+	const navigate = useNavigate();
+	const { setState: setLocalStorage } = useLocalAppState();
 	const [loading, setLoading] = useState(false);
 
 	const registarUser = async () => {
-		// console.log({ email, username, password });
-
 		if (!username || !password || !email) {
 			setLocalStorage((prev) => ({
 				...prev,

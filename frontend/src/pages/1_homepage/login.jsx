@@ -4,15 +4,13 @@ import { useLocalAppState } from "../../context/appState.local";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function Login() {
-	// const [email, setEmail] = React.useState("");
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-	const navigate = useNavigate(); // hook to navigate programmatically
+	const navigate = useNavigate();
 	const { setState: setLocalStorage } = useLocalAppState();
-	const [loading, setLoading] = useState(false); // new state
+	const [loading, setLoading] = useState(false);
 
 	const loginUser = async () => {
-		// console.log({ email, username, password });
 
 		if (!username || !password) {
 			setLocalStorage((prev) => ({
@@ -71,7 +69,7 @@ export default function Login() {
 				},
 			}));
 		} finally {
-			setLoading(false); // hide spinner
+			setLoading(false);
 		}
 	};
 

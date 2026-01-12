@@ -1,4 +1,3 @@
-/* src/components/navbar.css */
 @import url("https://fonts.googleapis.com/css2?family=Michroma&display=swap");
 
 .navbar {
@@ -7,21 +6,19 @@
 	z-index: 1000;
 	background: rgba(24, 96, 173, 0.2);
 	border-bottom: #185fad 4px solid;
-	/* padding: 12px 0; */
-	/* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); */
 	width: 100%;
-	backdrop-filter: blur(8px); /* efeito de vidro fosco subtil */
+	backdrop-filter: blur(8px);
 	transition: background 0.3s;
 }
 .navbar-toggle {
-	display: none; /* hidden by default, shown on mobile */
+	display: none;
 }
 .navbar-container {
 	display: flex;
 	justify-content: space-between;
-	align-items: stretch; /* stretch children to full navbar height */
+	align-items: stretch;
 	padding: 0 8%;
-	height: 60px; /* match .logo-img height */
+	height: 60px;
 }
 
 .nav-text {
@@ -30,7 +27,6 @@
 
 .navbar-logo:hover {
 	transform-origin: center;
-	/* animation: shake-suave 0.5s ease-in-out; */
 }
 
 .navbar-links {
@@ -55,7 +51,6 @@
 .navbar-links a:hover {
 	background: rgba(24, 96, 173, 0.1);
 	color: #1e1e1e;
-	/* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
 }
 
 .navbar-links a.active {
@@ -112,7 +107,6 @@
 	}
 }
 
-/* ================= MOBILE ================= */
 @media (max-width: 768px) {
 	.navbar-container {
 		flex-direction: row;

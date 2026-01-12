@@ -171,7 +171,6 @@ export default function ProcurarCarroPorModelo() {
 			<h2>Adicionar por Modelo</h2>
 
 			<div className="form-grid">
-				{/** Categoria */}
 				<div className="form-row">
 					<label>Categoria</label>
 					<select name="categoria" value={caracteristicas.categoria} onChange={handleChange}>
@@ -186,25 +185,21 @@ export default function ProcurarCarroPorModelo() {
 					</select>
 				</div>
 
-				{/** Marca */}
 				<div className="form-row">
 					<label>Marca</label>
 					<input name="marca" value={caracteristicas.marca} onChange={handleChange} />
 				</div>
 
-				{/** Modelo */}
 				<div className="form-row">
 					<label>Modelo</label>
 					<input name="modelo" value={caracteristicas.modelo} onChange={handleChange} />
 				</div>
 
-				{/** Ano */}
 				<div className="form-row">
 					<label>Ano</label>
 					<input type="number" name="ano" value={caracteristicas.ano} onChange={handleChange} />
 				</div>
 
-				{/** Combustível */}
 				<div className="form-row">
 					<label>Combustível</label>
 					<select name="combustivel" value={caracteristicas.combustivel} onChange={handleChange}>
@@ -216,19 +211,16 @@ export default function ProcurarCarroPorModelo() {
 					</select>
 				</div>
 
-				{/** Cilindrada */}
 				<div className="form-row">
 					<label>Cilindrada (cc)</label>
 					<input type="number" name="cilindrada" value={caracteristicas.cilindrada} onChange={handleChange} />
 				</div>
 
-				{/** Cavalos */}
 				<div className="form-row">
 					<label>Cavalos</label>
 					<input type="number" name="cavalos" value={caracteristicas.cavalos} onChange={handleChange} />
 				</div>
 
-				{/** Transmissão */}
 				<div className="form-row">
 					<label>Transmissão</label>
 					<select name="transmissao" value={caracteristicas.transmissao} onChange={handleChange}>
@@ -239,19 +231,16 @@ export default function ProcurarCarroPorModelo() {
 					</select>
 				</div>
 
-				{/** Quilometragem */}
 				<div className="form-row">
 					<label>Quilometragem</label>
 					<input type="number" name="quilometragem" value={caracteristicas.quilometragem} onChange={handleChange} />
 				</div>
 
-				{/** Matrícula */}
 				<div className="form-row">
 					<label>Matrícula</label>
 					<input name="matricula" value={caracteristicas.matricula} onChange={handleChange} />
 				</div>
 
-				{/** Imagem */}
 				<div className="form-row">
 					<label>Imagem</label>
 					<input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} />

@@ -30,7 +30,6 @@ export default function VerPreventivo() {
 		}));
 	}, [setLocalStorage]);
 
-	// sessão expirada
 	const handleForbidden = useCallback(() => {
 		setLocalStorage((prev) => ({
 			...prev,
