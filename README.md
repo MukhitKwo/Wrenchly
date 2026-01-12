@@ -42,7 +42,7 @@ npm run frontend | f
 # Colaboradores
 
 - **António** – Backend/Frontend
-- **Guilherme** – Backend/Fronten
+- **Guilherme** – Backend/Frontend
 - **Rui** – Frontend
 - **Daniel** – Frontend
 - **Pablo** – Frontend
