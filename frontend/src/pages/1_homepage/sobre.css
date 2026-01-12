@@ -4,41 +4,48 @@
 }
 
 .sobre-hero {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
 
-  width: 100%;
-  height: 100vh;
-  margin:0;
-  padding:0;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
 
-  background-image: url('../../components/imagem-homepage.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+    background-image: url('../../components/imagem-homepage.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 
-  color: white;
-  text-align: left;
+    color: white;
+    text-align: left;
 
-  padding-top: clamp(100px, 25vh, 320px);
-  padding-left: clamp(20px, 5vw, 80px);
-  padding-right: clamp(20px, 5vw, 80px);
+    padding-top: clamp(100px, 25vh, 320px);
+    padding-left: clamp(20px, 5vw, 80px);
+    padding-right: clamp(20px, 5vw, 80px);
 }
 
-
+.sobre-hero .maquinaescrever {
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 2px solid white;
+    animation: blink 0.7s step-end infinite;
+}
 
 .sobre-hero h1 {
-  font-size: clamp(2.2rem, 6vw, 3.8rem);
-  margin-bottom: 14px;
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    margin-bottom: 14px;
 }
 
 .sobre-hero p {
-  font-size: clamp(1rem, 3vw, 1.4rem);
-  max-width: 600px;
-  line-height: 1.5;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    max-width: 600px;
+    line-height: 1.5;
 }
 
 .sobre-section {
@@ -105,13 +112,13 @@
     background-color: #1860ad33;
     border-radius: 10px;
     padding: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
     transition: transform 0.25s, box-shadow 0.25s;
 }
 
 .card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .card h3 {
@@ -133,6 +140,7 @@
     font-size: 0.9rem;
     opacity: 0.85;
 }
+
 @media (max-width: 900px) {
     .sobre-cards {
         grid-template-columns: repeat(2, 1fr);
@@ -156,7 +164,7 @@ body.theme-dark .sobre-section {
 body.theme-dark .card {
     background-color: #1e1e1e;
     color: #eaeaea;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
 }
 
 body.theme-dark .sobre-section li::before {
@@ -168,9 +176,14 @@ body.theme-dark .sobre-footer {
     color: #eaeaea;
 }
 
-html, body{
-    margin:0;
-    padding:0;
-    width:100%;
-    overflow-x:hidden;
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
 }

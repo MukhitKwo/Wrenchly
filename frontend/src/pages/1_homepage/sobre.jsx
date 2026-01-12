@@ -1,13 +1,57 @@
+import { useState, useEffect } from "react";
 import "./sobre.css";
 
 function Sobre() {
+  const text = "Wrenchly";
+  const [displayedText, setDisplayedText] = useState("");
+
+  useEffect(() => {
+    let index = 1; // começamos com 1 porque o "W" já está
+    setDisplayedText(text[0]); // inicializa com "W"
+    let isDeleting = false; // controlamos dentro do effect
+    let timeout;
+
+    const animate = () => {
+      if (!isDeleting) {
+        // Escrever letra a letra
+        setDisplayedText(text.slice(0, index + 1));
+        index++;
+        if (index === text.length) {
+          // espera 1s e começa a apagar
+          timeout = setTimeout(() => {
+            isDeleting = true;
+            animate();
+          }, 2000);
+          return;
+        }
+      } else {
+        // Apagar letra a letra, mantendo sempre o "W"
+        setDisplayedText(text.slice(0, Math.max(index, 1)));
+        index--;
+        if (index === 1) {
+          // espera 1s e volta a escrever
+          timeout = setTimeout(() => {
+            isDeleting = false;
+            animate();
+          }, 1000);
+          return;
+        }
+      }
+      timeout = setTimeout(animate, 150);
+    };
+
+    animate();
+
+    return () => clearTimeout(timeout);
+  }, []); // sem dependências, loop gerido internamente
+
   return (
     <div className="sobre-page">
-
-      <section className="sobre-hero" >
-        <h1>Wrenchly</h1>
+      <section className="sobre-hero">
+        <h1 className="typewriter">{displayedText}</h1>
       </section>
 
+      {/* Restante conteúdo */}
       <section className="sobre-section">
         <h2>A nossa visão</h2>
         <p>
@@ -97,10 +141,10 @@ function Sobre() {
           sobre a manutenção dos seus veículos, desde utilizadores comuns até
           entusiastas automóveis e pequenos negócios.
         </p>
-          <ul>
-            <li><strong>Proprietários de veículos</strong></li>
-            <li><strong>Oficinas e pequenos profissionais</strong></li>
-            <li><strong>Entusiastas de automóveis</strong></li>
+        <ul>
+          <li><strong>Proprietários de veículos</strong></li>
+          <li><strong>Oficinas e pequenos profissionais</strong></li>
+          <li><strong>Entusiastas de automóveis</strong></li>
         </ul>
       </section>
 
@@ -116,7 +160,6 @@ function Sobre() {
       <footer className="sobre-footer">
         <span>Gestão inteligente para uma condução mais segura</span>
       </footer>
-
     </div>
   );
 }
