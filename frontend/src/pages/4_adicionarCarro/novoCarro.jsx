@@ -24,13 +24,13 @@ export default function NovoCarro() {
 			<h1 style={{ textAlign: "center", marginBottom: "20px" }}>Escolha uma opção</h1>
 
 			<div style={{ display: "flex", justifyContent: "center", gap: "15px", marginBottom: "30px" }}>
-				<button onClick={() => setSelected("modelo")} style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>
+				<button className="submit-btn" type="button" onClick={() => setSelected("modelo")} style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>
 					Adicionar por Modelo
 				</button>
-				<button onClick={() => setSelected("especificacoes")} style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>
+				<button className="submit-btn" type="button" onClick={() => setSelected("especificacoes")} style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>
 					Procurar por Especificações
 				</button>
-				<button onClick={() => setSelected("guardado")} style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>
+				<button className="submit-btn" type="button" onClick={() => setSelected("guardado")} style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>
 					Escolher um carro guardado
 				</button>
 			</div>

@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import "./adicionarEProcurar.css";
 
 export default function ProcurarCarroPorModelo() {
 	const navigate = useNavigate();
@@ -32,7 +33,6 @@ export default function ProcurarCarroPorModelo() {
 
 	const [file, setFile] = useState(null);
 
-	/* ================== 403 ================== */
 	const handleForbidden = useCallback(() => {
 		setLocalState((prev) => ({
 			...prev,
@@ -86,7 +86,6 @@ export default function ProcurarCarroPorModelo() {
 				body: JSON.stringify({ caracteristicas }),
 			});
 
-			//  403 antes de tentar ler JSON
 			if (res.status === 403) {
 				handleForbidden();
 				return;
@@ -105,7 +104,6 @@ export default function ProcurarCarroPorModelo() {
 				return;
 			}
 
-			// upload da imagem
 			if (file) {
 				setLoadingtext("A adicionar imagem...");
 				const carroId = data.carro_data.id;
@@ -115,11 +113,10 @@ export default function ProcurarCarroPorModelo() {
 
 				const resImage = await fetch("http://localhost:8001/api/adicionarCarroImagem/", {
 					method: "POST",
-					credentials: "include", //  cookie/sessão
+					credentials: "include",
 					body: formData,
 				});
 
-				// 403 no upload também
 				if (resImage.status === 403) {
 					handleForbidden();
 					return;
@@ -139,7 +136,6 @@ export default function ProcurarCarroPorModelo() {
 				}
 			}
 
-			// sucesso
 			setLocalState((prev) => ({
 				...prev,
 				feedback: {
@@ -166,19 +162,19 @@ export default function ProcurarCarroPorModelo() {
 				},
 			}));
 		} finally {
-			setLoading(false); // hide spinner
+			setLoading(false);
 		}
 	};
 
 	return (
-		<div style={{ backgroundColor: "inherit", padding: "25px", borderRadius: "12px" }}>
-			<h2 style={{ marginBottom: "20px" }}>Pesquisar por Modelo</h2>
+		<div className="form-container">
+			<h2>Adicionar por Modelo</h2>
 
-			<div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "12px" }}>
-				{/* Categoria */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Categoria</label>
-					<select name="categoria" value={caracteristicas.categoria} onChange={handleChange} style={{ flex: 1 }}>
+			<div className="form-grid">
+				{/** Categoria */}
+				<div className="form-row">
+					<label>Categoria</label>
+					<select name="categoria" value={caracteristicas.categoria} onChange={handleChange}>
 						<option value="">---</option>
 						<optgroup label="Carro">
 							<option value="carro:sedan">Sedan</option>
@@ -190,28 +186,28 @@ export default function ProcurarCarroPorModelo() {
 					</select>
 				</div>
 
-				{/* Marca */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Marca</label>
-					<input name="marca" value={caracteristicas.marca} onChange={handleChange} style={{ flex: 1 }} />
+				{/** Marca */}
+				<div className="form-row">
+					<label>Marca</label>
+					<input name="marca" value={caracteristicas.marca} onChange={handleChange} />
 				</div>
 
-				{/* Modelo */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Modelo</label>
-					<input name="modelo" value={caracteristicas.modelo} onChange={handleChange} style={{ flex: 1 }} />
+				{/** Modelo */}
+				<div className="form-row">
+					<label>Modelo</label>
+					<input name="modelo" value={caracteristicas.modelo} onChange={handleChange} />
 				</div>
 
-				{/* Ano */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Ano</label>
-					<input type="number" name="ano" value={caracteristicas.ano} onChange={handleChange} style={{ flex: 1 }} />
+				{/** Ano */}
+				<div className="form-row">
+					<label>Ano</label>
+					<input type="number" name="ano" value={caracteristicas.ano} onChange={handleChange} />
 				</div>
 
-				{/* Combustível */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Combustível</label>
-					<select name="combustivel" value={caracteristicas.combustivel} onChange={handleChange} style={{ flex: 1 }}>
+				{/** Combustível */}
+				<div className="form-row">
+					<label>Combustível</label>
+					<select name="combustivel" value={caracteristicas.combustivel} onChange={handleChange}>
 						<option value="">---</option>
 						<option value="gasoleo">Diesel</option>
 						<option value="gasolina">Gasolina</option>
@@ -220,22 +216,22 @@ export default function ProcurarCarroPorModelo() {
 					</select>
 				</div>
 
-				{/* Cilindrada */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Cilindrada (cc)</label>
-					<input type="number" name="cilindrada" value={caracteristicas.cilindrada} onChange={handleChange} style={{ flex: 1 }} />
+				{/** Cilindrada */}
+				<div className="form-row">
+					<label>Cilindrada (cc)</label>
+					<input type="number" name="cilindrada" value={caracteristicas.cilindrada} onChange={handleChange} />
 				</div>
 
-				{/* Cavalos */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Cavalos</label>
-					<input type="number" name="cavalos" value={caracteristicas.cavalos} onChange={handleChange} style={{ flex: 1 }} />
+				{/** Cavalos */}
+				<div className="form-row">
+					<label>Cavalos</label>
+					<input type="number" name="cavalos" value={caracteristicas.cavalos} onChange={handleChange} />
 				</div>
 
-				{/* Transmissão */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Transmissão</label>
-					<select name="transmissao" value={caracteristicas.transmissao} onChange={handleChange} style={{ flex: 1 }}>
+				{/** Transmissão */}
+				<div className="form-row">
+					<label>Transmissão</label>
+					<select name="transmissao" value={caracteristicas.transmissao} onChange={handleChange}>
 						<option value="">---</option>
 						<option value="manual:5speed">Manual 5-speed</option>
 						<option value="manual:6speed">Manual 6-speed</option>
@@ -243,30 +239,31 @@ export default function ProcurarCarroPorModelo() {
 					</select>
 				</div>
 
-				{/* Quilometragem */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Quilometragem</label>
-					<input type="number" name="quilometragem" value={caracteristicas.quilometragem} onChange={handleChange} style={{ flex: 1 }} />
+				{/** Quilometragem */}
+				<div className="form-row">
+					<label>Quilometragem</label>
+					<input type="number" name="quilometragem" value={caracteristicas.quilometragem} onChange={handleChange} />
 				</div>
 
-				{/* Matrícula */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Matrícula</label>
-					<input name="matricula" value={caracteristicas.matricula} onChange={handleChange} style={{ flex: 1 }} />
+				{/** Matrícula */}
+				<div className="form-row">
+					<label>Matrícula</label>
+					<input name="matricula" value={caracteristicas.matricula} onChange={handleChange} />
 				</div>
 
-				{/* Imagem */}
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "160px" }}>Imagem</label>
-					<input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} style={{ flex: 1 }} />
+				{/** Imagem */}
+				<div className="form-row">
+					<label>Imagem</label>
+					<input type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} />
 				</div>
 			</div>
 
-			<div style={{ marginTop: "20px", textAlign: "center" }}>
-				<button type="button" onClick={adicionarCarro} style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>
+			<div style={{ textAlign: "center" }}>
+				<button className="submit-btn" type="button" onClick={adicionarCarro}>
 					Adicionar
 				</button>
 			</div>
+
 			{loading && <LoadingSpinner text={loadingText} />}
 		</div>
 	);

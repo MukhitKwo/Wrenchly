@@ -2,216 +2,309 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalAppState } from "../../context/appState.local";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import "./adicionarEProcurar.css"; // mesmo CSS do AdicionarPorModelo
 
 export default function ProcurarPorEspecificacoes() {
-	const navigate = useNavigate();
-	const { setState } = useLocalAppState();
+  const navigate = useNavigate();
+  const { setState } = useLocalAppState();
 
-	const [especificacoes, setEspecificacoes] = useState({});
-	const [loading, setLoading] = useState(false);
+  const [especificacoes, setEspecificacoes] = useState({});
+  const [loading, setLoading] = useState(false);
 
-	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setEspecificacoes((prev) => ({
-			...prev,
-			[name]: value,
-		}));
-	};
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEspecificacoes((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-	const handleForbidden = useCallback(() => {
-		setState((prev) => ({
-			...prev,
-			user: null,
-			garagem: null,
-			carros_preview: [],
-			notas: [],
-			feedback: {
-				type: "error",
-				message: "Sessão expirada. Inicia sessão novamente.",
-			},
-		}));
+  const handleForbidden = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      user: null,
+      garagem: null,
+      carros_preview: [],
+      notas: [],
+      feedback: {
+        type: "error",
+        message: "Sessão expirada. Inicia sessão novamente.",
+      },
+    }));
 
-		navigate("/login", { replace: true });
-	}, [setState, navigate]);
+    navigate("/login", { replace: true });
+  }, [setState, navigate]);
 
-	const procurarCarros = async (specs) => {
-		setLoading(true);
-		try {
-			const res = await fetch("http://localhost:8001/api/procurarCarros/", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				credentials: "include",
-				body: JSON.stringify({ specs }),
-			});
+  const procurarCarros = async (specs) => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:8001/api/procurarCarros/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ specs }),
+      });
 
-			if (res.status === 403) {
-				handleForbidden();
-				return;
-			}
+      if (res.status === 403) {
+        handleForbidden();
+        return;
+      }
 
-			const data = await res.json();
+      const data = await res.json();
+      if (!res.ok) return;
 
-			if (!res.ok) return;
+      navigate("/listaCarrosRecomendados", {
+        state: { candidateCars: data.candidateCars_data },
+      });
+    } catch (error) {
+      console.error(error);
+      setState((prev) => ({
+        ...prev,
+        feedback: {
+          type: "error",
+          message: "Erro inesperado ao procurar carros.",
+        },
+      }));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-			navigate("/listaCarrosRecomendados", {
-				state: { candidateCars: data.candidateCars_data },
-			});
-		} catch (error) {
-			console.error(error);
-			setState((prev) => ({
-				...prev,
-				feedback: {
-					type: "error",
-					message: "Erro inesperado ao procurar carros.",
-				},
-			}));
-		} finally {
-			setLoading(false);
-		}
-	};
-	return (
-		<div style={{ backgroundColor: "inherit", padding: "25px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
-			<h2 style={{ marginBottom: "20px", borderBottom: "1px solid #ddd", paddingBottom: "5px" }}>Pesquisar por Especificações</h2>
+  return (
+    <div className="form-container">
+      <h2>Pesquisar por Especificações</h2>
 
-			<div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "12px" }}>
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Categoria</label>
-					<select name="categoria" value={especificacoes.categoria} onChange={handleChange} style={{ flex: 1 }}>
-						<option value="">Tipo / Categoria</option>
-						<optgroup label="Carro">
-							<option value="sedan">Sedan</option>
-							<option value="suv">SUV</option>
-							<option value="hatchback">Hatchback</option>
-							<option value="coupe">Coupé</option>
-							<option value="carrinha">Carrinha</option>
-						</optgroup>
-						<optgroup label="Mota">
-							<option value="naked">Naked</option>
-							<option value="sport">Sport</option>
-							<option value="touring">Touring</option>
-							<option value="custom">Custom</option>
-							<option value="adv">Adventure</option>
-						</optgroup>
-					</select>
-				</div>
+      <div className="form-grid">
+        {/* Categoria */}
+        <div className="form-row">
+          <label>Categoria</label>
+          <select
+            name="categoria"
+            value={especificacoes.categoria || ""}
+            onChange={handleChange}
+          >
+            <option value="">Tipo / Categoria</option>
+            <optgroup label="Carro">
+              <option value="sedan">Sedan</option>
+              <option value="suv">SUV</option>
+              <option value="hatchback">Hatchback</option>
+              <option value="coupe">Coupé</option>
+              <option value="carrinha">Carrinha</option>
+            </optgroup>
+            <optgroup label="Mota">
+              <option value="naked">Naked</option>
+              <option value="sport">Sport</option>
+              <option value="touring">Touring</option>
+              <option value="custom">Custom</option>
+              <option value="adv">Adventure</option>
+            </optgroup>
+          </select>
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Marca</label>
-					<input name="marca" value={especificacoes.marca} onChange={handleChange} style={{ flex: 1 }} />
-				</div>
+        {/* Marca */}
+        <div className="form-row">
+          <label>Marca</label>
+          <input
+            name="marca"
+            value={especificacoes.marca || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Modelo</label>
-					<input name="modelo" value={especificacoes.modelo} onChange={handleChange} style={{ flex: 1 }} />
-				</div>
+        {/* Modelo */}
+        <div className="form-row">
+          <label>Modelo</label>
+          <input
+            name="modelo"
+            value={especificacoes.modelo || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Ano mínimo</label>
-					<input type="number" name="anoMin" value={especificacoes.anoMin} onChange={handleChange} style={{ flex: 1 }} />
-				</div>
+        {/* Ano mínimo */}
+        <div className="form-row">
+          <label>Ano mínimo</label>
+          <input
+            type="number"
+            name="anoMin"
+            value={especificacoes.anoMin || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Ano máximo</label>
-					<input type="number" name="anoMax" value={especificacoes.anoMax} onChange={handleChange} style={{ flex: 1 }} />
-				</div>
+        {/* Ano máximo */}
+        <div className="form-row">
+          <label>Ano máximo</label>
+          <input
+            type="number"
+            name="anoMax"
+            value={especificacoes.anoMax || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Combustível</label>
-					<select name="combustivel" value={especificacoes.combustivel} onChange={handleChange} style={{ flex: 1 }}>
-						<option value="">---</option>
-						<option value="gasoleo">Diesel</option>
-						<option value="gasolina">Gasolina</option>
-						<option value="eletrico">Elétrico</option>
-						<option value="hibrido">Híbrido</option>
-					</select>
-				</div>
+        {/* Combustível */}
+        <div className="form-row">
+          <label>Combustível</label>
+          <select
+            name="combustivel"
+            value={especificacoes.combustivel || ""}
+            onChange={handleChange}
+          >
+            <option value="">---</option>
+            <option value="gasoleo">Diesel</option>
+            <option value="gasolina">Gasolina</option>
+            <option value="eletrico">Elétrico</option>
+            <option value="hibrido">Híbrido</option>
+          </select>
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Transmissão</label>
-					<select name="transmissao" value={especificacoes.transmissao} onChange={handleChange} style={{ flex: 1 }}>
-						<option value="">---</option>
-						<option value="manual">Manual</option>
-						<option value="automatica">Automática</option>
-					</select>
-				</div>
+        {/* Transmissão */}
+        <div className="form-row">
+          <label>Transmissão</label>
+          <select
+            name="transmissao"
+            value={especificacoes.transmissao || ""}
+            onChange={handleChange}
+          >
+            <option value="">---</option>
+            <option value="manual">Manual</option>
+            <option value="automatica">Automática</option>
+          </select>
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Tração</label>
-					<select name="tracao" value={especificacoes.tracao} onChange={handleChange} style={{ flex: 1 }}>
-						<option value="">---</option>
-						<option value="fwd">FWD</option>
-						<option value="rwd">RWD</option>
-						<option value="awd">AWD</option>
-					</select>
-				</div>
+        {/* Tração */}
+        <div className="form-row">
+          <label>Tração</label>
+          <select
+            name="tracao"
+            value={especificacoes.tracao || ""}
+            onChange={handleChange}
+          >
+            <option value="">---</option>
+            <option value="fwd">FWD</option>
+            <option value="rwd">RWD</option>
+            <option value="awd">AWD</option>
+          </select>
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Carroçaria</label>
-					<select name="tipoCarroceria" value={especificacoes.tipoCarroceria} onChange={handleChange} style={{ flex: 1 }}>
-						<option value="">---</option>
-						<option value="sedan">Sedan</option>
-						<option value="hatchback">Hatchback</option>
-						<option value="suv">SUV</option>
-						<option value="coupe">Coupé</option>
-						<option value="carrinha">Carrinha</option>
-					</select>
-				</div>
+        {/* Carroçaria */}
+        <div className="form-row">
+          <label>Carroçaria</label>
+          <select
+            name="tipoCarroceria"
+            value={especificacoes.tipoCarroceria || ""}
+            onChange={handleChange}
+          >
+            <option value="">---</option>
+            <option value="sedan">Sedan</option>
+            <option value="hatchback">Hatchback</option>
+            <option value="suv">SUV</option>
+            <option value="coupe">Coupé</option>
+            <option value="carrinha">Carrinha</option>
+          </select>
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Cavalos mín</label>
-					<input type="number" name="cavalosMin" value={especificacoes.cavalosMin} onChange={handleChange} style={{ flex: 1 }} />
-				</div>
+        {/* Cavalos */}
+        <div className="form-row">
+          <label>Cavalos mín</label>
+          <input
+            type="number"
+            name="cavalosMin"
+            value={especificacoes.cavalosMin || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-row">
+          <label>Cavalos máx</label>
+          <input
+            type="number"
+            name="cavalosMax"
+            value={especificacoes.cavalosMax || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Cavalos máx</label>
-					<input type="number" name="cavalosMax" value={especificacoes.cavalosMax} onChange={handleChange} style={{ flex: 1 }} />
-				</div>
+        {/* Cilindrada */}
+        <div className="form-row">
+          <label>Cilindrada mín (cc)</label>
+          <input
+            type="number"
+            name="cilindradaMin"
+            value={especificacoes.cilindradaMin || ""}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="form-row">
+          <label>Cilindrada máx (cc)</label>
+          <input
+            type="number"
+            name="cilindradaMax"
+            value={especificacoes.cilindradaMax || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Cilindrada mín (cc)</label>
-					<input type="number" name="cilindradaMin" value={especificacoes.cilindradaMin} onChange={handleChange} style={{ flex: 1 }} />
-				</div>
+        {/* Portas */}
+        <div className="form-row">
+          <label>Portas</label>
+          <input
+            type="number"
+            name="portas"
+            value={especificacoes.portas || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Cilindrada máx (cc)</label>
-					<input type="number" name="cilindradaMax" value={especificacoes.cilindradaMax} onChange={handleChange} style={{ flex: 1 }} />
-				</div>
+        {/* Lugares */}
+        <div className="form-row">
+          <label>Lugares</label>
+          <input
+            type="number"
+            name="lugares"
+            value={especificacoes.lugares || ""}
+            onChange={handleChange}
+          />
+        </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Portas</label>
-					<input type="number" name="portas" value={especificacoes.portas} onChange={handleChange} style={{ flex: 1 }} />
-				</div>
+        {/* Ordenar */}
+        <div className="form-row">
+          <label>Ordenar por</label>
+          <select
+            name="ordenarPor"
+            value={especificacoes.ordenarPor || ""}
+            onChange={handleChange}
+          >
+            <option value="">---</option>
+            <option value="ano">Ano</option>
+            <option value="cavalos">Cavalos</option>
+            <option value="cilindrada">Cilindrada</option>
+          </select>
+        </div>
+        <div className="form-row">
+          <label>Ordem</label>
+          <select
+            name="ordem"
+            value={especificacoes.ordem || "asc"}
+            onChange={handleChange}
+          >
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+          </select>
+        </div>
+      </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Lugares</label>
-					<input type="number" name="lugares" value={especificacoes.lugares} onChange={handleChange} style={{ flex: 1 }} />
-				</div>
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <button
+          className="submit-btn"
+          type="button"
+          onClick={() => procurarCarros(especificacoes)}
+        >
+          Procurar
+        </button>
+      </div>
 
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Ordenar por</label>
-					<select name="ordenarPor" value={especificacoes.ordenarPor} onChange={handleChange} style={{ flex: 1 }}>
-						<option value="">---</option>
-						<option value="ano">Ano</option>
-						<option value="cavalos">Cavalos</option>
-						<option value="cilindrada">Cilindrada</option>
-					</select>
-				</div>
-
-				<div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-					<label style={{ width: "180px" }}>Ordem</label>
-					<select name="ordem" value={especificacoes.ordem} onChange={handleChange} style={{ flex: 1 }}>
-						<option value="asc">Ascendente</option>
-						<option value="desc">Descendente</option>
-					</select>
-				</div>
-			</div>
-
-			<div style={{ marginTop: "20px", textAlign: "center" }}>
-				<button type="button" onClick={() => procurarCarros(especificacoes)} style={{ padding: "10px 20px", borderRadius: "8px", cursor: "pointer" }}>
-					Procurar
-				</button>
-			</div>
-			{loading && <LoadingSpinner text="A procurar veiculos..." />}
-		</div>
-	);
+      {loading && <LoadingSpinner text="A procurar veiculos..." />}
+    </div>
+  );
 }

@@ -194,17 +194,24 @@ export default function MostrarCarrosGuardados() {
 			{status === "idle" && carros.length > 0 && (
 				<ul>
 					{carros.map((carro) => (
-						<li key={carro.id} style={{ marginBottom: "8px" }}>
+						<li key={carro.id} style={{ marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
 							<strong>{carro.nome}</strong>
 
-							<button onClick={() => esquecerCarro(carro.id)} disabled={action.id === carro.id}>
+							<button
+								onClick={() => esquecerCarro(carro.id)}
+								disabled={action.id === carro.id}
+							>
 								{action.id === carro.id && action.type === "delete" ? "A apagar…" : "Esquecer"}
 							</button>
 
-							<button onClick={() => adicionarCarro(carro.nome, carro.id)} disabled={action.id === carro.id}>
+							<button
+								onClick={() => adicionarCarro(carro.nome, carro.id)}
+								disabled={action.id === carro.id}
+							>
 								{action.id === carro.id && action.type === "add" ? "A abrir…" : "Adicionar"}
 							</button>
 						</li>
+
 					))}
 				</ul>
 			)}

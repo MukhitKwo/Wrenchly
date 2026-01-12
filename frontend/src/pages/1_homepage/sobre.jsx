@@ -5,12 +5,8 @@ function Sobre() {
     <div className="sobre-page">
 
       {/* HERO */}
-      <section className="sobre-hero">
+      <section className="sobre-hero" >
         <h1>Wrenchly</h1>
-        <p>
-          A plataforma inteligente para gerir veículos, manutenções
-          e decisões automóveis.
-        </p>
       </section>
 
       {/* VISÃO */}
